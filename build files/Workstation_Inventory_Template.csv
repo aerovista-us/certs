@@ -1,0 +1,2 @@
+Hostname,ServiceTag,Model,RegModel,RegType,CPU,RAM_GB,Storage,OS,InputRating,PSU_W,CountryOfOrigin,Certs,Dell_PN,BIOS_Version,MAC_Address,Location,Notes
+,,Dell OptiPlex 3050 SFF,D11S,D11S002,Intel Core i5 (exact SKU TBD),16,"NVMe + (optional) 2.5"" SSD",Windows 11 Pro,"100–240 V~, 3.0 A, 50/60 Hz",≈180 (verify on PSU label),China,UL/cUL E105106; RoHS; Safety Mark; CAN ICES-3 (B),XJOPV A00,,,,Enable WoL; add to Syncthing + RustDesk; update via Dell Command | Update

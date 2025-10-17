@@ -1,0 +1,46 @@
+AeroVista PC Image — App Inclusion List (Draft)
+================================================
+
+Core (install/shortcut on every PC)
+- AeroCoreOS Shell/Dashboard (PWA tile set; web-first)
+- AeroCoreOS — Staff Call (one-click mesh voice; Tailscale tailnet)
+- Daily Brief Builder (HTML/PWA)
+- AdminCenter (internal admin console)
+- File Gateway (internal file portal / CopyParty client shortcut)
+- ByteSysScan (hardware + inventory scan/telemetry)
+
+Productivity (offline-first apps; include where relevant)
+- BytePad (notes)
+- TasksPro (tasks/kanban)
+- Contacts-SQL
+- Projects-SQL
+
+Comms & Sync
+- RydeSync‑Next (group travel / ride / chat / music sync)
+- RydeBeats‑Sync (music sync companion)
+- EchoVerse Player (loops/audio content launcher)
+
+Creative / R&D (optional per role)
+- SkyForge — Ascension Awaits (prototype launcher)
+- EchoVerse Tools (prompt pads, loop pack viewer)
+- Synthetic Souls / SwampHop launchers (as available)
+
+Ops / Reporting (optional per site)
+- Daily/Weekly Ops Reports (HTML/PWA pages)
+- CX Pulse Web Link (Power Apps/Power BI portal)
+- NFL report dashboards (seasonal; optional)
+- Borderlands Tips site link (optional personal-use)
+
+Third‑Party Baseline (not AeroVista apps, but include in image)
+- Tailscale (auto-login to tailnet)
+- Node.js LTS
+- Git + Git Credential Manager
+- Visual Studio Code (extensions baseline)
+- 7‑Zip
+- VLC
+- Edge/Chrome policies (PWA install allowed, mic permissions whitelisted for tailnet URL)
+- (Optional) Docker Desktop if this workstation will run local services
+
+Notes
+- Favor PWA installs / Start Menu shortcuts for web apps (managed via Edge/Chrome).
+- Centralize AeroVista payloads under C:\AeroVista\ (scripts, zips, logs, shortcuts).

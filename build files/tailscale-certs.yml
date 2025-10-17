@@ -1,0 +1,6 @@
+# /traefik/dynamic/tailscale-certs.yml
+# Uses the single Tailscale-issued cert for nxcore.tail79107c.ts.net
+tls:
+  certificates:
+    - certFile: /etc/ssl/tailscale/nxcore.tail79107c.ts.net.crt
+      keyFile:  /etc/ssl/tailscale/nxcore.tail79107c.ts.net.key

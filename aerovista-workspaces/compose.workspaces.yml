@@ -1,0 +1,153 @@
+version: "3.9"
+name: aerovista-workspaces
+
+x-common-labels: &common_labels
+  - "traefik.enable=true"
+  # Router and TLS examples (edit hosts before use)
+  - "traefik.http.routers.W.NAME.rule=Host(`W.SUBDOM`)"  # placeholder, overridden per service
+  - "traefik.http.routers.W.NAME.entrypoints=websecure"
+  - "traefik.http.routers.W.NAME.tls=true"
+  - "traefik.http.services.W.NAME.loadbalancer.server.port=W.PORT"
+
+networks:
+  traefik_proxy:
+    external: true
+  worknet:
+    driver: bridge
+
+volumes:
+  ws-user1-home:
+  ws-shared:
+  code-user1-config:
+  jupyter-data:
+  onlyoffice-data:
+  penpot-postgres:
+  penpot-redis:
+
+services:
+
+  # 1) Web Desktop in the browser (XFCE) with audio support.
+  # Install GUI apps inside (GIMP, Inkscape, Audacity, etc).
+  webtop-user1:
+    image: lscr.io/linuxserver/webtop:ubuntu-xfce
+    container_name: webtop-user1
+    shm_size: "2gb"
+    environment:
+      - TZ=Etc/UTC
+      - PUID=1000
+      - PGID=1000
+      - TITLE=AeroVista Webtop — user1
+    volumes:
+      - ws-user1-home:/config
+      - ws-shared:/workspace
+    networks: [worknet, traefik_proxy]
+    security_opt:
+      - no-new-privileges:true
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.webtop-user1.rule=Host(`ws1.%PRIVATE_HOST%`)"
+      - "traefik.http.routers.webtop-user1.entrypoints=websecure"
+      - "traefik.http.routers.webtop-user1.tls=true"
+      - "traefik.http.services.webtop-user1.loadbalancer.server.port=3000"
+
+  # 2) VS Code in the browser (Node/Python work without local installs)
+  code-user1:
+    image: coder/code-server:latest
+    container_name: code-user1
+    environment:
+      - TZ=Etc/UTC
+      - PASSWORD=${CODE_USER1_PASSWORD:-changeme}
+    volumes:
+      - ws-user1-home:/home/coder
+      - ws-shared:/workspace
+    networks: [worknet, traefik_proxy]
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.code-user1.rule=Host(`code1.%PRIVATE_HOST%`)"
+      - "traefik.http.routers.code-user1.entrypoints=websecure"
+      - "traefik.http.routers.code-user1.tls=true"
+      - "traefik.http.services.code-user1.loadbalancer.server.port=8080"
+
+  # 3) JupyterLab for notebooks and data work
+  jupyterlab:
+    image: jupyter/datascience-notebook:latest
+    container_name: jupyterlab
+    environment:
+      - JUPYTER_TOKEN=${JUPYTER_TOKEN:-changeme}
+      - TZ=Etc/UTC
+    volumes:
+      - jupyter-data:/home/jovyan
+      - ws-shared:/home/jovyan/work
+    networks: [worknet, traefik_proxy]
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.jupyter.rule=Host(`nb.%PRIVATE_HOST%`)"
+      - "traefik.http.routers.jupyter.entrypoints=websecure"
+      - "traefik.http.routers.jupyter.tls=true"
+      - "traefik.http.services.jupyter.loadbalancer.server.port=8888"
+
+  # 4) OnlyOffice Document Server (docs/sheets/slides)
+  onlyoffice:
+    image: onlyoffice/documentserver:latest
+    container_name: onlyoffice
+    networks: [worknet, traefik_proxy]
+    volumes:
+      - onlyoffice-data:/var/www/onlyoffice/Data
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.onlyoffice.rule=Host(`office.%PUBLIC_HOST%`)"
+      - "traefik.http.routers.onlyoffice.entrypoints=websecure"
+      - "traefik.http.routers.onlyoffice.tls=true"
+      - "traefik.http.services.onlyoffice.loadbalancer.server.port=80"
+
+  # 5) draw.io (diagrams.net) self-hosted
+  drawio:
+    image: fjudith/draw.io:latest
+    container_name: drawio
+    networks: [worknet, traefik_proxy]
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.drawio.rule=Host(`draw.%PUBLIC_HOST%`)"
+      - "traefik.http.routers.drawio.entrypoints=websecure"
+      - "traefik.http.routers.drawio.tls=true"
+      - "traefik.http.services.drawio.loadbalancer.server.port=8080"
+
+  # 6) Excalidraw (lightweight whiteboard/diagram)
+  excalidraw:
+    image: excalidraw/excalidraw:latest
+    container_name: excalidraw
+    networks: [worknet, traefik_proxy]
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.excalidraw.rule=Host(`x.%PUBLIC_HOST%`)"
+      - "traefik.http.routers.excalidraw.entrypoints=websecure"
+      - "traefik.http.routers.excalidraw.tls=true"
+      - "traefik.http.services.excalidraw.loadbalancer.server.port=80"
+
+  # 7) BytePad (stub): serve your web build from /apps/bytepad
+  bytepad:
+    image: nginx:alpine
+    container_name: bytepad
+    volumes:
+      - ./apps/bytepad:/usr/share/nginx/html:ro
+    networks: [worknet, traefik_proxy]
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.bytepad.rule=Host(`bytepad.%PRIVATE_HOST%`)"
+      - "traefik.http.routers.bytepad.entrypoints=websecure"
+      - "traefik.http.routers.bytepad.tls=true"
+      - "traefik.http.services.bytepad.loadbalancer.server.port=80"
+
+  # 8) AudioMass (stub): simple in-browser audio editor
+  audiomass:
+    image: nginx:alpine
+    container_name: audiomass
+    volumes:
+      - ./apps/audiomass:/usr/share/nginx/html:ro
+    networks: [worknet, traefik_proxy]
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.audiomass.rule=Host(`audio.%PRIVATE_HOST%`)"
+      - "traefik.http.routers.audiomass.entrypoints=websecure"
+      - "traefik.http.routers.audiomass.tls=true"
+      - "traefik.http.services.audiomass.loadbalancer.server.port=80"

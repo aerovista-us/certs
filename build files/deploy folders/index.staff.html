@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>AeroCoreOS — Staff Call</title>
+  <link rel="stylesheet" href="style.css" />
+  <script src="https://unpkg.com/peerjs@1.4.7/dist/peerjs.min.js"></script>
+  <style>
+    /* minor inline tweaks so this works even without external CSS */
+    body { font-family: system-ui, sans-serif; background:#0b0e12; color:#e6ebef; }
+    .container { max-width: 900px; margin: 40px auto; padding: 24px; background:#121821; border-radius:16px; }
+    .row { display:flex; gap:12px; flex-wrap:wrap; align-items:center; }
+    button { padding:10px 14px; border:0; border-radius:12px; cursor:pointer; background:#1e90ff; color:white; font-weight:600; }
+    button.secondary { background:#263241; }
+    #status { font-size: 0.9rem; opacity:0.9; }
+    .pill { display:inline-block; padding:2px 10px; border-radius:999px; background:#263241; margin-left:6px; font-size:0.8rem; }
+    #connections { display:grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap:12px; margin-top:12px; }
+    .card { background:#0f141c; border:1px solid #1f2a38; padding:12px; border-radius:12px; }
+    audio { width:100%; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>AeroCoreOS — One‑Click Staff Call <span class="pill">Tailnet</span></h1>
+    <p id="status">Idle.</p>
+
+    <div class="row" style="margin:12px 0 16px;">
+      <button id="joinBtn">Join Staff Call</button>
+      <button id="leaveBtn" class="secondary" disabled>Leave</button>
+      <button id="muteBtn" class="secondary" disabled>Mute</button>
+    </div>
+
+    <div class="card">
+      <strong>Active connections</strong>
+      <div id="connections"></div>
+    </div>
+  </div>
+
+  <script src="app.staff.js"></script>
+</body>
+</html>

@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>AeroCoreOS — Enhanced Boot Splash</title>
+<style>
+  :root{
+    --bg: #0b0e14;
+    --muted: #aab1c0;
+    --text: #e6e9ef;
+  }
+  html,body{height:100%;margin:0;background:var(--bg);color:var(--text);font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Arial}
+  .stage{
+    position:relative; height:100%; width:100%;
+    background: radial-gradient(1200px 600px at 50% 40%, rgba(90,130,255,.25), transparent 60%), url('assets/bg_1920x1080.png') center/cover no-repeat;
+    display:flex; align-items:center; justify-content:center;
+    overflow:hidden;
+  }
+  .panel{ text-align:center; padding:24px 28px; border-radius:18px; background: rgba(12,16,24,.55); backdrop-filter: blur(8px); border:1px solid rgba(255,255,255,.06);}
+  .title{ font-size: clamp(24px, 3.4vw, 48px); font-weight: 900; letter-spacing:.4px; margin: 10px 0 4px; background: linear-gradient(90deg,#7aa2f7,#6de38f); -webkit-background-clip:text; background-clip:text; color:transparent;}
+  .sub{ color: var(--muted); font-weight:600; font-size:clamp(12px,1.4vw,16px); margin-bottom: 12px;}
+  .foot{ color: #c7d2fe; font-size: 13px; margin-top: 8px; opacity:.9; }
+  .fade-in{ animation: fade .8s ease-out both; }
+  @keyframes fade { from{opacity:0; transform: translateY(6px)} to{opacity:1; transform:none} }
+  .spin { animation: spin 12s linear infinite; }
+  @keyframes spin { from { transform: rotate(0deg) } to { transform: rotate(360deg) } }
+  .badge { position:absolute; right:14px; bottom:14px; background: rgba(12,16,24,.6); padding:8px 12px; border-radius:999px; border:1px solid rgba(255,255,255,.08);}
+</style>
+</head>
+<body>
+  <div class="stage">
+    <div class="panel fade-in">
+      <img src="assets/animated_logo.svg" alt="AeroCoreOS Animated Logo" style="width:min(56vw,480px); max-width:90%;">
+      <div class="title">Enhanced by AeroCoreOS</div>
+      <div class="sub">Fast. Secure. Synchronized.</div>
+      <div class="foot">An AeroVista Production | NeXuS Tech Works</div>
+    </div>
+    <div class="badge">v2025-10-12</div>
+  </div>
+</body>
+</html>

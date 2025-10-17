@@ -1,0 +1,81 @@
+{
+  "audio": {
+    "enhanced_processing": true,
+    "spectrum_analyzer": true,
+    "auto_quality_optimization": true,
+    "default_bass": 2,
+    "default_treble": 1,
+    "default_reverb": 0.3,
+    "spectrum_bars": 32,
+    "smoothing_factor": 0.8
+  },
+  "themes": {
+    "default_theme": "default",
+    "custom_themes_enabled": true,
+    "gradient_support": true,
+    "preset_themes": [
+      "default",
+      "ocean", 
+      "sunset",
+      "forest",
+      "purple",
+      "minimal"
+    ],
+    "export_import_enabled": true
+  },
+  "context_menus": {
+    "enabled": true,
+    "keyboard_shortcuts": true,
+    "smart_menus": true,
+    "actions": [
+      "play_now",
+      "add_to_queue", 
+      "rate_song",
+      "add_note",
+      "add_tags",
+      "work_order",
+      "view_details",
+      "copy_link",
+      "share_song"
+    ]
+  },
+  "persistent_audio": {
+    "enabled": true,
+    "background_controls": true,
+    "cross_page_persistence": true,
+    "notifications": true,
+    "spectrum_visualization": true,
+    "auto_resume": true
+  },
+  "metadata": {
+    "ratings_enabled": true,
+    "notes_enabled": true,
+    "tags_enabled": true,
+    "play_count_tracking": true,
+    "work_order_integration": true,
+    "export_import": true,
+    "analytics": true
+  },
+  "network": {
+    "primary_path": "\\\\envy2-0\\EchoVerse_Music\\Albums\\",
+    "local_path": "M:\\Albums\\",
+    "backup_path": "D:\\Clients\\AeroVista\\Projects\\EchoVerse_Music\\Albums\\",
+    "tailscale_enabled": true,
+    "auto_fallback": true,
+    "streaming_optimization": true
+  },
+  "performance": {
+    "caching_enabled": true,
+    "lazy_loading": true,
+    "async_processing": true,
+    "optimized_queries": true,
+    "progressive_enhancement": true
+  },
+  "ui": {
+    "glassmorphism": true,
+    "smooth_animations": true,
+    "responsive_design": true,
+    "accessibility": true,
+    "dark_mode_default": true
+  }
+}

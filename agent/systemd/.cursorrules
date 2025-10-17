@@ -1,0 +1,35 @@
+# Cursor Rules for NXCore-Control
+# Scope: Local operator pack to manage NXCore (192.168.7.209).
+
+project_style:
+  - terse_when_safe
+  - show_commands_before_running
+  - prefer_idempotent_scripts
+
+tools:
+  - name: ssh
+    usage: use Windows built-in OpenSSH client
+    host: 192.168.7.209
+    user: glyph
+  - name: scp
+    usage: push/pull files to /srv/core and /opt/nexus
+
+guardrails:
+  - NEVER hardcode secrets in repo; use env or .secrets.user
+  - Only write to: /srv/core, /opt/nexus, /etc/systemd/system, /etc/nxcore*
+  - For services, prefer systemd units and docker compose
+
+routines:
+  - name: deploy_n8n
+    steps:
+      - scp docker/compose-n8n.yml nxcore:/srv/core/compose-n8n.yml
+      - ssh: 'sudo docker compose -f /srv/core/compose-n8n.yml up -d'
+  - name: deploy_filebrowser
+    steps:
+      - scp docker/compose-filebrowser.yml nxcore:/srv/core/compose-filebrowser.yml
+      - ssh: 'sudo docker compose -f /srv/core/compose-filebrowser.yml up -d'
+  - name: install_agent
+    steps:
+      - scp agent/nxcore-agent.rules nxcore:/etc/nxcore-agent.rules
+      - scp agent/systemd/cursor-agent.service nxcore:/etc/systemd/system/cursor-agent.service
+      - ssh: 'sudo systemctl daemon-reload && sudo systemctl enable --now cursor-agent'

@@ -1,0 +1,12 @@
+# /etc/nxcore-agent.rules
+[default]
+allow_ip_range = 192.168.7.0/22
+log_level = info
+watch_paths = /srv/core,/opt/nexus
+block_external_scripts = true
+
+[monitoring]
+enable = true
+agent = cursor
+heartbeat = 60s
+alert_on_change = true

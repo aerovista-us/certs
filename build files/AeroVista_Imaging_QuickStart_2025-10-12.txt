@@ -1,0 +1,21 @@
+AeroVista Imaging QuickStart — 2025-10-12
+
+PC (Windows) — Golden Image:
+1) Fresh install Win 11 Pro → create local admin (av-admin)  [See OOBE appendix for skipping MSA]
+2) Update + drivers; BitLocker on; power plan High Performance; hibernation off (optional).
+3) Install: Tailscale, Node.js LTS (via nvm → 22.19.0), Git, VS Code, 7-Zip, VLC. (Docker if needed)
+4) Drop Staff Call bundle → test `node server.staff.js` on 8443 → `tailscale serve https / http://127.0.0.1:8443`.
+5) Add PWAs (AeroCoreOS Dashboard, Daily Brief, AdminCenter, File Gateway) → pin to Start/Taskbar.
+6) Create standard user (av-user). Clean up. Sysprep: `Sysprep.exe /generalize /oobe /shutdown`.
+7) Capture with Clonezilla (simple) or MDT (scalable). Name image: AV_W11_YYYYMMDD_v1.
+
+Server (Ubuntu 24.04) — Desktop-Server:
+1) Minimal install + OpenSSH → join Tailscale (`tailscale up --ssh`).
+2) Install Node LTS + Docker Engine.
+3) Deploy Staff Call to /opt/aerocoreos-staff-call → systemd service → `tailscale serve`.
+4) Deploy n8n + Postgres via docker compose → expose over tailnet.
+5) Backups (restic), monitoring (node_exporter), ufw/fail2ban hardening.
+
+Common Validation:
+- Staff Call loads over `https://<magicdns>/index.staff.html`, peers connect, mic prompts appear.
+- RustDesk/Tailscale reachable; PWA shortcuts working; versions logged in C:\AeroVista\apps\VERSION.txt

@@ -1,0 +1,303 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>RydeSync P2P Voice — Industrial Core v2</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
+  <style>
+    :root{--metal:#8a8f97;--panel:#0d0f12;--bevel:#1c1f24;--accent:#34e89e;--accent2:#00c6ff;--warn:#ff6b6b}
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      background:radial-gradient(1200px 800px at 20% 15%, #14181e, #0a0c0f 60%, #060709);
+      color:#e6eaef;margin:0;font-family:'Share Tech Mono', monospace;overflow:hidden;
+    }
+    .bus{position:absolute;inset:16px;pointer-events:none}
+    .bus:before,.bus:after{content:'';position:absolute;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent 0 4%,#26303a 4% 6%,transparent 6% 94%,#26303a 94% 96%,transparent 96% 100%);opacity:.4}
+    .bus:before{top:40%}.bus:after{top:70%}
+
+    .panel{
+      width:420px;height:300px;position:absolute;padding:14px;display:flex;flex-direction:column;gap:10px;user-select:none;cursor:grab;
+      background:linear-gradient(145deg,var(--panel),#080a0d);
+      border:4px solid #2a2f36;border-radius:14px;
+      box-shadow:inset 0 0 40px #000, 0 18px 40px rgba(0,0,0,.7);
+      outline:1px solid #1b1f24;outline-offset:-6px;
+    }
+    .panel:active{cursor:grabbing}
+    .title{display:flex;align-items:center;justify-content:center;gap:10px;letter-spacing:2px;padding-bottom:6px;border-bottom:2px solid #2b2f34}
+    .bolt{width:10px;height:10px;border-radius:50%;background:#1b1f24;border:2px solid #454b54;box-shadow:inset -1px -1px 2px #000,inset 1px 1px 2px #666}
+
+    .row{display:flex;gap:10px;align-items:center}
+    .stretch{flex:1}
+    input[type=text]{width:140px;padding:8px 10px;border:2px solid #2e343c;background:#0e1216;color:#d2d8df;border-radius:8px;letter-spacing:1px}
+    button{padding:8px 14px;border:2px solid #3a414b;border-radius:8px;background:#0f141a;color:#e8f5ff;cursor:pointer;box-shadow:inset 0 0 10px #000}
+    button[disabled]{opacity:.45;cursor:not-allowed}
+    .switch{display:flex;gap:10px;align-items:center}
+
+    .dial{display:flex;align-items:center;justify-content:center}
+    .dial input{-webkit-appearance:none;appearance:none;width:110px;height:110px;border-radius:50%;background:radial-gradient(circle at 30% 30%,#4a5059,#20252c);border:4px solid #3a414b;box-shadow:inset -6px -6px 14px #000, inset 6px 6px 14px #555;transform:rotate(-90deg)}
+
+    .led{width:14px;height:14px;border-radius:50%;box-shadow:0 0 10px #000;border:1px solid #20252c}
+    .led.on{background:var(--accent);box-shadow:0 0 12px var(--accent)}
+    .led.warn{background:var(--warn);box-shadow:0 0 12px var(--warn)}
+    .led.off{background:#2a2f36}
+
+    .meter{height:8px;background:#0d1116;border:1px solid #2a2f36;border-radius:6px;overflow:hidden}
+    .meter > i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--accent2),var(--accent));transition:width .2s}
+
+    .hint{opacity:.7;font-size:.9rem}
+  </style>
+</head>
+<body>
+  <div class="panel" id="tx" style="top:36px;left:36px;">
+    <div class="title"><span class="bolt"></span> TRANSMIT MODULE <span class="bolt"></span></div>
+    <div class="row">
+      <label>ROOM</label>
+      <input id="roomId" type="text" value="alpha" />
+      <span class="stretch"></span>
+      <span class="hint">Aerovision × EchoVerse</span>
+    </div>
+    <div class="row">
+      <button id="joinBtn">JOIN</button>
+      <button id="muteBtn" disabled>MUTE</button>
+      <span class="led off" id="authLed" title="Auth"></span>
+      <span class="led off" id="signalLed" title="Signaling"></span>
+      <span class="led off" id="iceLed" title="ICE"></span>
+    </div>
+    <div class="dial"><input id="txDial" type="range" min="0" max="100" value="50" /></div>
+    <div class="meter"><i id="vu"></i></div>
+    <div class="hint" id="status">idle</div>
+  </div>
+
+  <div class="panel" id="rx" style="top:120px;left:520px;">
+    <div class="title"><span class="bolt"></span> RECEIVE MODULE <span class="bolt"></span></div>
+    <div class="row">
+      <button id="leaveBtn" disabled>LEAVE</button>
+      <span class="led off" id="peerLed" title="Peer bound"></span>
+      <span class="stretch"></span>
+      <span id="iceState" class="hint">disconnected</span>
+    </div>
+    <div class="dial"><input id="rxDial" type="range" min="0" max="100" value="50" /></div>
+    <div class="meter"><i id="vuRx"></i></div>
+    <div class="hint">drag panels; heavy feel by design</div>
+  </div>
+
+  <div class="bus"></div>
+
+  <audio id="localAudio" autoplay muted></audio>
+  <audio id="remoteAudio" autoplay></audio>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-app.js";
+    import { getDatabase, ref, set, get, onValue, onChildAdded, onDisconnect, push, remove, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-database.js";
+    import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-auth.js";
+
+    // 🔧 REQUIRED: set your project values
+    const firebaseConfig = {
+      apiKey: "YOUR_API_KEY",
+      authDomain: "YOUR_PROJECT.firebaseapp.com",
+      databaseURL: "https://YOUR_PROJECT-default-rtdb.firebaseio.com",
+      projectId: "YOUR_PROJECT",
+      appId: "YOUR_APP_ID"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db  = getDatabase(app);
+    const auth = getAuth(app);
+
+    const $ = id=>document.getElementById(id);
+    const setText = (id, t)=> $(id).textContent = t;
+    const setLed = (el, state)=>{ el.className = `led ${state}` };
+
+    let me=null, roomId="alpha", pc=null, localStream=null, remoteStream=null, otherPeerId=null;
+    let unsubSignals = [];
+
+    const rtcConfig={iceServers:[
+      {urls:["stun:stun.l.google.com:19302"]},
+      // {urls:["turn:YOUR_TURN_HOST:3478"], username:"user", credential:"pass"}
+    ]};
+
+    // --- auth bootstrap ---
+    await ensureAuth();
+    setLed($("authLed"), "on");
+
+    $("joinBtn").onclick = joinRoom;
+    $("leaveBtn").onclick = leaveRoom;
+    $("muteBtn").onclick  = toggleMute;
+
+    function ensureAuth(){
+      return new Promise((resolve)=>{
+        if (auth.currentUser){ me = auth.currentUser.uid; return resolve(); }
+        onAuthStateChanged(auth,(u)=>{ if(u){ me=u.uid; resolve(); } });
+        signInAnonymously(auth).catch(console.error);
+      });
+    }
+
+    async function joinRoom(){
+      if (pc) return;
+      roomId = $("roomId").value.trim() || "alpha";
+      setText("status", `joining ${roomId}…`);
+
+      // presence
+      const meRef = ref(db, `voice/rooms/${roomId}/participants/${me}`);
+      await set(meRef, { uid: me, joinedAt: serverTimestamp() });
+      onDisconnect(meRef).remove();
+      setLed($("signalLed"), "on");
+
+      // local media
+      try {
+        localStream = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation:true, noiseSuppression:true }, video:false });
+        $("localAudio").srcObject = localStream;
+      } catch (e){ setText("status","mic denied"); return; }
+
+      // PC
+      pc = new RTCPeerConnection(rtcConfig);
+      remoteStream = new MediaStream();
+      $("remoteAudio").srcObject = remoteStream;
+
+      localStream.getTracks().forEach(t=> pc.addTrack(t, localStream));
+      pc.ontrack = (e)=> e.streams[0].getTracks().forEach(tr=> remoteStream.addTrack(tr));
+
+      pc.onicecandidate = (ev)=>{
+        if (!ev.candidate || !otherPeerId) return;
+        push(ref(db, `voice/rooms/${roomId}/signals/${otherPeerId}/${me}/candidates`), ev.candidate.toJSON());
+      };
+
+      pc.onconnectionstatechange = ()=>{
+        const s = pc.connectionState;
+        setText("iceState", s);
+        setLed($("iceLed"), s === 'connected' || s === 'completed' ? 'on' : (s==='failed'?'warn':'off'));
+      };
+
+      // pick peer + wire signaling
+      const partsSnap = await get(ref(db, `voice/rooms/${roomId}/participants`));
+      const peers = Object.keys(partsSnap.val()||{}).filter(id=> id!==me).sort();
+
+      if (peers.length){
+        otherPeerId = peers[0];
+        bindSignals();
+        if (me < otherPeerId) await makeOffer();
+      } else {
+        // wait until someone joins, then bind
+        const off = onValue(ref(db, `voice/rooms/${roomId}/participants`), async (snap)=>{
+          const ids = Object.keys(snap.val()||{}).filter(id=> id!==me).sort();
+          if (!otherPeerId && ids.length){
+            otherPeerId = ids[0];
+            bindSignals();
+            if (me < otherPeerId) await makeOffer();
+            off(); // stop listening after we have a peer
+          }
+        });
+      }
+
+      $("joinBtn").disabled = true; $("leaveBtn").disabled = false; $("muteBtn").disabled = false;
+      setText("status","joined");
+    }
+
+    function bindSignals(){
+      setLed($("peerLed"), "on");
+      // offer → me
+      unsubSignals.push(onValue(ref(db, `voice/rooms/${roomId}/signals/${me}/${otherPeerId}/offer`), async (s)=>{
+        const offer = s.val(); if (!offer) return;
+        if (!pc.currentRemoteDescription){
+          await pc.setRemoteDescription(offer);
+          const answer = await pc.createAnswer();
+          await pc.setLocalDescription(answer);
+          await set(ref(db, `voice/rooms/${roomId}/signals/${otherPeerId}/${me}/answer`), answer);
+        }
+      }));
+
+      // answer → me
+      unsubSignals.push(onValue(ref(db, `voice/rooms/${roomId}/signals/${me}/${otherPeerId}/answer`), async (s)=>{
+        const ans = s.val(); if (!ans) return;
+        if (!pc.currentRemoteDescription){ await pc.setRemoteDescription(ans); }
+      }));
+
+      // ICE → me
+      unsubSignals.push(onChildAdded(ref(db, `voice/rooms/${roomId}/signals/${me}/${otherPeerId}/candidates`), async (snap)=>{
+        const c = snap.val(); if (!c) return; try { await pc.addIceCandidate(c); } catch(e){}
+      }));
+    }
+
+    async function makeOffer(){
+      const offer = await pc.createOffer({ offerToReceiveAudio:true });
+      await pc.setLocalDescription(offer);
+      await set(ref(db, `voice/rooms/${roomId}/signals/${otherPeerId}/${me}/offer`), offer);
+    }
+
+    async function leaveRoom(){
+      setText("status","leaving…");
+      try{
+        if (roomId) await remove(ref(db, `voice/rooms/${roomId}/participants/${me}`));
+        if (otherPeerId){
+          // cleanup signaling mailboxes
+          await remove(ref(db, `voice/rooms/${roomId}/signals/${otherPeerId}/${me}`));
+          await remove(ref(db, `voice/rooms/${roomId}/signals/${me}/${otherPeerId}`));
+        }
+      }catch{}
+
+      unsubSignals.forEach(off=>{ try{ off(); }catch{} });
+      unsubSignals = [];
+
+      if (pc){ pc.getSenders().forEach(s=>{ try{s.track.stop()}catch{} }); pc.close(); }
+      if (localStream){ localStream.getTracks().forEach(t=> t.stop()); }
+
+      pc=null; localStream=null; remoteStream=null; otherPeerId=null;
+      $("joinBtn").disabled=false; $("leaveBtn").disabled=true; $("muteBtn").disabled=true;
+      setLed($("peerLed"),"off"); setLed($("iceLed"),"off"); setLed($("signalLed"),"off");
+      setText("iceState","disconnected"); setText("status","idle");
+    }
+
+    function toggleMute(){
+      if (!localStream) return;
+      const enabled = localStream.getAudioTracks().every(t=> t.enabled);
+      localStream.getAudioTracks().forEach(t=> t.enabled = !enabled);
+      $("muteBtn").textContent = enabled ? "UNMUTE" : "MUTE";
+    }
+
+    // VU meters (fake-ish; quick amplitude probe)
+    const audioCtx = new (window.AudioContext||window.webkitAudioContext)();
+    const analyser = audioCtx.createAnalyser(); analyser.fftSize = 256; const data = new Uint8Array(analyser.frequencyBinCount);
+    function loopVU(){
+      requestAnimationFrame(loopVU);
+      if (localStream){
+        const src = audioCtx.createMediaStreamSource(localStream);
+        try{ src.connect(analyser); }catch{}
+        analyser.getByteTimeDomainData(data);
+        const rms = Math.sqrt(data.reduce((s,v)=>{ const d=(v-128)/128; return s+d*d; },0)/data.length);
+        $("vu").style.width = Math.min(100, Math.round(rms*200)) + "%";
+      }
+      // (Optional) derive remote VU if needed
+    }
+    loopVU();
+
+    // drag panels with weighty feel
+    function makeDraggable(el){
+      let ox=0,oy=0,drag=false,vx=0,vy=0,lastX=0,lastY=0,raf; const damp=0.88;
+      const step=()=>{ if(!drag){ const x=el.offsetLeft+vx, y=el.offsetTop+vy; el.style.left=x+"px"; el.style.top=y+"px"; vx*=damp; vy*=damp; if(Math.abs(vx)+Math.abs(vy)>0.2) raf=requestAnimationFrame(step); } };
+      el.onmousedown=e=>{drag=true;ox=e.clientX-el.offsetLeft;oy=e.clientY-el.offsetTop;cancelAnimationFrame(raf)};
+      document.onmousemove=e=>{ if(!drag) return; const nx=e.clientX-ox, ny=e.clientY-oy; vx=nx-lastX; vy=ny-lastY; lastX=nx; lastY=ny; el.style.left=nx+"px"; el.style.top=ny+"px"; };
+      document.onmouseup=()=>{ if(!drag) return; drag=false; requestAnimationFrame(step); };
+    }
+    makeDraggable($("tx"));
+    makeDraggable($("rx"));
+  </script>
+
+  <!--
+  🔒 Realtime Database (signaling) rules to start with (tighten for rooms/ACL later):
+  {
+    "rules": {
+      "voice": {"rooms": {"$room": {
+        ".read": "auth!=null",
+        ".write": "auth!=null",
+        "participants": {"$uid": { ".write": "auth!=null && auth.uid===$uid", ".read":"auth!=null" }},
+        "signals": {"$to": {"$from": { ".write": "auth!=null && auth.uid===$from", ".read": "auth!=null && (auth.uid===$to || auth.uid===$from)" }}}
+      }}}
+    }
+  }
+  -->
+</body>
+</html>

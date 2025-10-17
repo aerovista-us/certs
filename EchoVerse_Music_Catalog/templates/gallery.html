@@ -1,0 +1,875 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Album Art Gallery - EchoVerse</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎵</text></svg>">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: #ffffff;
+            min-height: 100vh;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 1rem 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 2rem;
+            font-weight: bold;
+            background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+        }
+
+        .nav-link {
+            color: #ffffff;
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .nav-link:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .gallery-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .gallery-title {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .gallery-subtitle {
+            font-size: 1.2rem;
+            opacity: 0.8;
+            margin-bottom: 2rem;
+        }
+
+        .gallery-stats {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-radius: 12px;
+            padding: 1rem 2rem;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #4ecdc4;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+
+        .gallery-controls {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .control-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #ffffff;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .control-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .control-btn.active {
+            background: #4ecdc4;
+            border-color: #4ecdc4;
+        }
+
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .album-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-radius: 16px;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .album-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .album-image {
+            width: 100%;
+            height: 300px;
+            background: linear-gradient(45deg, #2a5298, #1e3c72);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 4rem;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .lazy-image {
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            min-width: 100%;
+            min-height: 100%;
+            width: auto;
+            height: auto;
+            object-fit: none; /* Don't crop the image */
+        }
+        
+        /* Smart fill mode styles */
+        .smart-fill-mode .album-image img {
+            position: absolute !important;
+            top: 50% !important;
+            left: 50% !important;
+            transform: translate(-50%, -50%) !important;
+            min-width: 100% !important;
+            min-height: 100% !important;
+            width: auto !important;
+            height: auto !important;
+            max-width: none !important;
+            max-height: none !important;
+            object-fit: none !important;
+        }
+        
+        /* Cover mode styles */
+        .cover-mode .album-image img {
+            position: absolute !important;
+            top: 0 !important;
+            left: 0 !important;
+            transform: none !important;
+            width: 100% !important;
+            height: 100% !important;
+            object-fit: cover !important;
+            min-width: 0 !important;
+            min-height: 0 !important;
+        }
+        
+        /* Default style (smart fill) */
+        .album-image img {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            min-width: 100%;
+            min-height: 100%;
+            width: auto;
+            height: auto;
+            max-width: none;
+            max-height: none;
+            object-fit: none;
+        }
+        
+        .lazy-image[src] {
+            opacity: 1;
+        }
+
+        .album-info {
+            padding: 1.5rem;
+        }
+
+        .album-title {
+            font-size: 1.3rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+            color: #ffffff;
+        }
+
+        .album-artist {
+            font-size: 1rem;
+            opacity: 0.8;
+            margin-bottom: 0.5rem;
+        }
+
+        .album-meta {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.9rem;
+            opacity: 0.7;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 3rem;
+            font-size: 1.2rem;
+        }
+
+        .error {
+            text-align: center;
+            padding: 3rem;
+            color: #ff6b6b;
+            font-size: 1.2rem;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.9);
+        }
+
+        .modal-content {
+            margin: 5% auto;
+            display: block;
+            max-width: 90%;
+            max-height: 90%;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 15px;
+            right: 35px;
+            color: #f1f1f1;
+            font-size: 40px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        @media (max-width: 768px) {
+            .gallery-grid {
+                grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+                gap: 1rem;
+            }
+            
+            .header-content {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            .nav-links {
+                gap: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <div class="logo">🎵 EchoVerse</div>
+            <nav class="nav-links">
+                <a href="/" class="nav-link">🏠 Dashboard</a>
+                <a href="/gallery" class="nav-link active">🖼️ Album Art Gallery</a>
+            </nav>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="gallery-header">
+            <h1 class="gallery-title">Album Art Gallery</h1>
+            <p class="gallery-subtitle">Browse your complete music collection through beautiful album covers</p>
+            
+            <div class="gallery-stats">
+                <div class="stat-card">
+                    <div class="stat-number" id="total-albums">-</div>
+                    <div class="stat-label">Total Albums</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="total-tracks">-</div>
+                    <div class="stat-label">Total Tracks</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="total-size">-</div>
+                    <div class="stat-label">Total Size</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="gallery-controls">
+            <button class="control-btn active" onclick="setViewMode('grid')">📱 Grid View</button>
+            <button class="control-btn" onclick="setViewMode('list')">📋 List View</button>
+            <button class="control-btn" onclick="setViewMode('compact')">🔲 Compact</button>
+            <button class="control-btn" onclick="sortBy('album')">📚 Sort by Album</button>
+            <button class="control-btn" onclick="sortBy('artist')">🎤 Sort by Artist</button>
+            <button class="control-btn" onclick="sortBy('year')">📅 Sort by Year</button>
+            <button class="control-btn" id="fillModeBtn" onclick="toggleImageFillMode()">🖼️ Smart Fill</button>
+        </div>
+
+        <div id="gallery-content">
+            <div class="loading">Loading album art gallery...</div>
+        </div>
+    </div>
+
+    <!-- Modal for full-size image -->
+    <div id="imageModal" class="modal">
+        <div class="modal-container" style="position: relative; max-width: 90%; max-height: 90%;">
+            <span class="modal-close" onclick="closeModal()" style="position: absolute; top: -30px; right: -30px; color: white; font-size: 30px; font-weight: bold; cursor: pointer;">&times;</span>
+            <div style="width: 100%; height: 80vh; position: relative; overflow: hidden;">
+                <img class="modal-content" id="modalImage" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); min-width: 100%; min-height: 100%; width: auto; height: auto; max-width: none; max-height: none; object-fit: none;">
+            </div>
+            <div class="modal-nav" style="position: absolute; top: 50%; width: 100%; display: flex; justify-content: space-between; transform: translateY(-50%);">
+                <button style="background: rgba(0,0,0,0.5); color: white; border: none; border-radius: 50%; width: 40px; height: 40px; font-size: 20px; cursor: pointer;">❮</button>
+                <button style="background: rgba(0,0,0,0.5); color: white; border: none; border-radius: 50%; width: 40px; height: 40px; font-size: 20px; cursor: pointer;">❯</button>
+            </div>
+            <div id="modalInfo" style="color: white; text-align: center; padding: 10px 0;"></div>
+        </div>
+    </div>
+
+    <script>
+        let currentViewMode = 'grid';
+        let currentSortBy = 'album';
+        let albumData = [];
+        let smartFillEnabled = true; // Default to smart fill mode
+
+        // Load album art data when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            // Apply the appropriate class to the body immediately
+            document.body.classList.add('smart-fill-mode');
+            
+            // Load saved fill mode preference
+            const savedFillMode = localStorage.getItem('smartFillEnabled');
+            if (savedFillMode !== null) {
+                smartFillEnabled = savedFillMode === 'true';
+                // Update body class immediately
+                document.body.classList.remove('smart-fill-mode', 'cover-mode');
+                document.body.classList.add(smartFillEnabled ? 'smart-fill-mode' : 'cover-mode');
+                
+                // Update button text
+                const fillModeBtn = document.getElementById('fillModeBtn');
+                if (fillModeBtn) {
+                    if (smartFillEnabled) {
+                        fillModeBtn.textContent = '🖼️ Smart Fill';
+                        fillModeBtn.classList.add('active');
+                    } else {
+                        fillModeBtn.textContent = '🖼️ Cover Mode';
+                        fillModeBtn.classList.remove('active');
+                    }
+                }
+            }
+            
+            loadAlbumArtGallery();
+            initializeLazyLoading();
+            
+            // Apply smart fill to all images (both opened and unopened)
+            setTimeout(() => {
+                applyCurrentFillModeToAllImages();
+            }, 500);
+        });
+
+        async function loadAlbumArtGallery() {
+            try {
+                const response = await fetch('/api/album-art-flipbook');
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const responseData = await response.json();
+                // Extract the album_arts array from the response
+                const data = responseData.album_arts || [];
+                albumData = data;
+                
+                updateStats(data);
+                displayGallery(data);
+                
+            } catch (error) {
+                console.error('Error loading gallery:', error);
+                document.getElementById('gallery-content').innerHTML = 
+                    '<div class="error">Error loading album art gallery. Please try again.</div>';
+            }
+        }
+
+        function updateStats(data) {
+            // Make sure data is an array
+            if (!Array.isArray(data)) {
+                console.error('Data is not an array:', data);
+                data = [];
+            }
+            
+            const totalAlbums = data.length;
+            let totalTracks = 0;
+            let totalSize = 0;
+            
+            // Safely calculate totals
+            if (data.length > 0) {
+                totalTracks = data.reduce((sum, album) => sum + (album.track_count || 0), 0);
+                totalSize = data.reduce((sum, album) => sum + (album.total_duration || 0), 0);
+            }
+            
+            document.getElementById('total-albums').textContent = totalAlbums;
+            document.getElementById('total-tracks').textContent = totalTracks;
+            document.getElementById('total-size').textContent = formatDuration(totalSize);
+        }
+
+        function displayGallery(data) {
+            const container = document.getElementById('gallery-content');
+            
+            if (data.length === 0) {
+                container.innerHTML = '<div class="loading">No album art found</div>';
+                return;
+            }
+
+            // Group images by album
+            const albumGroups = {};
+            data.forEach(item => {
+                const albumName = item.album;
+                if (!albumGroups[albumName]) {
+                    albumGroups[albumName] = {
+                        album: albumName,
+                        artist: item.artist,
+                        track_count: item.track_count,
+                        total_duration: item.total_duration,
+                        images: []
+                    };
+                }
+                albumGroups[albumName].images.push({
+                    cover_path: item.cover_path,
+                    is_primary_cover: item.is_primary_cover || false
+                });
+            });
+            
+            // Convert to array and sort by album name
+            const groupedData = Object.values(albumGroups).sort((a, b) => 
+                a.album.toLowerCase().localeCompare(b.album.toLowerCase())
+            );
+            
+            // For each album, prioritize primary cover art
+            groupedData.forEach(album => {
+                // Sort images to put primary cover first
+                album.images.sort((a, b) => {
+                    if (a.is_primary_cover && !b.is_primary_cover) return -1;
+                    if (!a.is_primary_cover && b.is_primary_cover) return 1;
+                    return 0;
+                });
+            });
+
+            const gridClass = currentViewMode === 'compact' ? 'gallery-grid compact' : 'gallery-grid';
+            container.innerHTML = `<div class="${gridClass}">${groupedData.map(album => createAlbumCard(album)).join('')}</div>`;
+            
+            // Refresh lazy loading for new images
+            refreshLazyLoading();
+            
+            // Apply current fill mode to all images
+            setTimeout(() => {
+                applyCurrentFillModeToAllImages();
+            }, 100);
+        }
+
+        function createAlbumCard(album) {
+            // Check if we have images for this album
+            const hasImages = album.images && album.images.length > 0;
+            
+            // Get the primary image (first in the list)
+            const primaryImage = hasImages ? album.images[0] : null;
+            const primaryImagePath = primaryImage ? primaryImage.cover_path : '';
+            
+            // Use direct image API for cover path
+            const imageUrl = primaryImagePath 
+                ? `/api/image/${encodeURIComponent(primaryImagePath)}`
+                : '';
+                
+            const imageHtml = primaryImagePath 
+                ? `<img data-src="${imageUrl}" 
+                       alt="${album.album}" 
+                       class="lazy-image"
+                       onclick="openAlbumModal('${album.album}')"
+                       onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />`
+                : '';
+            
+            const fallbackHtml = `<div style="display: ${primaryImagePath ? 'none' : 'flex'}; align-items: center; justify-content: center; font-size: 4rem;">🎵</div>`;
+            
+            // Create a hidden div with all image paths for this album
+            const allImagesData = hasImages 
+                ? `<div class="album-all-images" style="display:none;" 
+                       data-images='${JSON.stringify(album.images.map(img => ({
+                           path: img.cover_path,
+                           url: `/api/image/${encodeURIComponent(img.cover_path)}`
+                       })))}'>
+                   </div>`
+                : '';
+            
+            // Show image count badge if there are multiple images
+            const imageCountBadge = album.images && album.images.length > 1
+                ? `<div class="image-count-badge" style="position: absolute; top: 10px; right: 10px; background: rgba(0,0,0,0.6); color: white; border-radius: 50%; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; font-weight: bold;">${album.images.length}</div>`
+                : '';
+            
+            return `
+                <div class="album-card" data-album-id="${album.id || ''}" data-album-name="${album.album}">
+                    <div class="album-image" style="position: relative;">
+                        ${imageHtml}
+                        ${fallbackHtml}
+                        ${imageCountBadge}
+                    </div>
+                    <div class="album-info">
+                        <div class="album-title">${album.album}</div>
+                        <div class="album-artist">${album.artist}</div>
+                        <div class="album-meta">
+                            <span>${album.track_count} tracks</span>
+                            <span>${formatDuration(album.total_duration)}</span>
+                        </div>
+                    </div>
+                    ${allImagesData}
+                </div>
+            `;
+        }
+
+        function setViewMode(mode) {
+            currentViewMode = mode;
+            
+            // Update active button
+            document.querySelectorAll('.control-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            // Update grid class
+            const grid = document.querySelector('.gallery-grid');
+            if (grid) {
+                grid.className = `gallery-grid ${mode === 'compact' ? 'compact' : ''}`;
+            }
+            
+            // Apply smart fill to all images after view mode change
+            setTimeout(() => {
+                applyCurrentFillModeToAllImages();
+            }, 50);
+        }
+
+        function sortBy(criteria) {
+            currentSortBy = criteria;
+            
+            // Update active button
+            document.querySelectorAll('.control-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            // Sort data
+            const sortedData = [...albumData].sort((a, b) => {
+                let aVal = a[criteria] || '';
+                let bVal = b[criteria] || '';
+                
+                if (criteria === 'year') {
+                    aVal = parseInt(aVal) || 0;
+                    bVal = parseInt(bVal) || 0;
+                }
+                
+                if (aVal < bVal) return -1;
+                if (aVal > bVal) return 1;
+                return 0;
+            });
+            
+            displayGallery(sortedData);
+        }
+
+        function openModal(imageSrc) {
+            const modal = document.getElementById('imageModal');
+            const modalImg = document.getElementById('modalImage');
+            modal.style.display = "block";
+            modalImg.src = imageSrc;
+        }
+        
+        function openAlbumModal(albumName) {
+            // Find the album card with this album name
+            const albumCard = document.querySelector(`[data-album-name="${albumName}"]`);
+            if (!albumCard) return;
+            
+            // Get the album images data
+            const allImagesDiv = albumCard.querySelector('.album-all-images');
+            if (!allImagesDiv) return;
+            
+            try {
+                // Parse the JSON data
+                const imagesData = JSON.parse(allImagesDiv.dataset.images);
+                if (!imagesData || !imagesData.length) return;
+                
+                // Set up the modal carousel
+                const modal = document.getElementById('imageModal');
+                const modalImg = document.getElementById('modalImage');
+                const modalInfo = document.getElementById('modalInfo');
+                
+                // Set up carousel navigation
+                let currentImageIndex = 0;
+                const totalImages = imagesData.length;
+                
+                // Function to update the modal image
+                function updateModalImage() {
+                    modalImg.src = imagesData[currentImageIndex].url;
+                    modalInfo.textContent = `${albumName} (${currentImageIndex + 1}/${totalImages})`;
+                }
+                
+                // Initialize with the first image
+                updateModalImage();
+                modal.style.display = "block";
+                
+                // Add keyboard navigation
+                const keyHandler = function(e) {
+                    if (modal.style.display === "block") {
+                        if (e.key === 'ArrowLeft' && totalImages > 1) {
+                            currentImageIndex = (currentImageIndex - 1 + totalImages) % totalImages;
+                            updateModalImage();
+                        } else if (e.key === 'ArrowRight' && totalImages > 1) {
+                            currentImageIndex = (currentImageIndex + 1) % totalImages;
+                            updateModalImage();
+                        } else if (e.key === 'Escape') {
+                            closeModal();
+                            document.removeEventListener('keydown', keyHandler);
+                        }
+                    }
+                };
+                
+                document.addEventListener('keydown', keyHandler);
+                
+                // Add navigation buttons event listeners
+                const prevBtn = document.querySelector('.modal-nav button:first-child');
+                const nextBtn = document.querySelector('.modal-nav button:last-child');
+                
+                if (prevBtn && nextBtn) {
+                    prevBtn.onclick = function() {
+                        if (totalImages > 1) {
+                            currentImageIndex = (currentImageIndex - 1 + totalImages) % totalImages;
+                            updateModalImage();
+                        }
+                    };
+                    
+                    nextBtn.onclick = function() {
+                        if (totalImages > 1) {
+                            currentImageIndex = (currentImageIndex + 1) % totalImages;
+                            updateModalImage();
+                        }
+                    };
+                    
+                    // Show/hide navigation buttons based on image count
+                    if (totalImages <= 1) {
+                        prevBtn.style.display = 'none';
+                        nextBtn.style.display = 'none';
+                    } else {
+                        prevBtn.style.display = '';
+                        nextBtn.style.display = '';
+                    }
+                }
+                
+            } catch (e) {
+                console.error('Error parsing album images data:', e);
+                // Fall back to regular modal
+                openModal(albumCard.querySelector('img').src);
+            }
+        }
+
+        function closeModal() {
+            document.getElementById('imageModal').style.display = "none";
+        }
+
+        function formatDuration(seconds) {
+            if (!seconds || seconds === 0) return '0:00';
+            
+            const minutes = Math.floor(seconds / 60);
+            const remainingSeconds = seconds % 60;
+            return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
+        }
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            const modal = document.getElementById('imageModal');
+            if (event.target === modal) {
+                modal.style.display = "none";
+            }
+        }
+        
+        // Lazy Loading Implementation
+        function initializeLazyLoading() {
+            const imageObserver = new IntersectionObserver((entries, observer) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const img = entry.target;
+                        img.src = img.dataset.src;
+                        
+                        // Apply current fill mode to the newly loaded image
+                        applyFillModeToImage(img, smartFillEnabled);
+                        
+                        img.classList.remove('lazy-image');
+                        observer.unobserve(img);
+                    }
+                });
+            }, {
+                rootMargin: '50px 0px', // Start loading 50px before image comes into view
+                threshold: 0.1
+            });
+            
+            // Observe all lazy images
+            document.querySelectorAll('.lazy-image').forEach(img => {
+                imageObserver.observe(img);
+            });
+        }
+        
+        // Refresh lazy loading when gallery is updated
+        function refreshLazyLoading() {
+            setTimeout(() => {
+                initializeLazyLoading();
+            }, 100);
+        }
+        
+        // Function to apply the current fill mode to a single image
+        function applyFillModeToImage(img, isFillMode) {
+            if (isFillMode) {
+                img.style.objectFit = 'none';
+                img.style.minWidth = '100%';
+                img.style.minHeight = '100%';
+                img.style.width = 'auto';
+                img.style.height = 'auto';
+                img.style.maxWidth = 'none';
+                img.style.maxHeight = 'none';
+                img.style.position = 'absolute';
+                img.style.top = '50%';
+                img.style.left = '50%';
+                img.style.transform = 'translate(-50%, -50%)';
+            } else {
+                img.style.objectFit = 'cover';
+                img.style.minWidth = '0';
+                img.style.minHeight = '0';
+                img.style.width = '100%';
+                img.style.height = '100%';
+                img.style.maxWidth = '100%';
+                img.style.maxHeight = '100%';
+                img.style.position = 'absolute';
+                img.style.top = '0';
+                img.style.left = '0';
+                img.style.transform = 'none';
+            }
+        }
+        
+        // Function to apply the current fill mode to the modal image
+        function applyFillModeToModalImage(modalImg, isFillMode) {
+            if (isFillMode) {
+                modalImg.style.objectFit = 'none';
+                modalImg.style.minWidth = '100%';
+                modalImg.style.minHeight = '100%';
+                modalImg.style.width = 'auto';
+                modalImg.style.height = 'auto';
+                modalImg.style.maxWidth = 'none';
+                modalImg.style.maxHeight = 'none';
+            } else {
+                modalImg.style.objectFit = 'contain';
+                modalImg.style.minWidth = '';
+                modalImg.style.minHeight = '';
+                modalImg.style.width = 'auto';
+                modalImg.style.height = 'auto';
+                modalImg.style.maxWidth = '100%';
+                modalImg.style.maxHeight = '100%';
+            }
+        }
+        
+        // Function to apply the current fill mode to all images
+        function applyCurrentFillModeToAllImages() {
+            // Apply to all gallery images (both lazy-loaded and already loaded)
+            const allGalleryImages = document.querySelectorAll('.album-image img');
+            
+            // First, remove any existing classes
+            document.body.classList.remove('smart-fill-mode', 'cover-mode');
+            
+            // Add the appropriate class to the body
+            document.body.classList.add(smartFillEnabled ? 'smart-fill-mode' : 'cover-mode');
+            
+            // Apply styles directly to each image
+            allGalleryImages.forEach(img => {
+                applyFillModeToImage(img, smartFillEnabled);
+            });
+            
+            // Apply to modal image if visible
+            const modalImage = document.getElementById('modalImage');
+            if (modalImage && modalImage.src) {
+                applyFillModeToModalImage(modalImage, smartFillEnabled);
+            }
+        }
+        
+        function toggleImageFillMode() {
+            smartFillEnabled = !smartFillEnabled;
+            
+            // Update button appearance
+            const fillModeBtn = document.getElementById('fillModeBtn');
+            if (fillModeBtn) {
+                if (smartFillEnabled) {
+                    fillModeBtn.textContent = '🖼️ Smart Fill';
+                    fillModeBtn.classList.add('active');
+                } else {
+                    fillModeBtn.textContent = '🖼️ Cover Mode';
+                    fillModeBtn.classList.remove('active');
+                }
+            }
+            
+            // Apply to all images
+            applyCurrentFillModeToAllImages();
+            
+            // Save preference to localStorage
+            localStorage.setItem('smartFillEnabled', smartFillEnabled);
+        }
+    </script>
+</body>
+</html>

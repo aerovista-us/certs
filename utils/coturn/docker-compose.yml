@@ -1,0 +1,37 @@
+version: "3.9"
+services:
+  coturn:
+    image: coturn/coturn:latest
+    container_name: coturn
+    network_mode: host
+    restart: unless-stopped
+    environment:
+      - REALM=${REALM}
+      - TURN_USER=${TURN_USER}
+      - TURN_PASS=${TURN_PASS}
+      - UDP_MIN_PORT=${UDP_MIN_PORT}
+      - UDP_MAX_PORT=${UDP_MAX_PORT}
+      - USE_TLS=${USE_TLS}
+      - TLS_CERT_PATH=${TLS_CERT_PATH}
+      - TLS_KEY_PATH=${TLS_KEY_PATH}
+      - STATIC_AUTH_SECRET=${STATIC_AUTH_SECRET}
+    command: >
+      bash -lc '
+      set -euo pipefail;
+      if [ "${USE_TLS}" = "1" ]; then
+        TLS_OPTS="--tls-listening-port=5349 --cert=${TLS_CERT_PATH} --pkey=${TLS_KEY_PATH}";
+      else
+        TLS_OPTS="--no-tls --no-dtls";
+      fi;
+      exec turnserver
+        --log-file=stdout
+        --simple-log
+        --fingerprint
+        --realm=${REALM}
+        --listening-port=3478
+        --min-port=${UDP_MIN_PORT}
+        --max-port=${UDP_MAX_PORT}
+        --lt-cred-mech
+        --user ${TURN_USER}:${TURN_PASS}
+        $TLS_OPTS
+      '

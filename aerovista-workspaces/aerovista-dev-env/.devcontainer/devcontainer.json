@@ -1,0 +1,30 @@
+{
+  "name": "AeroVista Dev Container",
+  "dockerComposeFile": [
+    "docker-compose.dev.yml"
+  ],
+  "service": "dev",
+  "workspaceFolder": "/workspace",
+  "features": {},
+  "postCreateCommand": "git lfs install || true",
+  "customizations": {
+    "vscode": {
+      "settings": {
+        "terminal.integrated.defaultProfile.linux": "zsh",
+        "editor.formatOnSave": true
+      },
+      "extensions": [
+        "ms-python.python",
+        "ms-python.vscode-pylance",
+        "charliermarsh.ruff",
+        "ms-toolsai.jupyter",
+        "esbenp.prettier-vscode",
+        "dbaeumer.vscode-eslint",
+        "astro-build.astro-vscode",
+        "bradlc.vscode-tailwindcss",
+        "ms-azuretools.vscode-docker",
+        "eamodio.gitlens"
+      ]
+    }
+  }
+}

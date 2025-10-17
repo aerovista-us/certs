@@ -1,0 +1,10 @@
+[Unit]
+Description=Publish outbox to GitHub (exchange-outbox branch)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+User=glyph
+WorkingDirectory=/srv/core/nxcore
+ExecStart=/srv/core/nxcore/scripts/push_outbox.sh

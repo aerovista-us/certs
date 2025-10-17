@@ -1,0 +1,195 @@
+[
+  {
+    "type": "reference",
+    "title": "MetaUpdate",
+    "description": "Update meteData to include album and artist. Create album art if needed. ",
+    "priority": "medium",
+    "tracks": [
+      {
+        "id": "Heart Not Found-",
+        "track": "Heart Not Found",
+        "album": "",
+        "artist": "AeroVista"
+      }
+    ],
+    "status": "pending",
+    "id": "wo_20250916_154008",
+    "created_at": "2025-09-16T15:40:08.487310"
+  },
+  {
+    "type": "new_album",
+    "title": "New Album",
+    "description": "This combo could make a cool album ",
+    "priority": "low",
+    "tracks": [
+      {
+        "id": "PJ\u2019s on Monroe-",
+        "track": "PJ\u2019s on Monroe",
+        "album": "",
+        "artist": "Jeanie with a Jay"
+      },
+      {
+        "id": "Passionate Make-Up-",
+        "track": "Passionate Make-Up",
+        "album": "",
+        "artist": "Jeanie witha Jay"
+      },
+      {
+        "id": "Night Ride with Jeanie-",
+        "track": "Night Ride with Jeanie",
+        "album": "",
+        "artist": "Jeanie witha Jay"
+      },
+      {
+        "id": "\ud83c\udfb5 \u201cWits in the Water\u201d -",
+        "track": "\ud83c\udfb5 \u201cWits in the Water\u201d ",
+        "album": "",
+        "artist": "Jeanie witha Jay"
+      },
+      {
+        "id": "\ud83c\udfb6 Let Me Be the Fire-",
+        "track": "\ud83c\udfb6 Let Me Be the Fire",
+        "album": "",
+        "artist": "Jeanie with a Jay"
+      },
+      {
+        "id": "First Fight-",
+        "track": "First Fight",
+        "album": "",
+        "artist": "Jeanie witha Jay"
+      }
+    ],
+    "status": "pending",
+    "id": "wo_20250917_181547",
+    "created_at": "2025-09-17T18:15:47.496892"
+  },
+  {
+    "type": "remix",
+    "title": "Move to correct folder",
+    "description": "Needs moved to the Spanish rythem folder. ",
+    "priority": "high",
+    "tracks": [
+      {
+        "id": "Flow (1)-CodeKrack",
+        "track": "Flow (1)",
+        "album": "CodeKrack",
+        "artist": "AeroVista LLC"
+      }
+    ],
+    "status": "pending",
+    "id": "wo_20250917_212034",
+    "created_at": "2025-09-17T21:20:34.902328"
+  },
+  {
+    "type": "remix",
+    "title": "new video",
+    "description": "create a video and album art for this. ",
+    "priority": "medium",
+    "tracks": [
+      {
+        "id": "Resilience (1)-",
+        "track": "Resilience (1)",
+        "album": "",
+        "artist": ""
+      }
+    ],
+    "status": "pending",
+    "id": "wo_20250927_112810",
+    "created_at": "2025-09-27T11:28:10.368070"
+  },
+  {
+    "type": "playlist",
+    "title": "Sunset, for la$t day of work",
+    "description": "Create copys Of these songs and move them all downloads / Playlist in preparation to download These calls songs to my phone to I deal playlist for last day also build HT mail website to host from cell phone via termix",
+    "priority": "urgent",
+    "tracks": [
+      {
+        "id": "Move Different (though the cubes)-Sunsets",
+        "track": "Move Different (though the cubes)",
+        "album": "Sunsets",
+        "artist": "AeroVista LLC"
+      },
+      {
+        "id": "One at a Time-Sunsets",
+        "track": "One at a Time",
+        "album": "Sunsets",
+        "artist": "AeroVista LLC"
+      },
+      {
+        "id": "\ud83c\udf00 -Sunsets",
+        "track": "\ud83c\udf00 ",
+        "album": "Sunsets",
+        "artist": "aerovista"
+      },
+      {
+        "id": "\ud83c\udfb5 One at a Time \u2013 Rewritten Song Draft-Sunsets",
+        "track": "\ud83c\udfb5 One at a Time \u2013 Rewritten Song Draft",
+        "album": "Sunsets",
+        "artist": "aerovista"
+      },
+      {
+        "id": "\ud83c\udfb5 \u201cLet \u2018Em Have It\u201d (Swamphop Anthem)-Sunsets",
+        "track": "\ud83c\udfb5 \u201cLet \u2018Em Have It\u201d (Swamphop Anthem)",
+        "album": "Sunsets",
+        "artist": "AeroVista LLC"
+      },
+      {
+        "id": "Clock Out Vibes-Call Center Lyfe",
+        "track": "Clock Out Vibes",
+        "album": "Call Center Lyfe",
+        "artist": "Thanx4Callin'"
+      },
+      {
+        "id": "Daily Grind-Shadow Tag",
+        "track": "Daily Grind",
+        "album": "Shadow Tag",
+        "artist": "Thanx4Callin'"
+      },
+      {
+        "id": "Different-Shadow Tag",
+        "track": "Different",
+        "album": "Shadow Tag",
+        "artist": "Thanx4Callin'"
+      },
+      {
+        "id": "Gone Like Smoke (1)-Shadow Tag",
+        "track": "Gone Like Smoke (1)",
+        "album": "Shadow Tag",
+        "artist": "Thanx4Callin'"
+      },
+      {
+        "id": "Rise-Shadow Tag",
+        "track": "Rise",
+        "album": "Shadow Tag",
+        "artist": "Thanx4Callin'"
+      },
+      {
+        "id": "Shadow Tag-Shadow Tag",
+        "track": "Shadow Tag",
+        "album": "Shadow Tag",
+        "artist": "Thanx4Callin'"
+      },
+      {
+        "id": "Slept On (Quiet Storm Anthem-Shadow Tag",
+        "track": "Slept On (Quiet Storm Anthem",
+        "album": "Shadow Tag",
+        "artist": "Thanx4Callin'"
+      },
+      {
+        "id": "Too Fast for the Pen-Shadow Tag",
+        "track": "Too Fast for the Pen",
+        "album": "Shadow Tag",
+        "artist": "Thanx4Callin'"
+      },
+      {
+        "id": "Unseen-Shadow Tag",
+        "track": "Unseen",
+        "album": "Shadow Tag",
+        "artist": "Thanx4Callin'"
+      }
+    ],
+    "status": "pending",
+    "id": "wo_20250930_112725",
+    "created_at": "2025-09-30T11:27:25.985097"
+  }
+]

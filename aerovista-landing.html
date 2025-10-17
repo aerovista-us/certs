@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>AeroVista • NXCore Landing</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cpath fill='%23a78bfa' d='M31 4l8 18 19 3-14 13 3 19-16-9-16 9 3-19L4 25l19-3z'/%3E%3C/svg%3E">
+  <style>
+    .card { @apply relative bg-zinc-900/70 border border-zinc-700/60 rounded-2xl p-4 shadow-lg hover:shadow-xl transition; }
+    .chip { @apply px-2 py-0.5 rounded-full text-xs font-medium; }
+    .chip-up { @apply bg-emerald-500/15 text-emerald-300 border border-emerald-400/30; }
+    .chip-down { @apply bg-rose-500/15 text-rose-300 border border-rose-400/30; }
+    .chip-warn { @apply bg-amber-500/15 text-amber-300 border border-amber-400/30; }
+    .btn { @apply inline-flex items-center gap-2 rounded-xl border border-zinc-600/60 px-3 py-1.5 hover:bg-zinc-800; }
+    .kbd { @apply px-1.5 py-0.5 rounded border border-zinc-600/60 bg-zinc-900 text-zinc-300 text-[11px]; }
+    .link { @apply text-indigo-300 hover:text-indigo-200 underline decoration-dotted underline-offset-4; }
+  </style>
+</head>
+<body class="min-h-screen bg-gradient-to-b from-zinc-950 via-zinc-950 to-zinc-900 text-zinc-200">
+  <div class="max-w-7xl mx-auto px-4 py-8">
+    <!-- Header -->
+    <header class="flex flex-col md:flex-row md:items-end md:justify-between gap-6">
+      <div class="flex items-center gap-4">
+        <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-indigo-500 via-fuchsia-500 to-emerald-400 grid place-items-center shadow-lg shadow-indigo-900/30">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.5">
+            <path d="M12 3l3 6 6 1-4.5 4.2L17 21l-5-2.8L7 21l.5-6.8L3 10l6-1z"/>
+          </svg>
+        </div>
+        <div>
+          <h1 class="text-2xl md:text-3xl font-semibold tracking-tight">AeroVista • NXCore Landing</h1>
+          <p class="text-sm text-zinc-400">One panel to reach every service • live pings • private‑first • trim later</p>
+        </div>
+      </div>
+      <div class="flex items-center gap-2">
+        <button id="editBtn" class="btn">Configure URLs</button>
+        <button id="refreshBtn" class="btn">Refresh <span class="kbd">R</span></button>
+      </div>
+    </header>
+
+    <!-- Global status bar -->
+    <section class="mt-6 grid grid-cols-1 md:grid-cols-3 gap-3">
+      <div class="card">
+        <div class="flex items-center justify-between">
+          <div class="font-medium">Edge</div>
+          <div id="edgeStatus" class="chip chip-warn">pending…</div>
+        </div>
+        <p class="text-sm text-zinc-400 mt-1">Traefik, Authelia, DNS/certs.</p>
+      </div>
+      <div class="card">
+        <div class="flex items-center justify-between">
+          <div class="font-medium">Data</div>
+          <div id="dataStatus" class="chip chip-warn">pending…</div>
+        </div>
+        <p class="text-sm text-zinc-400 mt-1">Postgres, Redis, MinIO.</p>
+      </div>
+      <div class="card">
+        <div class="flex items-center justify-between">
+          <div class="font-medium">Observability</div>
+          <div id="obsStatus" class="chip chip-warn">pending…</div>
+        </div>
+        <p class="text-sm text-zinc-400 mt-1">Prometheus, Grafana, Kuma, Loki.</p>
+      </div>
+    </section>
+
+    <!-- Groups -->
+    <main class="mt-8 space-y-10">
+      <!-- Helper: card grid -->
+      <template id="card-template">
+        <div class="card">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-3">
+              <div class="w-9 h-9 rounded-xl bg-zinc-800 grid place-items-center text-zinc-300">
+                <span class="icon text-sm">🔧</span>
+              </div>
+              <div>
+                <a class="title link text-lg font-medium" target="_blank" rel="noreferrer noopener"></a>
+                <div class="text-xs text-zinc-400 desc"></div>
+              </div>
+            </div>
+            <div class="text-right">
+              <div class="chip chip-warn status">pending…</div>
+              <div class="text-[11px] text-zinc-400 mt-1 latency">–</div>
+            </div>
+          </div>
+        </div>
+      </template>
+
+      <!-- Sections will be injected here -->
+      <section id="sections" class="space-y-8"></section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="mt-10 text-xs text-zinc-500">
+      <div>Tips: <span class="kbd">E</span> to edit, <span class="kbd">R</span> to refresh. Status checks use a lightweight fetch (no-cors) with timeout so protected apps still show as reachable.</div>
+      <div class="mt-1">Branding © AeroVista LLC • Page v1.0</div>
+    </footer>
+  </div>
+
+  <!-- Config modal -->
+  <dialog id="configDlg" class="backdrop:bg-black/60 rounded-2xl p-0 w-[680px] max-w-[95vw]">
+    <form method="dialog" class="bg-zinc-950 border border-zinc-700/60 rounded-2xl overflow-hidden">
+      <div class="px-5 py-3 border-b border-zinc-800 flex items-center justify-between">
+        <h3 class="font-semibold">Configure Service URLs</h3>
+        <button class="btn" value="cancel">Close</button>
+      </div>
+      <div class="p-5 grid grid-cols-1 sm:grid-cols-2 gap-4 max-h-[60vh] overflow-auto text-sm">
+        <div class="sm:col-span-2">
+          <label class="block text-zinc-400 mb-1">Base host (private / Tailscale)</label>
+          <input id="basePrivate" class="w-full rounded-xl bg-zinc-900 border border-zinc-700/70 px-3 py-2" placeholder="nxcore.tailXXXXxx.ts.net">
+          <p class="text-[11px] text-zinc-500 mt-1">Used if a service URL contains <code>%PRIVATE_HOST%</code></p>
+        </div>
+        <div class="sm:col-span-2">
+          <label class="block text-zinc-400 mb-1">Base host (public)</label>
+          <input id="basePublic" class="w-full rounded-xl bg-zinc-900 border border-zinc-700/70 px-3 py-2" placeholder="nxcore.tail79107c.ts.net">
+          <p class="text-[11px] text-zinc-500 mt-1">Used if a service URL contains <code>%PUBLIC_HOST%</code></p>
+        </div>
+        <div class="sm:col-span-2 mt-2">
+          <label class="block text-zinc-400 mb-1">Uptime Kuma (optional)</label>
+          <input id="kumaUrl" class="w-full rounded-xl bg-zinc-900 border border-zinc-700/70 px-3 py-2" placeholder="https://status.%PUBLIC_HOST%">
+          <p class="text-[11px] text-zinc-500 mt-1">If set, card titles will include external status links.</p>
+        </div>
+      </div>
+      <div class="px-5 py-3 border-t border-zinc-800 flex items-center justify-between">
+        <div class="text-xs text-zinc-500">Values are saved in your browser (localStorage).</div>
+        <div class="flex items-center gap-2">
+          <button id="resetCfg" type="button" class="btn">Reset</button>
+          <button id="saveCfg" class="btn bg-zinc-800">Save</button>
+        </div>
+      </div>
+    </form>
+  </dialog>
+
+  <script>
+  // --- Service Catalog --------------------------------------------------------
+  // You can add/remove entries. Groups become sections. URL can include
+  // %PRIVATE_HOST% and %PUBLIC_HOST% which are replaced by config.
+  const CATALOG = [
+    // Ingress & Identity
+    { group: "Edge / Identity", name: "Traefik", url: "https://%PRIVATE_HOST%/", desc: "Reverse proxy & router", icon: "🛣️" },
+    { group: "Edge / Identity", name: "Authelia", url: "https://auth.%PUBLIC_HOST%/", desc: "SSO / MFA (public gate)", icon: "🔐" },
+    { group: "Edge / Identity", name: "Portainer", url: "https://portainer.%PRIVATE_HOST%/", desc: "Containers UI", icon: "📦" },
+
+    // Remote
+    { group: "Remote", name: "MeshCentral", url: "https://mesh.%PRIVATE_HOST%/", desc: "Fleet management", icon: "🕸️" },
+    { group: "Remote", name: "RustDesk (HBBS/HBBR)", url: "https://rustdesk.%PRIVATE_HOST%/", desc: "Self-hosted relay", icon: "🖥️" },
+    { group: "Remote", name: "AeroCaller", url: "https://caller.%PRIVATE_HOST%/", desc: "WebRTC helper", icon: "📞" },
+    { group: "Remote", name: "coturn", url: "https://turn.%PRIVATE_HOST%/", desc: "TURN server (check port 5349)", icon: "🔁" },
+
+    // Data
+    { group: "Data", name: "PostgreSQL", url: "https://pg.%PRIVATE_HOST%/health", desc: "DB primary (health stub)", icon: "🗃️" },
+    { group: "Data", name: "Redis", url: "https://redis.%PRIVATE_HOST%/health", desc: "Cache/queues (health stub)", icon: "🧠" },
+    { group: "Data", name: "MinIO", url: "https://minio.%PRIVATE_HOST%/", desc: "S3 object store", icon: "🪣" },
+    { group: "Data", name: "Kong / KrakenD", url: "https://api.%PUBLIC_HOST%/status", desc: "API gateway (public)", icon: "🧭" },
+
+    // Automation & AI
+    { group: "Automation & AI", name: "n8n", url: "https://n8n.%PRIVATE_HOST%/", desc: "Automations", icon: "🤖" },
+    { group: "Automation & AI", name: "Ollama", url: "https://ollama.%PRIVATE_HOST%/api/tags", desc: "Local models (API)", icon: "🦙" },
+    { group: "Automation & AI", name: "Open WebUI", url: "https://ai.%PRIVATE_HOST%/", desc: "LLM chat/UI", icon: "💬" },
+
+    // Files & Music
+    { group: "Files & Music", name: "FileBrowser", url: "https://files.%PRIVATE_HOST%/", desc: "File manager UI", icon: "🗂️" },
+    { group: "Files & Music", name: "CopyParty", url: "https://share.%PRIVATE_HOST%/", desc: "Fast file drop/static", icon: "📤" },
+    { group: "Files & Music", name: "Navidrome", url: "https://music.%PRIVATE_HOST%/", desc: "Music streaming", icon: "🎶" },
+    { group: "Files & Music", name: "Jellyfin (opt)", url: "https://jelly.%PRIVATE_HOST%/", desc: "All-media server", icon: "📺" },
+    { group: "Files & Music", name: "EchoVerse (static)", url: "https://echo.%PUBLIC_HOST%/", desc: "Curated releases", icon: "✨" },
+
+    // Observability
+    { group: "Observability", name: "Grafana", url: "https://grafana.%PRIVATE_HOST%/", desc: "Dashboards", icon: "📊" },
+    { group: "Observability", name: "Prometheus", url: "https://prom.%PRIVATE_HOST%/-/healthy", desc: "Metrics scrape", icon: "📈" },
+    { group: "Observability", name: "Loki", url: "https://loki.%PRIVATE_HOST%/ready", desc: "Logs store", icon: "📜" },
+    { group: "Observability", name: "Uptime Kuma", url: "https://status.%PUBLIC_HOST%/", desc: "External status", icon: "🩺" },
+    { group: "Observability", name: "Dozzle", url: "https://logs.%PRIVATE_HOST%/", desc: "Live container logs", icon: "📟" },
+
+    // Security
+    { group: "Security", name: "Nmap Scan (reports)", url: "https://sec.%PRIVATE_HOST%/nmap/", desc: "Light scheduled scans", icon: "🛰️" },
+    { group: "Security", name: "Nikto Reports", url: "https://sec.%PUBLIC_HOST%/nikto/", desc: "Public vhost checks", icon: "🧪" },
+    { group: "Security", name: "Lynis Reports", url: "https://sec.%PRIVATE_HOST%/lynis/", desc: "Host audit summaries", icon: "🛡️" },
+  ];
+
+  // --- Utilities --------------------------------------------------------------
+  const $ = (sel, el=document) => el.querySelector(sel);
+
+  function loadCfg() {
+    return {
+      privateHost: localStorage.getItem("av_private_host") || "nxcore.tailXXXXxx.ts.net",
+      publicHost: localStorage.getItem("av_public_host") || "nxcore.tail79107c.ts.net",
+      kumaUrl: localStorage.getItem("av_kuma_url") || ""
+    };
+  }
+  function saveCfg({privateHost, publicHost, kumaUrl}) {
+    localStorage.setItem("av_private_host", privateHost);
+    localStorage.setItem("av_public_host", publicHost);
+    localStorage.setItem("av_kuma_url", kumaUrl || "");
+  }
+  function applyTpl(url, cfg) {
+    return url.replaceAll("%PRIVATE_HOST%", cfg.privateHost).replaceAll("%PUBLIC_HOST%", cfg.publicHost);
+  }
+
+  // Reachability check (no-cors). We treat any settled fetch within timeout as "reachable".
+  async function checkUrl(url, timeoutMs=3500) {
+    const start = performance.now();
+    try {
+      const ctrl = new AbortController();
+      const t = setTimeout(() => ctrl.abort("timeout"), timeoutMs);
+      // HEAD can be blocked; use GET with no-cors so 401/redirect/CORS still counts as reachable.
+      await fetch(url, { method: "GET", mode: "no-cors", cache: "no-store", signal: ctrl.signal });
+      clearTimeout(t);
+      const ms = Math.max(1, Math.round(performance.now() - start));
+      return { up: true, ms };
+    } catch (e) {
+      return { up: false, ms: null };
+    }
+  }
+
+  function setChip(el, state, latency) {
+    el.classList.remove("chip-up","chip-down","chip-warn");
+    if (state === "up") el.classList.add("chip-up"), el.textContent = "online";
+    else if (state === "down") el.classList.add("chip-down"), el.textContent = "offline";
+    else el.classList.add("chip-warn"), el.textContent = "pending…";
+    if (latency !== undefined) {
+      el.parentElement.querySelector(".latency").textContent = latency ? (latency + " ms") : "–";
+    }
+  }
+
+  function groupBy(xs, key) {
+    return xs.reduce((acc, x) => (acc[x[key]] = acc[x[key]] || []).push(x), {}), xs, acc;
+  }
+
+  // Render sections and cards
+  async function render() {
+    const cfg = loadCfg();
+    const container = $("#sections");
+    container.innerHTML = "";
+
+    // Section groups
+    const groups = [...new Set(CATALOG.map(x => x.group))];
+    for (const g of groups) {
+      const sec = document.createElement("div");
+      sec.innerHTML = `<h2 class="text-xl font-semibold mb-3">${g}</h2>`;
+      const grid = document.createElement("div");
+      grid.className = "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4";
+
+      const items = CATALOG.filter(x => x.group === g);
+      for (const item of items) {
+        const node = document.importNode($("#card-template").content, true);
+        const url = applyTpl(item.url, cfg);
+        node.querySelector(".icon").textContent = item.icon || "🔧";
+        const title = node.querySelector(".title");
+        title.textContent = item.name;
+        title.href = url;
+        node.querySelector(".desc").textContent = item.desc || "";
+        const statusEl = node.querySelector(".status");
+        setChip(statusEl, "pending");
+        grid.appendChild(node);
+        // async check
+        checkUrl(url).then(res => setChip(statusEl, res.up ? "up" : "down", res.ms));
+      }
+      sec.appendChild(grid);
+      container.appendChild(sec);
+    }
+
+    // Global rollups: simple AND/OR across representative services
+    const reps = {
+      edgeStatus: ["Traefik","Authelia","Portainer"],
+      dataStatus: ["PostgreSQL","MinIO","Redis"],
+      obsStatus: ["Grafana","Prometheus","Uptime Kuma"]
+    };
+    for (const [id, names] of Object.entries(reps)) {
+      const chips = [...document.querySelectorAll(".card")].filter(c => {
+        const t = c.querySelector(".title")?.textContent || "";
+        return names.includes(t);
+      }).map(c => c.querySelector(".status"));
+      const up = chips.filter(ch => ch.classList.contains("chip-up")).length;
+      const pend = chips.filter(ch => ch.classList.contains("chip-warn")).length;
+      const el = document.getElementById(id);
+      if (up === names.length) setChip(el, "up");
+      else if (up === 0 && pend === names.length) setChip(el, "warn");
+      else setChip(el, "down");
+    }
+  }
+
+  // Periodic refresh
+  let poll;
+  function startPoll() {
+    clearInterval(poll);
+    poll = setInterval(render, 30000);
+  }
+
+  // Modal wiring
+  const dlg = document.getElementById("configDlg");
+  const basePrivate = document.getElementById("basePrivate");
+  const basePublic  = document.getElementById("basePublic");
+  const kumaUrl     = document.getElementById("kumaUrl");
+  document.getElementById("editBtn").addEventListener("click", () => {
+    const cfg = loadCfg();
+    basePrivate.value = cfg.privateHost;
+    basePublic.value  = cfg.publicHost;
+    kumaUrl.value     = cfg.kumaUrl;
+    dlg.showModal();
+  });
+  document.getElementById("saveCfg").addEventListener("click", (e) => {
+    e.preventDefault();
+    saveCfg({ privateHost: basePrivate.value.trim(), publicHost: basePublic.value.trim(), kumaUrl: kumaUrl.value.trim() });
+    dlg.close();
+    render();
+  });
+  document.getElementById("resetCfg").addEventListener("click", () => {
+    localStorage.removeItem("av_private_host");
+    localStorage.removeItem("av_public_host");
+    localStorage.removeItem("av_kuma_url");
+    basePrivate.value = "nxcore.tailXXXXxx.ts.net";
+    basePublic.value = "nxcore.tail79107c.ts.net";
+    kumaUrl.value = "";
+  });
+  document.getElementById("refreshBtn").addEventListener("click", render);
+  document.addEventListener("keydown", (e) => {
+    if (e.key.toLowerCase() === "e") { document.getElementById("editBtn").click(); }
+    if (e.key.toLowerCase() === "r") { render(); }
+  });
+
+  // First paint
+  render();
+  startPoll();
+  </script>
+</body>
+</html>

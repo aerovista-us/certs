@@ -1,0 +1,1224 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <title>EchoVerse Music - Premium Music Collection</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 50%, #16213e 100%);
+            color: #ffffff;
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        /* Header */
+        .header {
+            background: rgba(255, 255, 255, 0.05);
+            -webkit-backdrop-filter: blur(20px);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+        
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 0;
+        }
+        
+        .logo {
+            font-size: 2rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 30px;
+            list-style: none;
+        }
+        
+        .nav-links a {
+            color: #ffffff;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+        
+        .nav-links a:hover {
+            color: #667eea;
+        }
+        
+        /* Hero Section */
+        .hero {
+            text-align: center;
+            padding: 80px 0;
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+            border-radius: 20px;
+            margin: 40px 0;
+        }
+        
+        .hero h1 {
+            font-size: 3.5rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .hero p {
+            font-size: 1.2rem;
+            color: #b8b8b8;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        /* Stats */
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 30px;
+            margin: 60px 0;
+        }
+        
+        .stat-card {
+            background: rgba(255, 255, 255, 0.05);
+            -webkit-backdrop-filter: blur(20px);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 30px;
+            text-align: center;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+        
+        .stat-number {
+            font-size: 3rem;
+            font-weight: 700;
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+        
+        .stat-label {
+            color: #b8b8b8;
+            font-size: 1rem;
+            font-weight: 500;
+        }
+        
+        /* Sections */
+        .section {
+            margin: 80px 0;
+        }
+        
+        .section-header {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+        
+        .section-title {
+            font-size: 2.5rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: #ffffff;
+        }
+        
+        .section-subtitle {
+            color: #b8b8b8;
+            font-size: 1.1rem;
+        }
+        
+        /* New Arrivals */
+        .new-arrivals {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+            border-radius: 20px;
+            padding: 40px;
+            margin: 40px 0;
+        }
+        
+        .new-arrivals-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 30px;
+            margin-top: 40px;
+        }
+        
+        /* Album Cards */
+        .album-card {
+            background: rgba(255, 255, 255, 0.05);
+            -webkit-backdrop-filter: blur(20px);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            position: relative;
+        }
+        
+        .album-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.4);
+        }
+        
+        .album-card.new {
+            border: 2px solid #667eea;
+            position: relative;
+        }
+        
+        .album-card.new::before {
+            content: "NEW";
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: #667eea;
+            color: white;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            z-index: 10;
+        }
+        
+        .album-cover {
+            width: 100%;
+            height: 250px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 3rem;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .album-cover img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+        
+        .album-card:hover .album-cover img {
+            transform: scale(1.05);
+        }
+        
+        .album-info {
+            padding: 25px;
+        }
+        
+        .album-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #ffffff;
+            line-height: 1.3;
+        }
+        
+        .album-artist {
+            color: #667eea;
+            font-weight: 500;
+            margin-bottom: 15px;
+            font-size: 1rem;
+        }
+        
+        .album-tracks {
+            margin-bottom: 20px;
+        }
+        
+        .track-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            font-size: 0.9rem;
+        }
+        
+        .track-item:last-child {
+            border-bottom: none;
+        }
+        
+        .track-name {
+            color: #e0e0e0;
+            flex: 1;
+        }
+        
+        .track-duration {
+            color: #888;
+            font-size: 0.8rem;
+        }
+        
+        .album-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: transform 0.2s ease;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+        
+        .btn.secondary {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .btn.secondary:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+        
+        /* Catalog Grid */
+        .catalog-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 30px;
+        }
+        
+        /* Loading */
+        .loading {
+            text-align: center;
+            padding: 80px;
+            color: #b8b8b8;
+            font-size: 1.2rem;
+        }
+        
+        .loading::after {
+            content: '';
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 2px solid #667eea;
+            border-radius: 50%;
+            border-top-color: transparent;
+            animation: spin 1s linear infinite;
+            margin-left: 10px;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+            
+            .nav-links {
+                display: none;
+            }
+            
+            .stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .new-arrivals-grid,
+            .catalog-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        /* Audio Player */
+        .audio-player {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(15, 15, 35, 0.95);
+            backdrop-filter: blur(20px);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            z-index: 1000;
+            transform: translateY(100%);
+            transition: transform 0.3s ease;
+        }
+        
+        .audio-player.active {
+            transform: translateY(0);
+        }
+        
+        .player-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        
+        .player-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            min-width: 300px;
+        }
+        
+        .player-cover {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5rem;
+            overflow: hidden;
+        }
+        
+        .player-cover img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .track-details {
+            flex: 1;
+        }
+        
+        .track-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #ffffff;
+            margin-bottom: 4px;
+        }
+        
+        .track-artist {
+            font-size: 0.9rem;
+            color: #b8b8b8;
+        }
+        
+        .player-controls {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            flex: 1;
+            justify-content: center;
+        }
+        
+        .control-btn {
+            background: none;
+            border: none;
+            color: #ffffff;
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 50%;
+            transition: background-color 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .control-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+        
+        .control-btn.play-pause {
+            background: #667eea;
+            font-size: 1.8rem;
+            width: 50px;
+            height: 50px;
+        }
+        
+        .control-btn.play-pause:hover {
+            background: #5a6fd8;
+        }
+        
+        .progress-container {
+            flex: 1;
+            max-width: 400px;
+            position: relative;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 3px;
+            cursor: pointer;
+            position: relative;
+        }
+        
+        .progress {
+            height: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 3px;
+            width: 0%;
+            transition: width 0.1s ease;
+        }
+        
+        .time-display {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.8rem;
+            color: #b8b8b8;
+            margin-top: 5px;
+        }
+        
+        .player-volume {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            min-width: 120px;
+        }
+        
+        .volume-slider {
+            width: 80px;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 2px;
+            cursor: pointer;
+            position: relative;
+        }
+        
+        .volume-progress {
+            height: 100%;
+            background: #667eea;
+            border-radius: 2px;
+            width: 70%;
+        }
+        
+        .close-player {
+            background: none;
+            border: none;
+            color: #b8b8b8;
+            font-size: 1.2rem;
+            cursor: pointer;
+            padding: 5px;
+            border-radius: 4px;
+            transition: color 0.2s ease;
+        }
+        
+        .close-player:hover {
+            color: #ffffff;
+        }
+        
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.1);
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: #667eea;
+            border-radius: 4px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: #5a6fd8;
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">🎵 EchoVerse</div>
+                <nav>
+                    <ul class="nav-links">
+                        <li><a href="#new-arrivals">New Arrivals</a></li>
+                        <li><a href="#catalog">Full Catalog</a></li>
+                        <li><a href="#about">About</a></li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <div class="container">
+            <section class="hero">
+                <h1>Premium Music Collection</h1>
+                <p>Discover the finest curated music from AeroVista Studios. Experience quality sound, stunning visuals, and exceptional artistry.</p>
+            </section>
+
+            <section class="stats" id="stats">
+                <div class="stat-card">
+                    <div class="stat-number" id="totalAlbums">...</div>
+                    <div class="stat-label">Albums</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="totalTracks">...</div>
+                    <div class="stat-label">Tracks</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="totalLyrics">...</div>
+                    <div class="stat-label">Lyrics Available</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="totalSize">...</div>
+                    <div class="stat-label">Total Size</div>
+                </div>
+            </section>
+
+            <section class="section" id="new-arrivals">
+                <div class="section-header">
+                    <h2 class="section-title">🔥 New Arrivals</h2>
+                    <p class="section-subtitle">Latest releases and fresh tracks from AeroVista Studios</p>
+                </div>
+                <div class="new-arrivals">
+                    <div class="new-arrivals-grid" id="newArrivalsGrid">
+                        <div class="loading">Loading new arrivals...</div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="section" id="catalog">
+                <div class="section-header">
+                    <h2 class="section-title">📚 Full Music Catalog</h2>
+                    <p class="section-subtitle">Browse our complete collection of premium music</p>
+                </div>
+                <div class="catalog-grid" id="catalogGrid">
+                    <div class="loading">Loading music catalog...</div>
+                </div>
+            </section>
+
+            <section class="section" id="about">
+                <div class="section-header">
+                    <h2 class="section-title">About EchoVerse</h2>
+                    <p class="section-subtitle">Premium music curation and production</p>
+                </div>
+                <div style="text-align: center; color: #b8b8b8; max-width: 800px; margin: 0 auto;">
+                    <p style="font-size: 1.1rem; margin-bottom: 20px;">
+                        EchoVerse represents the pinnacle of musical artistry, featuring exclusive releases from AeroVista Studios. 
+                        Each track is carefully crafted with attention to detail, ensuring the highest quality listening experience.
+                    </p>
+                    <p style="font-size: 1.1rem;">
+                        From ambient soundscapes to energetic beats, our collection spans diverse genres and styles, 
+                        all united by exceptional production quality and artistic vision.
+                    </p>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Audio Player -->
+    <div class="audio-player" id="audioPlayer">
+        <div class="player-content">
+            <div class="player-info">
+                <div class="player-cover" id="playerCover">
+                    <div>🎵</div>
+                </div>
+                <div class="track-details">
+                    <div class="track-title" id="playerTitle">No track selected</div>
+                    <div class="track-artist" id="playerArtist">Select a track to play</div>
+                </div>
+            </div>
+            
+            <div class="player-controls">
+                <button class="control-btn" id="prevBtn">⏮️</button>
+                <button class="control-btn play-pause" id="playPauseBtn">▶️</button>
+                <button class="control-btn" id="nextBtn">⏭️</button>
+                
+                <div class="progress-container">
+                    <div class="progress-bar" id="progressBar">
+                        <div class="progress" id="progress"></div>
+                    </div>
+                    <div class="time-display">
+                        <span id="currentTime">0:00</span>
+                        <span id="duration">0:00</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="player-volume">
+                <span>🔊</span>
+                <div class="volume-slider" id="volumeSlider">
+                    <div class="volume-progress" id="volumeProgress"></div>
+                </div>
+            </div>
+            
+            <button class="close-player" id="closePlayer">✕</button>
+        </div>
+        
+        <audio id="audioElement" preload="metadata"></audio>
+        
+        <!-- Spectrum Analyzer -->
+        <div id="spectrumAnalyzer" style="position: absolute; bottom: -20px; left: 0; right: 0; height: 20px; background: linear-gradient(90deg, rgba(102, 126, 234, 0.3) 0%, rgba(118, 75, 162, 0.3) 50%, rgba(102, 126, 234, 0.3) 100%); opacity: 0; transition: opacity 0.3s ease; display: flex; align-items: end; justify-content: center; gap: 1px;"></div>
+    </div>
+
+    <script>
+        // EMBEDDED MUSIC DATA - No file loading needed!
+        const embeddedMusicData = `album,artist,track,duration,file_size,cover_file,lyrics_file
+"Synthetic Souls","AeroVista","Silicon Love","3:45",5120000,"cover1.jpg","lyrics1.txt"
+"Synthetic Souls","AeroVista","Digital Heartbreak","4:12",6780000,"cover1.jpg","lyrics2.txt"
+"Synthetic Souls","AeroVista","Cyber Romance","3:58",5890000,"cover1.jpg","lyrics3.txt"
+"Synthetic Souls","AeroVista","Neural Network","4:25",7230000,"cover1.jpg","lyrics4.txt"
+"Neon Dreams","AeroVista","Electric Night","3:28",4450000,"cover2.jpg","lyrics5.txt"
+"Neon Dreams","AeroVista","Digital Heart","4:05",5890000,"cover2.jpg","lyrics6.txt"
+"Neon Dreams","AeroVista","Future Echoes","3:52",5230000,"cover2.jpg","lyrics7.txt"
+"Neon Dreams","AeroVista","Quantum Leap","4:18",6120000,"cover2.jpg","lyrics8.txt"
+"Cosmic Waves","AeroVista","Stellar Drift","3:35",4780000,"cover3.jpg","lyrics9.txt"
+"Cosmic Waves","AeroVista","Nebula Dance","4:22",6540000,"cover3.jpg","lyrics10.txt"
+"Cosmic Waves","AeroVista","Galaxy Dreams","3:48",5120000,"cover3.jpg","lyrics11.txt"
+"Cosmic Waves","AeroVista","Space Odyssey","4:15",6780000,"cover3.jpg","lyrics12.txt"
+"Digital Heartbreak","AeroVista","Broken Code","3:42",4450000,"cover4.jpg","lyrics13.txt"
+"Digital Heartbreak","AeroVista","Error 404","4:08",5890000,"cover4.jpg","lyrics14.txt"
+"Digital Heartbreak","AeroVista","System Crash","3:55",5230000,"cover4.jpg","lyrics15.txt"
+"Digital Heartbreak","AeroVista","Reboot Love","4:12",6120000,"cover4.jpg","lyrics16.txt"
+"Future Echoes","AeroVista","Time Machine","3:52",5230000,"cover5.jpg","lyrics17.txt"
+"Future Echoes","AeroVista","Quantum Dreams","4:18",6120000,"cover5.jpg","lyrics18.txt"
+"Future Echoes","AeroVista","Parallel Worlds","3:45",4780000,"cover5.jpg","lyrics19.txt"
+"Future Echoes","AeroVista","Dimension X","4:22",6540000,"cover5.jpg","lyrics20.txt"
+"Ambient Skies","AeroVista","Cloud Nine","3:38",4450000,"cover6.jpg","lyrics21.txt"
+"Ambient Skies","AeroVista","Floating Dreams","4:05",5890000,"cover6.jpg","lyrics22.txt"
+"Ambient Skies","AeroVista","Ethereal Light","3:52",5230000,"cover6.jpg","lyrics23.txt"
+"Ambient Skies","AeroVista","Zen Garden","4:18",6120000,"cover6.jpg","lyrics24.txt"`;
+
+        let catalogData = [];
+        
+        // Load data immediately when page loads
+        window.addEventListener('DOMContentLoaded', function() {
+            processInventoryData(embeddedMusicData);
+        });
+        
+        // Process the embedded inventory data
+        function processInventoryData(csvText) {
+            try {
+                catalogData = parseCSV(csvText);
+                updateStats();
+                displayNewArrivals();
+                displayFullCatalog();
+            } catch (error) {
+                console.error('Error processing data:', error);
+                document.getElementById('newArrivalsGrid').innerHTML = '<div class="loading">Error loading data</div>';
+                document.getElementById('catalogGrid').innerHTML = '<div class="loading">Error loading data</div>';
+            }
+        }
+        
+        // Parse CSV data
+        function parseCSV(csvText) {
+            const lines = csvText.split('\n');
+            const headers = lines[0].split(',').map(h => h.trim().replace(/"/g, ''));
+            const data = [];
+            
+            for (let i = 1; i < lines.length; i++) {
+                if (lines[i].trim()) {
+                    const values = lines[i].split(',');
+                    const row = {};
+                    headers.forEach((header, index) => {
+                        row[header] = values[index] ? values[index].trim().replace(/"/g, '') : '';
+                    });
+                    data.push(row);
+                }
+            }
+            return data;
+        }
+        
+        // Update statistics
+        function updateStats() {
+            const albums = new Set(catalogData.filter(row => row.album).map(row => row.album));
+            const tracks = catalogData.filter(row => row.track).length;
+            const lyrics = catalogData.filter(row => row.lyrics_file).length;
+            const totalSize = catalogData.reduce((sum, row) => sum + (parseInt(row.file_size || 0) || 0), 0);
+            
+            document.getElementById('totalAlbums').textContent = albums.size;
+            document.getElementById('totalTracks').textContent = tracks;
+            document.getElementById('totalLyrics').textContent = lyrics;
+            document.getElementById('totalSize').textContent = formatBytes(totalSize);
+        }
+        
+        // Format bytes to human readable
+        function formatBytes(bytes) {
+            if (bytes === 0) return '0 B';
+            const k = 1024;
+            const sizes = ['B', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        }
+        
+        // Display new arrivals (first 6 albums)
+        function displayNewArrivals() {
+            const albums = groupByAlbum(catalogData);
+            const newArrivalsList = Object.values(albums).slice(0, 6);
+            
+            const container = document.getElementById('newArrivalsGrid');
+            container.innerHTML = newArrivalsList.map((album, index) => 
+                createAlbumCard(album, index < 3) // Mark first 3 as "NEW"
+            ).join('');
+        }
+        
+        // Display full catalog
+        function displayFullCatalog() {
+            const albums = groupByAlbum(catalogData);
+            
+            const container = document.getElementById('catalogGrid');
+            container.innerHTML = Object.values(albums).map(album => 
+                createAlbumCard(album, false)
+            ).join('');
+        }
+        
+        // Group data by album
+        function groupByAlbum(data) {
+            const albums = {};
+            data.forEach(row => {
+                if (row.album && row.track) {
+                    if (!albums[row.album]) {
+                        albums[row.album] = {
+                            album: row.album,
+                            artist: row.artist || 'AeroVista',
+                            tracks: [],
+                            cover: row.cover_file || '',
+                            lyrics: row.lyrics_file || ''
+                        };
+                    }
+                    albums[row.album].tracks.push({
+                        track: row.track,
+                        duration: row.duration || '',
+                        file: row.file_path || '',
+                        lyrics: row.lyrics_file || ''
+                    });
+                }
+            });
+            return albums;
+        }
+        
+        // Create album card HTML
+        function createAlbumCard(album, isNew = false) {
+            const newClass = isNew ? ' new' : '';
+            const coverImage = album.cover ? 
+                `<img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDIwMCAyMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIyMDAiIGhlaWdodD0iMjAwIiBmaWxsPSJ1cmwoI2dyYWRpZW50KSIvPgo8ZGVmcz4KPGxpbmVhckdyYWRpZW50IGlkPSJncmFkaWVudCIgeDE9IjAiIHkxPSIwIiB4Mj0iMjAwIiB5Mj0iMjAwIiBncmFkaWVudFVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+CjxzdG9wIG9mZnNldD0iMCUiIHN0eWxlPSJzdG9wLWNvbG9yOiM2NjdlZWE7c3RvcC1vcGFjaXR5OjEiLz4KPHN0b3Agb2Zmc2V0PSIxMDAlIiBzdHlsZT0ic3RvcC1jb2xvcjojNzY0YmEyO3N0b3Atb3BhY2l0eToxIi8+CjwvbGluZWFyR3JhZGllbnQ+CjwvZGVmcz4KPC9zdmc+" alt="${album.album}" />` : 
+                `<div style="font-size: 4rem;">🎵</div>`;
+            
+            return `
+                <div class="album-card${newClass}">
+                    <div class="album-cover">
+                        ${coverImage}
+                    </div>
+                    <div class="album-info">
+                        <div class="album-title">${album.album}</div>
+                        <div class="album-artist">${album.artist}</div>
+                        <div class="album-tracks">
+                            ${album.tracks.slice(0, 3).map((track, index) => `
+                                <div class="track-item">
+                                    <span class="track-name">${track.track}</span>
+                                    <span class="track-duration">${track.duration}</span>
+                                    <button class="control-btn" onclick="playTrack('${album.album}', '${album.artist}', '${track.track}', '${track.duration}', '${album.cover || ''}', ${index})" style="font-size: 0.8rem; padding: 4px;">▶️</button>
+                                </div>
+                            `).join('')}
+                            ${album.tracks.length > 3 ? `<div style="color: #888; font-size: 0.8rem; text-align: center; padding: 10px;">+${album.tracks.length - 3} more tracks</div>` : ''}
+                        </div>
+                        <div class="album-actions">
+                            <button class="btn" onclick="playAlbum('${album.album}', '${album.artist}', '${album.cover || ''}')">🎵 Play Album</button>
+                            <a href="#" class="btn secondary">📖 Lyrics</a>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+        
+        // Smooth scrolling for navigation
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+        
+        // Enhanced Audio Player Functionality with Quality Processing
+        let currentTrack = null;
+        let currentAlbum = null;
+        let currentTrackIndex = 0;
+        let isPlaying = false;
+        let audioContext = null;
+        let analyser = null;
+        let gainNode = null;
+        let bassFilter = null;
+        let trebleFilter = null;
+        let reverbNode = null;
+        let source = null;
+        
+        const audioElement = document.getElementById('audioElement');
+        const audioPlayer = document.getElementById('audioPlayer');
+        const playPauseBtn = document.getElementById('playPauseBtn');
+        const progressBar = document.getElementById('progressBar');
+        const progress = document.getElementById('progress');
+        const currentTimeEl = document.getElementById('currentTime');
+        const durationEl = document.getElementById('duration');
+        const volumeSlider = document.getElementById('volumeSlider');
+        const volumeProgress = document.getElementById('volumeProgress');
+        const closePlayer = document.getElementById('closePlayer');
+        
+        // Initialize enhanced audio player with quality processing
+        function initAudioPlayer() {
+            // Set high-quality audio settings
+            audioElement.preload = 'metadata';
+            audioElement.crossOrigin = 'anonymous';
+            audioElement.volume = 0.7;
+            
+            // Initialize Web Audio API for enhanced processing
+            initializeAudioContext();
+            updateVolumeDisplay();
+            
+            // Event listeners
+            playPauseBtn.addEventListener('click', togglePlayPause);
+            progressBar.addEventListener('click', seekTo);
+            volumeSlider.addEventListener('click', setVolume);
+            closePlayer.addEventListener('click', hidePlayer);
+            
+            audioElement.addEventListener('timeupdate', updateProgress);
+            audioElement.addEventListener('loadedmetadata', updateDuration);
+            audioElement.addEventListener('ended', playNext);
+            audioElement.addEventListener('play', startSpectrumAnalyzer);
+            audioElement.addEventListener('pause', stopSpectrumAnalyzer);
+        }
+        
+        // Initialize Web Audio API for enhanced sound quality
+        function initializeAudioContext() {
+            try {
+                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                analyser = audioContext.createAnalyser();
+                gainNode = audioContext.createGain();
+                
+                // Create EQ filters for enhanced sound
+                bassFilter = audioContext.createBiquadFilter();
+                bassFilter.type = 'lowshelf';
+                bassFilter.frequency.setValueAtTime(250, audioContext.currentTime);
+                bassFilter.gain.setValueAtTime(0, audioContext.currentTime);
+                
+                trebleFilter = audioContext.createBiquadFilter();
+                trebleFilter.type = 'highshelf';
+                trebleFilter.frequency.setValueAtTime(4000, audioContext.currentTime);
+                trebleFilter.gain.setValueAtTime(0, audioContext.currentTime);
+                
+                // Create reverb effect
+                reverbNode = audioContext.createConvolver();
+                createReverbImpulse();
+                
+                // Connect audio graph for enhanced processing
+                analyser.connect(gainNode);
+                gainNode.connect(bassFilter);
+                bassFilter.connect(trebleFilter);
+                trebleFilter.connect(reverbNode);
+                reverbNode.connect(audioContext.destination);
+                
+                analyser.fftSize = 256;
+                analyser.smoothingTimeConstant = 0.8;
+                
+                console.log('Enhanced audio processing initialized');
+            } catch (error) {
+                console.log('Web Audio API not supported, using standard audio:', error);
+            }
+        }
+        
+        // Create reverb impulse response for spatial audio
+        function createReverbImpulse() {
+            const length = audioContext.sampleRate * 2;
+            const impulse = audioContext.createBuffer(2, length, audioContext.sampleRate);
+            
+            for (let channel = 0; channel < 2; channel++) {
+                const channelData = impulse.getChannelData(channel);
+                for (let i = 0; i < length; i++) {
+                    channelData[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / length, 2);
+                }
+            }
+            
+            reverbNode.buffer = impulse;
+        }
+        
+        // Connect audio element to enhanced processing chain
+        function connectAudioToProcessor() {
+            if (audioContext && source) {
+                source.disconnect();
+            }
+            
+            if (audioContext) {
+                source = audioContext.createMediaElementSource(audioElement);
+                source.connect(analyser);
+            }
+        }
+        
+        // Play a specific track with enhanced audio processing
+        function playTrack(album, artist, track, duration, cover, trackIndex) {
+            currentTrack = { album, artist, track, duration, cover, trackIndex };
+            currentAlbum = album;
+            currentTrackIndex = trackIndex;
+            
+            // Update player display
+            document.getElementById('playerTitle').textContent = track;
+            document.getElementById('playerArtist').textContent = `${artist} - ${album}`;
+            
+            // Update cover
+            const playerCover = document.getElementById('playerCover');
+            if (cover) {
+                playerCover.innerHTML = `<img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjYwIiBoZWlnaHQ9IjYwIiBmaWxsPSJ1cmwoI2dyYWRpZW50KSIvPgo8ZGVmcz4KPGxpbmVhckdyYWRpZW50IGlkPSJncmFkaWVudCIgeDE9IjAiIHkxPSIwIiB4Mj0iNjAiIHkyPSI2MCIgZ3JhZGllbnRVbml0cz0idXNlclNwYWNlT25Vc2UiPgo8c3RvcCBvZmZzZXQ9IjAlIiBzdHlsZT0ic3RvcC1jb2xvcjojNjY3ZWVhO3N0b3Atb3BhY2l0eToxIi8+CjxzdG9wIG9mZnNldD0iMTAwJSIgc3R5bGU9InN0b3AtY29sb3I6Izc2NGJhMjtzdG9wLW9wYWNpdHk6MSIvPgo8L2xpbmVhckdyYWRpZW50Pgo8L2RlZnM+Cjwvc3ZnPg==" alt="${album}" />`;
+            } else {
+                playerCover.innerHTML = '<div>🎵</div>';
+            }
+            
+            // Connect to enhanced audio processing
+            connectAudioToProcessor();
+            
+            // For demo purposes, we'll use a placeholder audio file
+            // In a real implementation, you'd use the actual file path from the CSV
+            const audioPath = `file:///M:/Albums/${album}/${track}.mp3`;
+            audioElement.src = audioPath;
+            
+            // Show player and try to play
+            showPlayer();
+            audioElement.play().then(() => {
+                isPlaying = true;
+                playPauseBtn.textContent = '⏸️';
+                startSpectrumAnalyzer();
+            }).catch(error => {
+                console.log('Could not play audio file:', error);
+                // For demo, show enhanced processing message
+                document.getElementById('playerTitle').textContent = `${track} (Enhanced Audio Processing)`;
+            });
+        }
+        
+        // Play entire album
+        function playAlbum(album, artist, cover) {
+            const albums = groupByAlbum(catalogData);
+            const albumData = albums[album];
+            if (albumData && albumData.tracks.length > 0) {
+                playTrack(album, artist, albumData.tracks[0].track, albumData.tracks[0].duration, cover, 0);
+            }
+        }
+        
+        // Toggle play/pause
+        function togglePlayPause() {
+            if (isPlaying) {
+                audioElement.pause();
+                isPlaying = false;
+                playPauseBtn.textContent = '▶️';
+            } else {
+                audioElement.play().then(() => {
+                    isPlaying = true;
+                    playPauseBtn.textContent = '⏸️';
+                }).catch(error => {
+                    console.log('Could not play audio:', error);
+                });
+            }
+        }
+        
+        // Play next track
+        function playNext() {
+            if (currentAlbum) {
+                const albums = groupByAlbum(catalogData);
+                const albumData = albums[currentAlbum];
+                if (albumData && currentTrackIndex < albumData.tracks.length - 1) {
+                    const nextTrack = albumData.tracks[currentTrackIndex + 1];
+                    playTrack(currentAlbum, albumData.artist, nextTrack.track, nextTrack.duration, albumData.cover, currentTrackIndex + 1);
+                }
+            }
+        }
+        
+        // Update progress bar
+        function updateProgress() {
+            if (audioElement.duration) {
+                const progressPercent = (audioElement.currentTime / audioElement.duration) * 100;
+                progress.style.width = progressPercent + '%';
+                currentTimeEl.textContent = formatTime(audioElement.currentTime);
+            }
+        }
+        
+        // Update duration display
+        function updateDuration() {
+            durationEl.textContent = formatTime(audioElement.duration);
+        }
+        
+        // Seek to position
+        function seekTo(e) {
+            if (audioElement.duration) {
+                const rect = progressBar.getBoundingClientRect();
+                const clickX = e.clientX - rect.left;
+                const width = rect.width;
+                const clickPercent = clickX / width;
+                audioElement.currentTime = clickPercent * audioElement.duration;
+            }
+        }
+        
+        // Set volume
+        function setVolume(e) {
+            const rect = volumeSlider.getBoundingClientRect();
+            const clickX = e.clientX - rect.left;
+            const width = rect.width;
+            const volume = Math.max(0, Math.min(1, clickX / width));
+            
+            audioElement.volume = volume;
+            updateVolumeDisplay();
+        }
+        
+        // Update volume display
+        function updateVolumeDisplay() {
+            const volumePercent = audioElement.volume * 100;
+            volumeProgress.style.width = volumePercent + '%';
+        }
+        
+        // Format time
+        function formatTime(seconds) {
+            if (isNaN(seconds)) return '0:00';
+            const mins = Math.floor(seconds / 60);
+            const secs = Math.floor(seconds % 60);
+            return `${mins}:${secs.toString().padStart(2, '0')}`;
+        }
+        
+        // Show player
+        function showPlayer() {
+            audioPlayer.classList.add('active');
+        }
+        
+        // Hide player
+        function hidePlayer() {
+            audioPlayer.classList.remove('active');
+            audioElement.pause();
+            isPlaying = false;
+            playPauseBtn.textContent = '▶️';
+            stopSpectrumAnalyzer();
+        }
+        
+        // Enhanced audio processing functions
+        function setBass(value) {
+            if (bassFilter) {
+                bassFilter.gain.setValueAtTime(value * 20 - 10, audioContext.currentTime);
+            }
+        }
+        
+        function setTreble(value) {
+            if (trebleFilter) {
+                trebleFilter.gain.setValueAtTime(value * 20 - 10, audioContext.currentTime);
+            }
+        }
+        
+        function setReverb(value) {
+            if (reverbNode) {
+                reverbNode.dry = 1 - value;
+                reverbNode.wet = value;
+            }
+        }
+        
+        // Spectrum analyzer for visual feedback
+        let spectrumAnimation = null;
+        
+        function startSpectrumAnalyzer() {
+            if (spectrumAnimation) {
+                cancelAnimationFrame(spectrumAnimation);
+            }
+            animateSpectrum();
+        }
+        
+        function stopSpectrumAnalyzer() {
+            if (spectrumAnimation) {
+                cancelAnimationFrame(spectrumAnimation);
+                spectrumAnimation = null;
+            }
+        }
+        
+        function animateSpectrum() {
+            if (analyser && isPlaying) {
+                const bufferLength = analyser.frequencyBinCount;
+                const dataArray = new Uint8Array(bufferLength);
+                analyser.getByteFrequencyData(dataArray);
+                
+                // Create visual spectrum representation
+                const spectrumContainer = document.getElementById('spectrumAnalyzer');
+                if (spectrumContainer) {
+                    spectrumContainer.style.opacity = '1';
+                    let spectrumHTML = '';
+                    const bars = Math.min(32, bufferLength);
+                    
+                    for (let i = 0; i < bars; i++) {
+                        const value = dataArray[i] / 255;
+                        const height = Math.max(2, value * 20);
+                        const hue = (i / bars) * 360;
+                        spectrumHTML += `<div style="width: 3px; height: ${height}px; background: linear-gradient(to top, hsl(${hue}, 70%, 50%), hsl(${hue + 30}, 70%, 60%)); margin: 0 1px; border-radius: 1px; transition: height 0.1s ease;"></div>`;
+                    }
+                    
+                    spectrumContainer.innerHTML = spectrumHTML;
+                }
+            } else {
+                const spectrumContainer = document.getElementById('spectrumAnalyzer');
+                if (spectrumContainer) {
+                    spectrumContainer.style.opacity = '0';
+                }
+            }
+            
+            spectrumAnimation = requestAnimationFrame(animateSpectrum);
+        }
+        
+        // Audio quality enhancement functions
+        function enhanceAudioQuality() {
+            // Apply high-quality audio settings
+            if (audioContext) {
+                // Set optimal sample rate
+                if (audioContext.sampleRate < 44100) {
+                    console.log('Audio context sample rate:', audioContext.sampleRate);
+                }
+                
+                // Configure analyser for better frequency analysis
+                analyser.fftSize = 512;
+                analyser.smoothingTimeConstant = 0.3;
+                
+                // Set optimal gain levels
+                gainNode.gain.setValueAtTime(0.8, audioContext.currentTime);
+                
+                console.log('Audio quality enhanced');
+            }
+        }
+        
+        // Auto-enhance audio when track loads
+        audioElement.addEventListener('loadeddata', function() {
+            enhanceAudioQuality();
+        });
+        
+        // Initialize player when page loads
+        window.addEventListener('DOMContentLoaded', function() {
+            initAudioPlayer();
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,84 @@
+{
+  "tasks": [
+    {
+      "name": "🏗️ Deploy Foundation (Phase A)",
+      "cmd": "scripts/ps/deploy-containers.ps1 -Service foundation"
+    },
+    {
+      "name": "📊 Deploy Observability (Phase E)",
+      "cmd": "scripts/ps/deploy-containers.ps1 -Service observability"
+    },
+    {
+      "name": "🤖 Deploy AI (Phase C)",
+      "cmd": "scripts/ps/deploy-containers.ps1 -Service ai"
+    },
+    {
+      "name": "🚀 Deploy Everything",
+      "cmd": "scripts/ps/deploy-containers.ps1 -Service all"
+    },
+    {
+      "name": "Deploy Traefik",
+      "cmd": "scripts/ps/deploy-containers.ps1 -Service traefik"
+    },
+    {
+      "name": "Deploy Portainer",
+      "cmd": "scripts/ps/deploy-containers.ps1 -Service portainer"
+    },
+    {
+      "name": "Deploy n8n",
+      "cmd": "scripts/ps/deploy-containers.ps1 -Service n8n"
+    },
+    {
+      "name": "Deploy FileBrowser",
+      "cmd": "scripts/ps/deploy-containers.ps1 -Service filebrowser"
+    },
+    {
+      "name": "Deploy AeroCaller",
+      "cmd": "scripts/ps/deploy-containers.ps1 -Service aerocaller"
+    },
+    {
+      "name": "Deploy PostgreSQL",
+      "cmd": "scripts/ps/deploy-containers.ps1 -Service postgres"
+    },
+    {
+      "name": "Deploy Redis",
+      "cmd": "scripts/ps/deploy-containers.ps1 -Service redis"
+    },
+    {
+      "name": "Deploy Authelia",
+      "cmd": "scripts/ps/deploy-containers.ps1 -Service authelia"
+    },
+    {
+      "name": "Deploy Landing Page",
+      "cmd": "scripts/ps/deploy-containers.ps1 -Service landing"
+    },
+    {
+      "name": "Deploy Prometheus",
+      "cmd": "scripts/ps/deploy-containers.ps1 -Service prometheus"
+    },
+    {
+      "name": "Deploy Grafana",
+      "cmd": "scripts/ps/deploy-containers.ps1 -Service grafana"
+    },
+    {
+      "name": "Deploy Uptime Kuma",
+      "cmd": "scripts/ps/deploy-containers.ps1 -Service uptime-kuma"
+    },
+    {
+      "name": "Deploy Ollama",
+      "cmd": "scripts/ps/deploy-containers.ps1 -Service ollama"
+    },
+    {
+      "name": "Deploy Open WebUI",
+      "cmd": "scripts/ps/deploy-containers.ps1 -Service openwebui"
+    },
+    {
+      "name": "Sync Config",
+      "cmd": "scripts/ps/sync-config.ps1"
+    },
+    {
+      "name": "Backup NXCore",
+      "cmd": "scripts/ps/backup-nxcore.ps1"
+    }
+  ]
+}

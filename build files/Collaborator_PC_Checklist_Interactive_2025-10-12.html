@@ -1,0 +1,303 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Collaborator PC — Interactive Checklist (2025-10-12)</title>
+<style>
+  :root {
+    --bg: #0f1115;
+    --card: #151922;
+    --muted: #9aa4b2;
+    --text: #e6e9ef;
+    --accent: #7aa2f7;
+    --ok: #6de38f;
+    --border: #232838;
+  }
+  html, body { background: var(--bg); color: var(--text); margin:0; padding:0; font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial; }
+  header { position: sticky; top:0; z-index:10; background: linear-gradient(180deg, rgba(15,17,21,.95), rgba(15,17,21,.75)); backdrop-filter: blur(8px); border-bottom:1px solid var(--border); }
+  .wrap { max-width: 1100px; margin: 0 auto; padding: 16px; }
+  h1 { font-size: 1.6rem; margin: 4px 0 8px; }
+  .sub { color: var(--muted); }
+  .toolbar { display:flex; flex-wrap:wrap; gap:8px; margin-top:10px; }
+  button { background:#1c2230; color:var(--text); border:1px solid var(--border); padding:8px 10px; border-radius:10px; cursor:pointer; font-weight:600; }
+  button:hover { background:#1f2738; }
+  .overall { margin-top:10px; display:flex; align-items:center; gap:10px; }
+  .progress { height:8px; background:#0f121a; border:1px solid var(--border); border-radius:999px; overflow:hidden; }
+  .bar { height:100%; width:0%; background: linear-gradient(90deg, var(--accent), var(--ok)); transition: width .25s ease; }
+  .grid { display:grid; gap:16px; margin-top:16px; grid-template-columns: 1fr; }
+  @media (min-width: 940px) { .grid { grid-template-columns: 1fr 1fr; } }
+  .card { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 14px; }
+  details.card summary { cursor:pointer; display:flex; justify-content:space-between; align-items:center; gap:12px; }
+  .phase-sub { color: var(--muted); font-size: .9rem; }
+  .tasks { margin-top:10px; display:grid; gap:6px; }
+  label.task { display:flex; gap:10px; align-items:flex-start; padding:8px; border-radius:10px; border:1px dashed #273048; }
+  input[type="checkbox"] { transform: scale(1.2); margin-top:2px; }
+  pre, code { background:#0f1218; border:1px solid var(--border); }
+  pre { padding:12px; border-radius:8px; overflow:auto; }
+  @media print { header { position: static; } button,.toolbar { display:none!important; } .card { break-inside: avoid; } body { background:white; color:black; } }
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <h1>Collaborator PC — Interactive Checklist</h1>
+    <div class="sub">Generated 2025-10-12 · Progress persists in this browser (localStorage)</div>
+    <div class="toolbar">
+      <button id="expandAll">Expand all</button>
+      <button id="collapseAll">Collapse all</button>
+      <button id="exportBtn">Export progress</button>
+      <button id="importBtn">Import progress</button>
+      <button onclick="window.print()">Print</button>
+    </div>
+    <div class="overall">
+      <strong>Overall</strong>
+      <div class="progress" style="flex:1"><div class="bar" id="overallBar"></div></div>
+      <div id="overallPct">0%</div>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+  <section class="grid" id="phases"></section>
+
+  <div class="card">
+    <h2>Quick Next Actions</h2>
+    <ol>
+      <li>Windows Update + OEM drivers to green status.</li>
+      <li>Join Tailscale + verify MagicDNS and device tag.</li>
+      <li>Enable BitLocker; vault the recovery key.</li>
+      <li>Install core apps (VS Code, Git, 7-Zip, VLC, nvm/Node 22.19.0).</li>
+      <li>Pin PWAs and run a Staff Call smoke test.</li>
+    </ol>
+  </div>
+
+  <div class="card">
+    <h2>OOBE — Local Account Path (No MSA)</h2>
+    <ol>
+      <li>At the sign-in or network screen, press <strong>Shift+F10</strong> → run <code>OOBE\BYPASSNRO</code>.</li>
+      <li>After reboot: click <strong>I don't have internet</strong> → <strong>Continue with limited setup</strong>.</li>
+      <li>Create local admin <code>av-admin</code>. You can add <code>av-user</code> later for daily use.</li>
+    </ol>
+  </div>
+</main>
+
+<script>
+const STORAGE_KEY = "av_collab_pc_checklist_v1";
+const phases = [
+  {
+    title: "Phase 0 — Hardware & Firmware Prep",
+    note: "Pre-boot checks, firmware, TPM/SB, virtualization.",
+    tasks: [
+      ["Record model/serial; asset tag applied", false],
+      ["BIOS/UEFI updated; TPM 2.0 and Secure Boot enabled", false],
+      ["Disable Fast Boot; enable virtualization (VT-x/AMD-V)", false],
+      ["Storage/firmware utilities updated; baseline SMART health", false],
+    ]
+  },
+  {
+    title: "Phase 1 — Windows 11 Install & OOBE",
+    note: "Clean install + local admin via bypass.",
+    tasks: [
+      ["Install Windows 11 Pro (latest ISO)", false],
+      ["Skip Microsoft account (Shift+F10 → OOBE\\BYPASSNRO)", false],
+      ["Create local admin: av-admin", false],
+      ["Set PC name AV-COLLAB-<name>", false],
+    ]
+  },
+  {
+    title: "Phase 2 — Updates, Drivers, and Policies",
+    note: "Windows Update, OEM drivers, power settings.",
+    tasks: [
+      ["Run Windows Update until clear", false],
+      ["Install OEM chipset/GPU/Wi-Fi/Bluetooth drivers", false],
+      ["Power plan Balanced/High perf per device", false],
+      ["Disable sleep on AC power", false],
+    ]
+  },
+  {
+    title: "Phase 3 — Core Access & Identity",
+    note: "Join Tailscale; verify MagicDNS & device naming.",
+    tasks: [
+      ["Install Tailscale, sign in, verify tailnet connectivity", false],
+      ["(Optional) Tag device as tag:collaborator", false],
+      ["Set Tailscale device name av-collab-<name>", false],
+      ["Test CopyParty/files and internal UIs over tailnet", false],
+    ]
+  },
+  {
+    title: "Phase 4 — Security Baseline",
+    note: "BitLocker, Defender, Firewall, standard user.",
+    tasks: [
+      ["Enable BitLocker and vault recovery key", false],
+      ["Ensure Windows Defender and reputation protections on", false],
+      ["Firewall enabled; allowlists only as needed", false],
+      ["Disable RDP unless explicitly required", false],
+      ["Create standard user av-user", false],
+      ["Set lock/screen timeout to 10–15 min", false],
+    ]
+  },
+  {
+    title: "Phase 5 — Foundation Apps",
+    note: "Browsers, tools, dev stack (if needed).",
+    tasks: [
+      ["Install Edge (PWA host) + Chrome (optional)", false],
+      ["Install 7-Zip and VLC", false],
+      ["Install Git + VS Code (Docker/Prettier extensions)", false],
+      ["Install nvm-windows; set Node 22.19.0 default", false],
+      ["Install Docker Desktop (optional for dev)", false],
+      ["Install RustDesk client (optional) and pre-configure", false],
+    ]
+  },
+  {
+    title: "Phase 6 — AeroVista Apps & Shortcuts",
+    note: "Pin PWAs and verify access.",
+    tasks: [
+      ["Pin PWAs: Daily Brief, AdminCenter, File Gateway, AeroCoreOS Dashboard", false],
+      ["Create C:\\AeroVista\\Shortcuts (desktop/taskbar)", false],
+      ["Verify internal service access (n8n UI, Portainer read-only if used)", false],
+    ]
+  },
+  {
+    title: "Phase 7 — Collaboration & Content",
+    note: "VS Code sync, comms tools, bookmarks, A/V test.",
+    tasks: [
+      ["Configure VS Code Settings Sync (optional)", false],
+      ["Install Teams/Slack/Zoom per org standards", false],
+      ["Add tailnet bookmarks to favorites bar", false],
+      ["Test mic/cam for Staff Call sessions", false],
+    ]
+  },
+  {
+    title: "Phase 8 — Staff Call Ready",
+    note: "Open index.staff.html over tailnet; audio test.",
+    tasks: [
+      ["Open Staff Call endpoint over tailnet", false],
+      ["Allow mic permissions", false],
+      ["Join test room; verify audio with peer", false],
+    ]
+  },
+  {
+    title: "Phase 9 — Ops Hygiene",
+    note: "Version log, restore point, handover sheet, asset register.",
+    tasks: [
+      ["Create C:\\AeroVista\\apps\\VERSION.txt", false],
+      ["Enable Windows Restore Point; create baseline", false],
+      ["Export Device Handover Sheet", false],
+      ["Add device to asset register", false],
+    ]
+  },
+  {
+    title: "Phase 10 — Final Review & Sign‑off",
+    note: "Non-admin workflow, key vaulting, launch checks.",
+    tasks: [
+      ["Verify daily use as av-user (non-admin)", false],
+      ["Admin password vaulted; BitLocker key vaulted", false],
+      ["All PWAs launch; tailnet resources reachable", false],
+      ["Sign-off completed; device delivered", false],
+    ]
+  }
+];
+
+function el(tag, attrs = {}, html = "") {
+  const x = document.createElement(tag);
+  Object.entries(attrs).forEach(([k,v]) => x.setAttribute(k, v));
+  x.innerHTML = html;
+  return x;
+}
+
+function saveState() {
+  const state = Array.from(document.querySelectorAll('input[type=checkbox][data-id]')).map(cb => ({ id: cb.dataset.id, checked: cb.checked }));
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  computeProgress();
+}
+
+function loadState() {
+  const raw = localStorage.getItem(STORAGE_KEY);
+  if (!raw) return;
+  try {
+    const state = JSON.parse(raw);
+    state.forEach(s => {
+      const el = document.querySelector('input[type=checkbox][data-id="' + s.id + '"]');
+      if (el) el.checked = !!s.checked;
+    });
+  } catch(e) { console.warn("import error", e); }
+}
+
+function computeProgress() {
+  let total = 0, done = 0;
+  document.querySelectorAll('details.card').forEach((card) => {
+    const cbs = card.querySelectorAll('input[type=checkbox][data-id]');
+    const checked = card.querySelectorAll('input[type=checkbox][data-id]:checked');
+    const pct = cbs.length ? Math.round(checked.length / cbs.length * 100) : 0;
+    card.querySelector('.bar').style.width = pct + '%';
+    card.querySelector('.pct').textContent = pct + '%';
+    total += cbs.length; done += checked.length;
+  });
+  const overall = total ? Math.round(done/total * 100) : 0;
+  document.getElementById('overallBar').style.width = overall + '%';
+  document.getElementById('overallPct').textContent = overall + '%';
+}
+
+function render() {
+  const grid = document.getElementById('phases');
+  phases.forEach((p, pi) => {
+    const det = el('details', {class:'card'});
+    if (pi < 2) det.open = true;
+    const tasks = p.tasks.map((t, ti) => {
+      const id = `p${pi}-t${ti}`;
+      return `<label class="task"><input type="checkbox" data-id="${id}" /> <span>${t[0]}</span></label>`;
+    }).join('');
+    det.innerHTML = `
+      <summary>
+        <div>
+          <div style="font-weight:800">${p.title}</div>
+          <div class="phase-sub">${p.note}</div>
+        </div>
+        <div style="min-width:210px">
+          <div class="progress"><div class="bar"></div></div>
+          <div class="phase-sub" style="text-align:right"><span class="pct">0%</span></div>
+        </div>
+      </summary>
+      <div class="tasks">${tasks}</div>
+    `;
+    grid.appendChild(det);
+  });
+  computeProgress();
+  loadState();
+  computeProgress();
+  grid.addEventListener('change', (e) => { if (e.target.matches('input[type=checkbox][data-id]')) saveState(); });
+}
+
+document.getElementById('expandAll').addEventListener('click', () => {
+  document.querySelectorAll('details.card').forEach(d => d.open = true);
+});
+document.getElementById('collapseAll').addEventListener('click', () => {
+  document.querySelectorAll('details.card').forEach(d => d.open = false);
+});
+document.getElementById('exportBtn').addEventListener('click', () => {
+  const raw = localStorage.getItem(STORAGE_KEY) || "[]";
+  const blob = new Blob([raw], {type: "application/json"});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = "collab_pc_checklist_progress.json";
+  document.body.appendChild(a);
+  a.click(); a.remove();
+  URL.revokeObjectURL(url);
+});
+document.getElementById('importBtn').addEventListener('click', () => {
+  const input = document.createElement('input');
+  input.type = 'file'; input.accept = 'application/json,.json';
+  input.onchange = () => {
+    const f = input.files[0]; if (!f) return;
+    const r = new FileReader();
+    r.onload = () => { localStorage.setItem(STORAGE_KEY, r.result); loadState(); computeProgress(); alert("Progress imported."); };
+    r.readAsText(f);
+  };
+  input.click();
+});
+
+render();
+</script>
+</body>
+</html>

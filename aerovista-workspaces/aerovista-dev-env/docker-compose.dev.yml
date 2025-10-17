@@ -1,0 +1,55 @@
+version: "3.9"
+
+name: aerovista-dev
+
+services:
+  dev:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    image: aerovista/dev:latest
+    container_name: av-dev
+    working_dir: /workspace
+    tty: true
+    stdin_open: true
+    env_file:
+      - .env
+    volumes:
+      - ./:/workspace:cached
+      - dev-node-cache:/home/dev/.npm
+      - dev-pip-cache:/home/dev/.cache/pip
+      - dev-poetry:/home/dev/.cache/pypoetry
+    networks: [devnet]
+    command: zsh
+
+  postgres:
+    image: postgres:16-alpine
+    container_name: av-postgres
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-av_user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-changeme}
+      POSTGRES_DB: ${POSTGRES_DB:-av_db}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    networks: [devnet]
+    profiles: ["data"]
+
+  redis:
+    image: redis:alpine
+    container_name: av-redis
+    ports:
+      - "${REDIS_PORT:-6379}:6379"
+    networks: [devnet]
+    profiles: ["data"]
+
+networks:
+  devnet:
+    driver: bridge
+
+volumes:
+  dev-node-cache:
+  dev-pip-cache:
+  dev-poetry:
+  pgdata:

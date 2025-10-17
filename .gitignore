@@ -76,3 +76,7 @@ build/
 # Runtime files
 *.pid
 *.sock
+
+# GitHub prep - State management
+!state/**
+!state/outbox/**

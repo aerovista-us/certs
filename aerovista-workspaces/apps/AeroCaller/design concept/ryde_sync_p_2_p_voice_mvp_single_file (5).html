@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>RydeSync | Free Player × Industrial Core</title>
+  <meta name="description" content="Two‑track landing for RydeSync: Free Player jam room and Industrial Core production suite. AeroVista × EchoVerse." />
+  <meta name="theme-color" content="#0b0c0f" />
+  <meta property="og:title" content="RydeSync — Free Player × Industrial Core" />
+  <meta property="og:description" content="Jam-room simplicity now. Industrial control room next." />
+  <meta property="og:type" content="website" />
+  <style>
+    :root{
+      --ink:#eef1f6;--muted:#a8b0c2;--bg0:#0b0c0f;--bgL:#2c3370;--bgR:#0f1115;
+      --gradL:linear-gradient(135deg,#667eea,#764ba2); --gradR:linear-gradient(135deg,#1b1d20,#0b0c0f);
+      --line:#242833;--ok:#37d67a;--soon:#ffd166;--ring:#46ffe2;
+    }
+    *{box-sizing:border-box} html,body{height:100%}
+    body{margin:0;font-family:"Segoe UI",system-ui,Roboto,Helvetica,Arial,sans-serif;min-height:100vh;display:flex;background:#0b0c0f;color:var(--ink);}
+
+    /* Header */
+    .head{position:fixed;inset:0 0 auto 0;height:56px;display:flex;align-items:center;gap:12px;padding:0 18px;border-bottom:1px solid var(--line);background:rgba(11,12,15,.75);backdrop-filter:blur(10px);z-index:20}
+    .brand{font-weight:700;letter-spacing:.3px;opacity:.9}
+    .sp{flex:1}
+    .nav a{color:var(--muted);text-decoration:none;margin-left:10px;border:1px solid var(--line);padding:8px 12px;border-radius:10px;background:#0f1116}
+    .nav a:hover{outline:1px solid rgba(255,255,255,.06)}
+
+    /* Split */
+    .wrap{display:flex;flex:1;margin-top:56px}
+    .split{flex:1;display:flex;flex-direction:column;justify-content:space-between;padding:42px;transition:transform .25s ease, filter .25s ease}
+    .split h1{font-size:2.2rem;margin-bottom:8px}
+    .split p{line-height:1.6;margin-bottom:16px}
+    .split ul{list-style:none;margin-top:8px}
+    .split li{margin-bottom:8px;position:relative;padding-left:24px}
+    .split li:before{content:"✔";position:absolute;left:0;color:var(--ok)}
+
+    /* LEFT (Free) */
+    .left{background:var(--gradL);color:#fff;position:relative;overflow:hidden}
+    .left .button{background:#fff;color:#222;border:0}
+    .glow{position:absolute;inset:-20% -10% auto auto;width:60vmax;height:60vmax;background:radial-gradient(closest-side,rgba(255,255,255,.25),transparent 60%);filter:blur(30px);opacity:.35;pointer-events:none}
+    /* Subtle waveform */
+    .wave{position:absolute;left:-10%;right:-10%;bottom:-10px;height:120px;background:repeating-linear-gradient(90deg,rgba(255,255,255,.15) 0 2px,transparent 2px 6px);mask:linear-gradient(180deg,transparent,rgba(0,0,0,.8));}
+
+    /* RIGHT (Core) */
+    .right{background:var(--gradR);border-left:4px solid #2a2f3a;position:relative;overflow:hidden}
+    .right h1{background:linear-gradient(45deg,#bfc7da,#ffffff);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+    /* scanlines */
+    .scan{position:absolute;inset:0;background:repeating-linear-gradient(0deg,rgba(255,255,255,.04) 0 1px,transparent 1px 3px);pointer-events:none}
+    .plate{border:1px solid #313745;border-radius:12px;padding:16px;background:linear-gradient(145deg,#0b0e13,#090b0f);box-shadow:inset 0 0 40px #000}
+
+    /* Buttons */
+    .button{display:inline-block;padding:12px 20px;border-radius:10px;font-weight:700;text-decoration:none;border:1px solid #394155;background:#0f1420;color:var(--ink);box-shadow:inset 0 0 10px #000}
+    .ghost{display:inline-block;padding:12px 20px;border-radius:10px;border:1px dashed #5a6376;color:#9aa3b6}
+    .soon{border:1px solid #5a5970;color:#d8c9ff;background:rgba(127,127,170,.1)}
+
+    /* Micro‑motion */
+    .split:hover{filter:saturate(1.03)}
+    .left:hover{transform:translateY(-2px)}
+    .right:hover{transform:translateY(-2px)}
+
+    footer{position:fixed;left:0;right:0;bottom:8px;text-align:center;font-size:.9rem;color:var(--muted)}
+
+    @media(max-width:1000px){ body{flex-direction:column} .wrap{flex-direction:column} .right{border-left:0;border-top:4px solid #2a2f3a} }
+    @media(prefers-reduced-motion:reduce){ .split{transition:none} .left:hover,.right:hover{transform:none} }
+  </style>
+</head>
+<body>
+  <header class="head">
+    <div class="brand">AeroVista × EchoVerse · RydeSync</div>
+    <div class="sp"></div>
+    <nav class="nav">
+      <a href="/divisions">Divisions</a>
+      <a href="/status">Status</a>
+      <a href="/test/voice">Diagnostics</a>
+    </nav>
+  </header>
+
+  <main class="wrap">
+    <!-- LEFT : FREE PLAYER -->
+    <section class="split left" id="free">
+      <div class="glow"></div>
+      <div>
+        <h1>🎵 RydeSync Free Player</h1>
+        <p>The fun, low‑friction jam room. Plug in, press play, stay in sync.</p>
+        <ul>
+          <li>One‑click room join</li>
+          <li>Host‑controlled playback + volume</li>
+          <li>Real‑time presence & chat</li>
+          <li>P2P voice mesh for quick talk‑back</li>
+          <li>Built for fun, zero friction</li>
+        </ul>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:12px">
+          <a class="button" id="openFree" href="/rydesync">Launch Free Player</a>
+          <a class="button" href="/test/voice">Voice Test</a>
+        </div>
+      </div>
+      <div>
+        <p><em>Music‑led. Presence‑driven. You bring the vibe — we sync the ride. 🛻💿</em></p>
+      </div>
+      <div class="wave" aria-hidden="true"></div>
+    </section>
+
+    <!-- RIGHT : INDUSTRIAL CORE -->
+    <section class="split right" id="core">
+      <div class="scan" aria-hidden="true"></div>
+      <div>
+        <h1>⚙️ Industrial Core</h1>
+        <div class="plate">
+          <p>Bolted, ham‑radio‑meets‑cyberpunk console. Mixers, synthesis, analytics, SFU scaling.</p>
+          <ul>
+            <li>Advanced mixers & synthesis tools</li>
+            <li>Voice mesh (1‑4) + Oracle SFU (4+)</li>
+            <li>Session analytics and precision control</li>
+            <li>Role‑based room ACLs & host handoff</li>
+          </ul>
+        </div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:12px">
+          <span class="ghost soon" title="Coming soon">Request Access (coming)</span>
+          <a class="button" href="/status">System Status</a>
+          <a class="button" href="/test/rydesync">Test Harness</a>
+        </div>
+      </div>
+      <div>
+        <p><strong>Stealth development:</strong> we’re hardening the control room while you jam.</p>
+      </div>
+    </section>
+  </main>
+
+  <footer>© AeroVista LLC · EchoVerse Audio · 2025</footer>
+
+  <script>
+    // Keyboard shortcuts + deep link helper
+    // F → open Free Player, V → Voice Test
+    const freeBtn = document.getElementById('openFree');
+    window.addEventListener('keydown', (e)=>{
+      if (e.target && (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA')) return;
+      if (e.key.toLowerCase()==='f'){ freeBtn?.click(); }
+      if (e.key.toLowerCase()==='v'){ location.href='/test/voice'; }
+    });
+
+    // Accept UTM-like params to auto-route (e.g., ?open=free or ?open=core)
+    const params = new URLSearchParams(location.search);
+    const open = params.get('open');
+    if (open === 'free') freeBtn?.click();
+    if (open === 'core') document.getElementById('core')?.scrollIntoView({behavior:'smooth'});
+  </script>
+</body>
+</html>

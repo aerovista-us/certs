@@ -1,0 +1,67 @@
+<svg width="600" height="600" viewBox="0 0 600 600" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <radialGradient id="core" cx="50%" cy="50%" r="60%">
+      <stop offset="0%" stop-color="#9ec1ff"/>
+      <stop offset="60%" stop-color="#6a8bff"/>
+      <stop offset="100%" stop-color="#24324d"/>
+    </radialGradient>
+    <filter id="soft" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="8"/>
+    </filter>
+    <linearGradient id="ring" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0%" stop-color="#7aa2f7"/>
+      <stop offset="100%" stop-color="#6de38f"/>
+    </linearGradient>
+    <style>
+      .spin-slow { animation: spin 18s linear infinite; transform-origin: 300px 300px; }
+      .spin-med  { animation: spin 12s linear infinite reverse; transform-origin: 300px 300px; }
+      .spin-fast { animation: spin 8s linear infinite; transform-origin: 300px 300px; }
+      @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+      .pulse { animation: pulse 2.4s ease-in-out infinite; }
+      @keyframes pulse {
+        0% { opacity: .85; filter: drop-shadow(0 0 10px #7aa2f7); }
+        50% { opacity: 1; filter: drop-shadow(0 0 18px #6de38f); }
+        100% { opacity: .85; filter: drop-shadow(0 0 10px #7aa2f7); }
+      }
+    </style>
+  </defs>
+
+  <!-- backdrop glow -->
+  <circle cx="300" cy="300" r="190" fill="url(#core)" opacity="0.65" filter="url(#soft)"/>
+
+  <!-- concentric rings -->
+  <g fill="none" stroke="url(#ring)" stroke-opacity="0.7">
+    <circle cx="300" cy="300" r="160" stroke-width="1.6"/>
+    <circle cx="300" cy="300" r="220" stroke-width="1.2" stroke-dasharray="4 8"/>
+    <circle cx="300" cy="300" r="260" stroke-width="1" stroke-dasharray="2 10"/>
+  </g>
+
+  <!-- orbiters -->
+  <g class="spin-slow">
+    <circle cx="300" cy="40" r="7" fill="#7aa2f7" class="pulse"/>
+    <circle cx="120" cy="300" r="6" fill="#6de38f" class="pulse"/>
+  </g>
+  <g class="spin-med">
+    <circle cx="300" cy="80" r="5" fill="#c7d2fe"/>
+    <circle cx="480" cy="300" r="5" fill="#a0ffcf"/>
+    <circle cx="300" cy="520" r="5" fill="#9ec1ff"/>
+  </g>
+  <g class="spin-fast">
+    <circle cx="300" cy="110" r="4" fill="#ffffff"/>
+    <circle cx="420" cy="300" r="4" fill="#ffffff"/>
+    <circle cx="300" cy="490" r="4" fill="#ffffff"/>
+    <circle cx="180" cy="300" r="4" fill="#ffffff"/>
+  </g>
+
+  <!-- center logomark -->
+  <g transform="translate(300,300)">
+    <circle r="70" fill="url(#core)" />
+    <path d="M -36 -6 L 0 -52 L 36 -6 L 0 52 Z" fill="none" stroke="url(#ring)" stroke-width="3"/>
+    <circle r="6" fill="#e6f0ff" class="pulse"/>
+  </g>
+
+  <!-- captions -->
+  <g font-family="Segoe UI, Roboto, Helvetica, Arial, sans-serif" text-anchor="middle" fill="#c7d2fe">
+    <text x="300" y="570" font-size="18">An AeroVista Production | NeXuS Tech Works</text>
+  </g>
+</svg>

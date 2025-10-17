@@ -1,0 +1,13 @@
+[Unit]
+Description=Cursor Agent - NXCore File Watcher
+After=network-online.target
+
+[Service]
+Type=simple
+User=root
+ExecStart=/usr/bin/python3 /opt/nexus/cursor_agent.py --rules /etc/nxcore-agent.rules
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,994 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Gallery - EchoVerse</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🖼️</text></svg>">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        :root {
+            --primary-color: #667eea;
+            --secondary-color: #764ba2;
+            --text-color: #2d3748;
+            --bg-color: #f7fafc;
+            --card-bg: #ffffff;
+            --border-radius: 12px;
+            --shadow-sm: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+            --shadow-md: 0 4px 6px rgba(0,0,0,0.1);
+            --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05);
+            --transition: all 0.3s cubic-bezier(.25,.8,.25,1);
+            --primary-gradient: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+        }
+        
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            padding-bottom: 60px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        .header {
+            background: var(--primary-gradient);
+            color: white;
+            padding: 20px 0;
+            box-shadow: var(--shadow-md);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 30px;
+            list-style: none;
+        }
+        
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            font-weight: 600;
+            padding: 8px 16px;
+            border-radius: var(--border-radius);
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.2);
+            transition: var(--transition);
+        }
+        
+        .nav-links a:hover {
+            background: rgba(255,255,255,0.2);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .section {
+            margin: 40px 0;
+        }
+        
+        .section-title {
+            font-size: 2rem;
+            margin-bottom: 20px;
+            position: relative;
+            display: inline-block;
+        }
+        
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: var(--primary-gradient);
+            border-radius: 2px;
+        }
+        
+        .stats-bar {
+            display: flex;
+            justify-content: space-between;
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 20px;
+            margin-bottom: 30px;
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .stat-item {
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+        
+        .stat-label {
+            font-size: 0.9rem;
+            color: #718096;
+        }
+        
+        .controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .view-controls {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .view-btn {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: var(--border-radius);
+            padding: 8px 16px;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        
+        .view-btn.active {
+            background: var(--primary-gradient);
+            color: white;
+            border-color: transparent;
+        }
+        
+        .search-box {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .search-box input {
+            padding: 8px 16px;
+            border: 1px solid #e2e8f0;
+            border-radius: var(--border-radius);
+            width: 250px;
+        }
+        
+        .search-box button {
+            background: var(--primary-gradient);
+            color: white;
+            border: none;
+            border-radius: var(--border-radius);
+            padding: 8px 16px;
+            cursor: pointer;
+        }
+        
+        .filter-options {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .filter-options select {
+            padding: 8px 16px;
+            border: 1px solid #e2e8f0;
+            border-radius: var(--border-radius);
+            background: white;
+        }
+        
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+        }
+        
+        .gallery-grid.compact {
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+        }
+        
+        .image-card {
+            background: var(--card-bg);
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            box-shadow: var(--shadow-sm);
+            transition: var(--transition);
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .image-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-lg);
+        }
+        
+        .image-container {
+            position: relative;
+            overflow: hidden;
+            padding-top: 75%; /* 4:3 aspect ratio */
+            background: #f1f5f9;
+        }
+        
+        /* Smart fill mode styles */
+        body.smart-fill-mode .image-container img {
+            position: absolute !important;
+            top: 50% !important;
+            left: 50% !important;
+            transform: translate(-50%, -50%) !important;
+            min-width: 100% !important;
+            min-height: 100% !important;
+            width: auto !important;
+            height: auto !important;
+            max-width: none !important;
+            max-height: none !important;
+            object-fit: none !important;
+        }
+        
+        /* Cover mode styles */
+        body.cover-mode .image-container img {
+            position: absolute !important;
+            top: 0 !important;
+            left: 0 !important;
+            transform: none !important;
+            width: 100% !important;
+            height: 100% !important;
+            object-fit: cover !important;
+            min-width: 0 !important;
+            min-height: 0 !important;
+        }
+        
+        /* Default style */
+        .image-container img {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            min-width: 100%;
+            min-height: 100%;
+            width: auto;
+            height: auto;
+            max-width: none;
+            max-height: none;
+            object-fit: none;
+            transition: transform 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .image-container img:hover {
+            transform: scale(1.05);
+        }
+        
+        .image-info {
+            padding: 15px;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .image-name {
+            font-weight: 600;
+            margin-bottom: 5px;
+            word-break: break-word;
+        }
+        
+        .image-meta {
+            color: #718096;
+            font-size: 0.9rem;
+            margin-top: auto;
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 50px;
+            font-size: 1.2rem;
+            color: #718096;
+        }
+        
+        .error {
+            text-align: center;
+            padding: 50px;
+            font-size: 1.2rem;
+            color: #e53e3e;
+            background: #fed7d7;
+            border-radius: var(--border-radius);
+        }
+        
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            overflow: auto;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .modal-content {
+            position: relative;
+            max-width: 90%;
+            max-height: 90%;
+        }
+        
+        .modal-image {
+            max-width: 100%;
+            max-height: 90vh;
+            object-fit: contain;
+            border-radius: 5px;
+        }
+        
+        .close-modal {
+            position: absolute;
+            top: -40px;
+            right: 0;
+            color: white;
+            font-size: 2rem;
+            cursor: pointer;
+            background: none;
+            border: none;
+        }
+        
+        .modal-nav {
+            position: absolute;
+            top: 50%;
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            transform: translateY(-50%);
+        }
+        
+        .modal-nav button {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        
+        .modal-nav button:hover {
+            background: rgba(255, 255, 255, 0.4);
+        }
+        
+        .modal-info {
+            position: absolute;
+            bottom: -40px;
+            left: 0;
+            color: white;
+            font-size: 1rem;
+        }
+        
+        /* Pagination */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            margin-top: 30px;
+            gap: 10px;
+        }
+        
+        .pagination button {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: var(--border-radius);
+            padding: 8px 16px;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        
+        .pagination button.active {
+            background: var(--primary-gradient);
+            color: white;
+            border-color: transparent;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                gap: 20px;
+            }
+            
+            .nav-links {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            
+            .stats-bar {
+                flex-direction: column;
+                gap: 20px;
+            }
+            
+            .controls {
+                flex-direction: column;
+                gap: 20px;
+            }
+            
+            .search-box {
+                width: 100%;
+            }
+            
+            .search-box input {
+                flex-grow: 1;
+            }
+            
+            .filter-options {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">🖼️ EchoVerse Image Gallery</div>
+                <nav class="nav-links">
+                    <a href="/" class="nav-link">🏠 Home</a>
+                    <a href="/gallery" class="nav-link">🎵 Album Gallery</a>
+                    <a href="/images" class="nav-link">🖼️ All Images</a>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <main class="container">
+        <!-- Statistics -->
+        <section class="section">
+            <h2 class="section-title">Image Gallery</h2>
+            
+            <div class="stats-bar">
+                <div class="stat-item">
+                    <div class="stat-value" id="total-images">0</div>
+                    <div class="stat-label">Total Images</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="total-size">0 MB</div>
+                    <div class="stat-label">Total Size</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="total-folders">0</div>
+                    <div class="stat-label">Folders</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="total-types">0</div>
+                    <div class="stat-label">File Types</div>
+                </div>
+            </div>
+            
+            <!-- Controls -->
+            <div class="controls">
+                <div class="view-controls">
+                    <button class="view-btn active" onclick="setViewMode('grid')">Grid View</button>
+                    <button class="view-btn" onclick="setViewMode('compact')">Compact View</button>
+                    <button class="view-btn active" id="fillModeBtn" onclick="toggleImageFillMode()">🖼️ Smart Fill</button>
+                </div>
+                <div class="search-box">
+                    <input type="text" id="searchInput" placeholder="Search images..." oninput="filterImages()">
+                    <button onclick="filterImages()">Search</button>
+                </div>
+            </div>
+            
+            <!-- Filters -->
+            <div class="filter-options">
+                <select id="folderFilter" onchange="filterImages()">
+                    <option value="">All Folders</option>
+                </select>
+                <select id="typeFilter" onchange="filterImages()">
+                    <option value="">All Types</option>
+                </select>
+                <select id="sortBy" onchange="filterImages()">
+                    <option value="name">Sort by Name</option>
+                    <option value="size">Sort by Size</option>
+                    <option value="folder">Sort by Folder</option>
+                    <option value="type">Sort by Type</option>
+                </select>
+                <select id="sortOrder" onchange="filterImages()">
+                    <option value="asc">Ascending</option>
+                    <option value="desc">Descending</option>
+                </select>
+            </div>
+            
+            <!-- Gallery Content -->
+            <div id="gallery-content">
+                <div class="loading">Loading images...</div>
+            </div>
+            
+            <!-- Pagination -->
+            <div class="pagination" id="pagination"></div>
+        </section>
+    </main>
+    
+    <!-- Modal for image preview -->
+    <div class="modal" id="imageModal">
+        <div class="modal-content">
+            <button class="close-modal" onclick="closeModal()">&times;</button>
+            <img id="modalImage" class="modal-image" src="" alt="">
+            <div class="modal-nav">
+                <button onclick="navigateModal(-1)">&#10094;</button>
+                <button onclick="navigateModal(1)">&#10095;</button>
+            </div>
+            <div class="modal-info" id="modalInfo"></div>
+        </div>
+    </div>
+
+    <script>
+        // Global variables
+        let allImages = [];
+        let filteredImages = [];
+        let currentViewMode = 'grid';
+        let currentPage = 1;
+        const imagesPerPage = 50;
+        let currentModalIndex = 0;
+        let smartFillEnabled = true; // Default to smart fill mode
+        
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            // Apply the appropriate class to the body immediately
+            document.body.classList.add('smart-fill-mode');
+            
+            // Load saved fill mode preference
+            const savedFillMode = localStorage.getItem('smartFillEnabled');
+            if (savedFillMode !== null) {
+                smartFillEnabled = savedFillMode === 'true';
+                // Update body class immediately
+                document.body.classList.remove('smart-fill-mode', 'cover-mode');
+                document.body.classList.add(smartFillEnabled ? 'smart-fill-mode' : 'cover-mode');
+                
+                // Update button text
+                const fillModeBtn = document.getElementById('fillModeBtn');
+                if (fillModeBtn) {
+                    if (smartFillEnabled) {
+                        fillModeBtn.textContent = '🖼️ Smart Fill';
+                        fillModeBtn.classList.add('active');
+                    } else {
+                        fillModeBtn.textContent = '🖼️ Cover Mode';
+                        fillModeBtn.classList.remove('active');
+                    }
+                }
+            }
+            
+            loadAllImages();
+            
+            // Initialize lazy loading for images
+            initializeLazyLoading();
+        });
+        
+        async function loadAllImages() {
+            try {
+                const response = await fetch('/api/all-images');
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                allImages = data.images || [];
+                filteredImages = [...allImages];
+                
+                updateStats(allImages);
+                updateFilters(allImages);
+                displayGallery(filteredImages);
+                
+            } catch (error) {
+                console.error('Error loading images:', error);
+                document.getElementById('gallery-content').innerHTML = 
+                    '<div class="error">Error loading image gallery. Please try again.</div>';
+            }
+        }
+        
+        function updateStats(data) {
+            const totalImages = data.length;
+            const totalSize = data.reduce((sum, img) => sum + (parseInt(img.file_size) || 0), 0);
+            const folders = new Set(data.map(img => img.parent_folder));
+            const types = new Set(data.map(img => img.extension));
+            
+            document.getElementById('total-images').textContent = totalImages;
+            document.getElementById('total-size').textContent = formatSize(totalSize);
+            document.getElementById('total-folders').textContent = folders.size;
+            document.getElementById('total-types').textContent = types.size;
+        }
+        
+        function updateFilters(data) {
+            // Get unique folders and types
+            const folders = [...new Set(data.map(img => img.parent_folder))];
+            const types = [...new Set(data.map(img => img.extension))];
+            
+            // Sort alphabetically
+            folders.sort();
+            types.sort();
+            
+            // Update folder filter
+            const folderFilter = document.getElementById('folderFilter');
+            folderFilter.innerHTML = '<option value="">All Folders</option>';
+            folders.forEach(folder => {
+                if (folder) {
+                    const option = document.createElement('option');
+                    option.value = folder;
+                    option.textContent = folder;
+                    folderFilter.appendChild(option);
+                }
+            });
+            
+            // Update type filter
+            const typeFilter = document.getElementById('typeFilter');
+            typeFilter.innerHTML = '<option value="">All Types</option>';
+            types.forEach(type => {
+                if (type) {
+                    const option = document.createElement('option');
+                    option.value = type;
+                    option.textContent = type;
+                    typeFilter.appendChild(option);
+                }
+            });
+        }
+        
+        function filterImages() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const folderFilter = document.getElementById('folderFilter').value;
+            const typeFilter = document.getElementById('typeFilter').value;
+            const sortBy = document.getElementById('sortBy').value;
+            const sortOrder = document.getElementById('sortOrder').value;
+            
+            // Filter images
+            filteredImages = allImages.filter(img => {
+                const matchesSearch = 
+                    img.file_name.toLowerCase().includes(searchTerm) ||
+                    img.parent_folder.toLowerCase().includes(searchTerm) ||
+                    (img.album && img.album.toLowerCase().includes(searchTerm)) ||
+                    (img.artist && img.artist.toLowerCase().includes(searchTerm));
+                
+                const matchesFolder = !folderFilter || img.parent_folder === folderFilter;
+                const matchesType = !typeFilter || img.extension === typeFilter;
+                
+                return matchesSearch && matchesFolder && matchesType;
+            });
+            
+            // Sort images
+            filteredImages.sort((a, b) => {
+                let aVal, bVal;
+                
+                switch (sortBy) {
+                    case 'name':
+                        aVal = a.file_name.toLowerCase();
+                        bVal = b.file_name.toLowerCase();
+                        break;
+                    case 'size':
+                        aVal = parseInt(a.file_size) || 0;
+                        bVal = parseInt(b.file_size) || 0;
+                        break;
+                    case 'folder':
+                        aVal = a.parent_folder.toLowerCase();
+                        bVal = b.parent_folder.toLowerCase();
+                        break;
+                    case 'type':
+                        aVal = a.extension.toLowerCase();
+                        bVal = b.extension.toLowerCase();
+                        break;
+                    default:
+                        aVal = a.file_name.toLowerCase();
+                        bVal = b.file_name.toLowerCase();
+                }
+                
+                if (sortOrder === 'desc') {
+                    [aVal, bVal] = [bVal, aVal];
+                }
+                
+                if (aVal < bVal) return -1;
+                if (aVal > bVal) return 1;
+                return 0;
+            });
+            
+            // Reset to first page
+            currentPage = 1;
+            
+            // Update display
+            updateStats(filteredImages);
+            displayGallery(filteredImages);
+        }
+        
+        function displayGallery(data) {
+            const container = document.getElementById('gallery-content');
+            
+            if (data.length === 0) {
+                container.innerHTML = '<div class="loading">No images found</div>';
+                document.getElementById('pagination').innerHTML = '';
+                return;
+            }
+            
+            // Calculate pagination
+            const totalPages = Math.ceil(data.length / imagesPerPage);
+            const startIndex = (currentPage - 1) * imagesPerPage;
+            const endIndex = Math.min(startIndex + imagesPerPage, data.length);
+            const currentImages = data.slice(startIndex, endIndex);
+            
+            // Create gallery grid
+            const gridClass = currentViewMode === 'compact' ? 'gallery-grid compact' : 'gallery-grid';
+            container.innerHTML = `<div class="${gridClass}">${currentImages.map((img, index) => createImageCard(img, startIndex + index)).join('')}</div>`;
+            
+            // Create pagination
+            createPagination(totalPages);
+            
+            // Refresh lazy loading for new images
+            refreshLazyLoading();
+        }
+        
+        function createImageCard(image, index) {
+            // Create URL for the image using the image API
+            const imageUrl = `/api/image/${encodeURIComponent(image.file_path)}`;
+            
+            return `
+                <div class="image-card">
+                    <div class="image-container">
+                        <img data-src="${imageUrl}" 
+                             alt="${image.file_name}" 
+                             class="lazy-image"
+                             onclick="openModal('${imageUrl}', ${index})"
+                             onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🖼️</text></svg>'; this.onerror=null;" />
+                    </div>
+                    <div class="image-info">
+                        <div class="image-name">${image.file_name}</div>
+                        <div class="image-meta">
+                            <span>${image.parent_folder}</span>
+                            <span>${formatSize(image.file_size)}</span>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+        
+        function createPagination(totalPages) {
+            const pagination = document.getElementById('pagination');
+            pagination.innerHTML = '';
+            
+            if (totalPages <= 1) return;
+            
+            // Previous button
+            const prevButton = document.createElement('button');
+            prevButton.textContent = '← Previous';
+            prevButton.disabled = currentPage === 1;
+            prevButton.onclick = () => {
+                if (currentPage > 1) {
+                    currentPage--;
+                    displayGallery(filteredImages);
+                    window.scrollTo(0, 0);
+                }
+            };
+            pagination.appendChild(prevButton);
+            
+            // Page numbers
+            const maxButtons = 5;
+            let startPage = Math.max(1, currentPage - Math.floor(maxButtons / 2));
+            let endPage = Math.min(totalPages, startPage + maxButtons - 1);
+            
+            if (endPage - startPage + 1 < maxButtons) {
+                startPage = Math.max(1, endPage - maxButtons + 1);
+            }
+            
+            for (let i = startPage; i <= endPage; i++) {
+                const pageButton = document.createElement('button');
+                pageButton.textContent = i;
+                pageButton.className = i === currentPage ? 'active' : '';
+                pageButton.onclick = () => {
+                    currentPage = i;
+                    displayGallery(filteredImages);
+                    window.scrollTo(0, 0);
+                };
+                pagination.appendChild(pageButton);
+            }
+            
+            // Next button
+            const nextButton = document.createElement('button');
+            nextButton.textContent = 'Next →';
+            nextButton.disabled = currentPage === totalPages;
+            nextButton.onclick = () => {
+                if (currentPage < totalPages) {
+                    currentPage++;
+                    displayGallery(filteredImages);
+                    window.scrollTo(0, 0);
+                }
+            };
+            pagination.appendChild(nextButton);
+        }
+        
+        function setViewMode(mode) {
+            currentViewMode = mode;
+            
+            // Update active button
+            document.querySelectorAll('.view-btn').forEach(btn => {
+                if (btn.id !== 'fillModeBtn') {
+                    btn.classList.remove('active');
+                }
+            });
+            event.target.classList.add('active');
+            
+            // Update gallery
+            displayGallery(filteredImages);
+            
+            // Ensure smart fill mode is maintained
+            setTimeout(() => {
+                // Make sure the body has the correct class
+                document.body.classList.remove('smart-fill-mode', 'cover-mode');
+                document.body.classList.add(smartFillEnabled ? 'smart-fill-mode' : 'cover-mode');
+            }, 50);
+        }
+        
+        function openModal(src, index) {
+            const modal = document.getElementById('imageModal');
+            const modalImage = document.getElementById('modalImage');
+            const modalInfo = document.getElementById('modalInfo');
+            
+            currentModalIndex = index;
+            modalImage.src = src;
+            
+            // Get image info
+            const image = filteredImages[index];
+            modalInfo.textContent = `${image.file_name} (${formatSize(image.file_size)})`;
+            
+            modal.style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+        }
+        
+        function closeModal() {
+            const modal = document.getElementById('imageModal');
+            modal.style.display = 'none';
+            document.body.style.overflow = '';
+        }
+        
+        function navigateModal(direction) {
+            const newIndex = currentModalIndex + direction;
+            
+            if (newIndex >= 0 && newIndex < filteredImages.length) {
+                currentModalIndex = newIndex;
+                const image = filteredImages[newIndex];
+                const imageUrl = `/api/image/${encodeURIComponent(image.file_path)}`;
+                
+                document.getElementById('modalImage').src = imageUrl;
+                document.getElementById('modalInfo').textContent = `${image.file_name} (${formatSize(image.file_size)})`;
+            }
+        }
+        
+        // Format file size to human readable format
+        function formatSize(bytes) {
+            if (!bytes || isNaN(bytes)) return '0 B';
+            
+            const units = ['B', 'KB', 'MB', 'GB', 'TB'];
+            let i = 0;
+            
+            while (bytes >= 1024 && i < units.length - 1) {
+                bytes /= 1024;
+                i++;
+            }
+            
+            return bytes.toFixed(1) + ' ' + units[i];
+        }
+        
+        // Lazy Loading Implementation
+        function initializeLazyLoading() {
+            if ('IntersectionObserver' in window) {
+                const imageObserver = new IntersectionObserver((entries, observer) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            const img = entry.target;
+                            img.src = img.dataset.src;
+                            img.classList.remove('lazy-image');
+                            observer.unobserve(img);
+                        }
+                    });
+                }, {
+                    rootMargin: '50px 0px', // Start loading 50px before image comes into view
+                    threshold: 0.1
+                });
+                
+                // Observe all lazy images
+                document.querySelectorAll('.lazy-image').forEach(img => {
+                    imageObserver.observe(img);
+                });
+            } else {
+                // Fallback for browsers that don't support IntersectionObserver
+                document.querySelectorAll('.lazy-image').forEach(img => {
+                    img.src = img.dataset.src;
+                    img.classList.remove('lazy-image');
+                });
+            }
+        }
+        
+        // Re-initialize lazy loading when gallery is updated
+        function refreshLazyLoading() {
+            setTimeout(() => {
+                initializeLazyLoading();
+            }, 100);
+        }
+        
+        // Close modal when clicking outside the image
+        window.onclick = function(event) {
+            const modal = document.getElementById('imageModal');
+            if (event.target === modal) {
+                closeModal();
+            }
+        };
+        
+        // Keyboard navigation for modal
+        document.addEventListener('keydown', function(event) {
+            if (document.getElementById('imageModal').style.display === 'flex') {
+                if (event.key === 'Escape') {
+                    closeModal();
+                } else if (event.key === 'ArrowLeft') {
+                    navigateModal(-1);
+                } else if (event.key === 'ArrowRight') {
+                    navigateModal(1);
+                }
+            }
+        });
+        
+        // Function to toggle between smart fill and cover modes
+        function toggleImageFillMode() {
+            smartFillEnabled = !smartFillEnabled;
+            
+            // Update button appearance
+            const fillModeBtn = document.getElementById('fillModeBtn');
+            if (fillModeBtn) {
+                if (smartFillEnabled) {
+                    fillModeBtn.textContent = '🖼️ Smart Fill';
+                    fillModeBtn.classList.add('active');
+                } else {
+                    fillModeBtn.textContent = '🖼️ Cover Mode';
+                    fillModeBtn.classList.remove('active');
+                }
+            }
+            
+            // Update body class
+            document.body.classList.remove('smart-fill-mode', 'cover-mode');
+            document.body.classList.add(smartFillEnabled ? 'smart-fill-mode' : 'cover-mode');
+            
+            // Also update modal image if visible
+            const modalImage = document.getElementById('modalImage');
+            if (modalImage && modalImage.src) {
+                if (smartFillEnabled) {
+                    modalImage.style.objectFit = 'none';
+                    modalImage.style.minWidth = '100%';
+                    modalImage.style.minHeight = '100%';
+                    modalImage.style.width = 'auto';
+                    modalImage.style.height = 'auto';
+                    modalImage.style.maxWidth = 'none';
+                    modalImage.style.maxHeight = 'none';
+                } else {
+                    modalImage.style.objectFit = 'contain';
+                    modalImage.style.minWidth = '';
+                    modalImage.style.minHeight = '';
+                    modalImage.style.width = 'auto';
+                    modalImage.style.height = 'auto';
+                    modalImage.style.maxWidth = '100%';
+                    modalImage.style.maxHeight = '100%';
+                }
+            }
+            
+            // Save preference to localStorage
+            localStorage.setItem('smartFillEnabled', smartFillEnabled);
+        }
+    </script>
+</body>
+</html>

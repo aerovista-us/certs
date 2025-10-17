@@ -1,0 +1,52 @@
+AeroVista Dashboard Switcher - SSH Instructions
+==============================================
+
+HOW TO SWITCH DASHBOARD STYLES VIA SSH AND SEE CHANGES ON MONITOR:
+
+Method 1: Complete Refresh (RECOMMENDED)
+----------------------------------------
+ssh glyph@100.115.9.61 "/tmp/switch-dashboard-complete.sh"
+
+This will:
+- Switch the dashboard
+- Restart the dashboard service
+- Restart the browser on the monitor
+- You will see the changes immediately on the monitor
+
+Method 2: With Auto-Refresh
+---------------------------
+ssh glyph@100.115.9.61 "/tmp/switch-dashboard-with-refresh.sh"
+
+This will:
+- Switch the dashboard
+- Restart the dashboard service
+- Try to refresh the browser remotely
+- May or may not show changes immediately
+
+Method 3: Manual Commands
+-------------------------
+# Switch dashboard
+ssh glyph@100.115.9.61 "cp /srv/core/config/dashboard/office-minimal.html /srv/core/config/dashboard/index.html"
+
+# Restart dashboard service
+ssh glyph@100.115.9.61 "docker restart nxcore-dashboard"
+
+# Restart browser (to see changes on monitor)
+ssh glyph@100.115.9.61 "pkill -f chromium.*kiosk && /tmp/start-dashboard.sh &"
+
+AVAILABLE STYLES:
+1. Full Featured - Complete dashboard with charts and animations
+2. Minimal Professional - Clean, professional office display
+3. Cyberpunk Style - Futuristic, dramatic display
+4. System Monitor - Technical system monitor
+5. Landing Page - Main landing page
+
+The monitor will show the new style after the browser restarts!
+
+QUICK TEST:
+-----------
+Try switching to the Minimal Professional style:
+ssh glyph@100.115.9.61 "/tmp/switch-dashboard-complete.sh"
+Then choose option 2
+
+You should see the monitor change to a clean, professional display!

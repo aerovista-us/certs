@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>NXCore • Services</title>
+  <style>
+    :root{--bg:#0f1221;--card:#141832;--text:#e7e9f3;--sub:#9aa0b6;--ok:#28c281;--bad:#ef476f;--mut:#232748;--link:#7aa2ff}
+    *{box-sizing:border-box} html,body{height:100%} body{margin:0;background:radial-gradient(1200px 800px at 20% -10%,#1b2150,transparent),var(--bg);color:var(--text);font:16px/1.4 system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,"Helvetica Neue",Arial}
+    .wrap{max-width:1000px;margin:40px auto;padding:0 20px}
+    header{display:flex;gap:12px;align-items:center;margin-bottom:18px}
+    .dot{width:10px;height:10px;border-radius:50%;background:linear-gradient(135deg,#7aa2ff,#9b7aff);box-shadow:0 0 12px rgba(122,162,255,.6)}
+    h1{font-size:28px;margin:0}
+    p.sub{color:var(--sub);margin:.25rem 0 1.25rem}
+    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px}
+    .card{background:linear-gradient(180deg,rgba(255,255,255,.04),rgba(255,255,255,.01)); border:1px solid var(--mut); border-radius:16px; padding:18px}
+    .card h2{font-size:18px;margin:0 0 6px}
+    .meta{font-size:13px;color:var(--sub);margin-bottom:10px}
+    .row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+    .btn{display:inline-flex;align-items:center;gap:8px;padding:8px 12px;border-radius:10px;border:1px solid var(--mut);background:#11152b;color:var(--text);text-decoration:none}
+    .btn:hover{border-color:#2f3564}
+    .status{display:inline-flex;align-items:center;gap:8px;font-size:13px}
+    .pill{width:10px;height:10px;border-radius:50%;background:var(--bad);box-shadow:0 0 8px rgba(239,71,111,.6)}
+    .ok{background:var(--ok);box-shadow:0 0 8px rgba(40,194,129,.55)}
+    footer{margin-top:24px;color:var(--sub);font-size:12px}
+    code{background:#0c1024;border:1px solid var(--mut);padding:.2em .4em;border-radius:6px}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div class="dot"></div>
+      <div>
+        <h1>NXCore • Services</h1>
+        <p class="sub">Quick links & live status for core apps on nxcore.</p>
+      </div>
+    </header>
+
+    <div class="grid">
+      <!-- FileBrowser -->
+      <section class="card" id="svc-fb">
+        <h2>FileBrowser</h2>
+        <div class="meta">Web file manager</div>
+        <div class="row">
+          <a class="btn" id="fb-http" href="http://100.115.9.61:8080/fb/" target="_blank" rel="noopener">Open (HTTP)</a>
+          <a class="btn" id="fb-https" href="https://nxcore.tail79107c.ts.net/fb" target="_blank" rel="noopener">Open (HTTPS)</a>
+          <span class="status"><span class="pill" id="fb-dot"></span><span id="fb-txt">checking…</span></span>
+        </div>
+      </section>
+
+      <!-- n8n -->
+      <section class="card" id="svc-n8n">
+        <h2>n8n</h2>
+        <div class="meta">Automation / workflows</div>
+        <div class="row">
+          <a class="btn" id="n8n-http" href="http://100.115.9.61:5678" target="_blank" rel="noopener">Open (HTTP)</a>
+          <a class="btn" id="n8n-https" href="https://nxcore.tail79107c.ts.net/" target="_blank" rel="noopener">Open (HTTPS)</a>
+          <span class="status"><span class="pill" id="n8n-dot"></span><span id="n8n-txt">checking…</span></span>
+        </div>
+      </section>
+    </div>
+
+    <footer>
+      Tip: if you prefer HTTPS via MagicDNS, use the “Open (HTTPS)” buttons. Update IP/FQDN here if they change:
+      <code>index.html</code>.
+    </footer>
+  </div>
+
+  <script>
+    async function ping(url, dotId, txtId) {
+      const dot = document.getElementById(dotId);
+      const txt = document.getElementById(txtId);
+      try {
+        const ctl = new AbortController();
+        const t = setTimeout(()=>ctl.abort(), 3500);
+        const res = await fetch(url, { method:'GET', mode:'no-cors', signal: ctl.signal });
+        clearTimeout(t);
+        // no-cors always looks opaque; treat as success if no throw
+        dot.classList.add('ok');
+        txt.textContent = 'online';
+      } catch (e) {
+        dot.classList.remove('ok');
+        txt.textContent = 'offline';
+      }
+    }
+    // HTTP probes (fast & works inside tailnet)
+    ping('http://100.115.9.61:8080/fb/', 'fb-dot', 'fb-txt');
+    ping('http://100.115.9.61:5678',     'n8n-dot','n8n-txt');
+  </script>
+</body>
+</html>

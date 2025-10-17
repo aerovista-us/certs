@@ -21,12 +21,20 @@ services:
     networks:
       - gateway
     labels:
-      - "traefik.enable=true"
+      - traefik.enable=true
 
-      # Traefik dashboard (path-based routing)
-      - "traefik.http.routers.traefik-dash.rule=Host(`nxcore.tail79107c.ts.net`) && PathPrefix(`/traefik`)"
-      - "traefik.http.routers.traefik-dash.entrypoints=websecure"
-      - "traefik.http.routers.traefik-dash.service=api@internal"
-      - "traefik.http.routers.traefik-dash.tls=true"
-      - "traefik.http.middlewares.strip-traefik.stripprefix.prefixes=/traefik"
-      - "traefik.http.routers.traefik-dash.middlewares=strip-traefik"
+      # Traefik API (JSON) at /api -> NO strip
+      - traefik.http.routers.traefik-api.rule=Host(`nxcore.tail79107c.ts.net`) && PathPrefix(`/api`)
+      - traefik.http.routers.traefik-api.entrypoints=websecure
+      - traefik.http.routers.traefik-api.tls=true
+      - traefik.http.routers.traefik-api.service=api@internal
+      - traefik.http.routers.traefik-api.priority=100
+
+      # Traefik Dashboard at /dash -> STRIP /dash so it serves /dashboard/ internally
+      - traefik.http.routers.traefik-dash.rule=Host(`nxcore.tail79107c.ts.net`) && PathPrefix(`/dash`)
+      - traefik.http.routers.traefik-dash.entrypoints=websecure
+      - traefik.http.routers.traefik-dash.tls=true
+      - traefik.http.routers.traefik-dash.service=api@internal
+      - traefik.http.routers.traefik-dash.priority=100
+      - traefik.http.middlewares.traefik-dash-strip.stripprefix.prefixes=/dash
+      - traefik.http.routers.traefik-dash.middlewares=traefik-dash-strip@docker

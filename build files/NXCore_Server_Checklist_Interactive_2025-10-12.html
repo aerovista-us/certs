@@ -1,0 +1,445 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>NXCore Server — Interactive Checklist (2025-10-12)</title>
+<style>
+  :root {
+    --bg: #0f1115;
+    --card: #151922;
+    --muted: #9aa4b2;
+    --text: #e6e9ef;
+    --accent: #7aa2f7;
+    --ok: #6de38f;
+    --warn: #ffcc66;
+    --danger: #ff757f;
+    --border: #232838;
+  }
+  html, body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji", "Segoe UI Emoji";
+    margin: 0; padding: 0;
+  }
+  header {
+    position: sticky; top: 0; z-index: 10;
+    background: linear-gradient(180deg, rgba(15,17,21,.95) 0%, rgba(15,17,21,.75) 100%);
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--border);
+  }
+  .wrap { max-width: 1100px; margin: 0 auto; padding: 16px; }
+  h1 { font-size: 1.6rem; margin: 4px 0 8px; }
+  .sub { color: var(--muted); font-size: .95rem; }
+  .toolbar { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+  button, .btn {
+    background: #1c2230; color: var(--text); border: 1px solid var(--border);
+    padding: 8px 10px; border-radius: 10px; cursor: pointer; font-weight: 600;
+  }
+  button:hover { background: #1f2738; }
+  .grid { display: grid; grid-template-columns: 1fr; gap: 16px; margin-top: 16px; }
+  @media (min-width: 940px) { .grid { grid-template-columns: 1fr 1fr; } }
+  .card { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 14px; }
+  .phase-header { display:flex; align-items:center; justify-content: space-between; gap: 12px; cursor: pointer; }
+  .phase-title { font-weight: 800; }
+  .phase-sub { color: var(--muted); font-size: .9rem; }
+  .progress { height: 8px; background: #0f121a; border: 1px solid var(--border); border-radius: 999px; overflow: hidden; }
+  .bar { height: 100%; width: 0%; background: linear-gradient(90deg, var(--accent), var(--ok)); transition: width .25s ease; }
+  details { border-radius: 10px; }
+  .tasks { margin-top: 10px; display: grid; gap: 6px; }
+  label.task { display: flex; gap: 10px; align-items: flex-start; padding: 8px; border-radius: 10px; border: 1px dashed #273048; }
+  input[type="checkbox"] { transform: scale(1.2); margin-top: 2px; }
+  code, pre { background: #0f1218; border: 1px solid var(--border); padding: 2px 6px; border-radius: 8px; }
+  pre { padding: 12px; overflow: auto; }
+  .phase-actions { display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap; }
+  .overall { margin-top: 10px; display:flex; align-items:center; gap: 10px; }
+  .overall strong { min-width: 62px; }
+  .badges { display:flex; gap:8px; flex-wrap: wrap; }
+  .badge { font-size:.8rem; color: #0b1320; background: #c7d2fe; padding: 4px 8px; border-radius: 999px; }
+  .note { color: var(--muted); font-size: .9rem; }
+  .footer { color: var(--muted); text-align:center; font-size: .85rem; padding: 24px 0 50px; }
+  @media print {
+    header { position: static; }
+    button, .toolbar { display: none !important; }
+    .card { break-inside: avoid; }
+    body { background: white; color: black; }
+  }
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <h1>NXCore Server — Interactive Build Checklist</h1>
+    <div class="sub">Generated 2025-10-12 · Progress persists to this browser (localStorage)</div>
+    <div class="toolbar">
+      <button id="expandAll">Expand all</button>
+      <button id="collapseAll">Collapse all</button>
+      <button id="exportBtn">Export progress</button>
+      <button id="importBtn">Import progress</button>
+      <button onclick="window.print()">Print</button>
+    </div>
+    <div class="overall">
+      <strong>Overall</strong>
+      <div class="progress" style="flex:1"><div class="bar" id="overallBar"></div></div>
+      <div id="overallPct">0%</div>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+  <section class="grid" id="phases"></section>
+
+  <div class="card">
+    <h2>Quick Next Actions</h2>
+    <ol>
+      <li>Create <code>/srv</code> tree, set ownership/permissions → re-run FileBrowser admin create.</li>
+      <li>Add <code>systemd</code> service for Staff Call + <code>tailscale serve</code> binding → run smoke test.</li>
+      <li>Turn on <code>ufw</code> + <code>fail2ban</code>; verify only tailnet entry points.</li>
+      <li>Stand up <code>restic</code> + schedule DB dumps; run one restore test.</li>
+      <li>Add <code>node_exporter</code> + a minimal Grafana panel (or use an external healthcheck).</li>
+    </ol>
+  </div>
+
+  <div class="card">
+    <h2>Scratchpad — Common Commands</h2>
+<pre><code># Phase 5 — storage
+sudo mkdir -p /srv/{core,backups,files,compose}
+sudo chown -R root:root /srv
+sudo chmod 755 /srv
+
+# Phase 6 — filebrowser (after /srv exists)
+docker run --rm -u 1000:1000 \
+  -v /srv/core/filebrowser:/database \
+  -v /srv:/srv \
+  filebrowser/filebrowser:latest \
+  users add admin 'REDACTED' --perm.admin --scope /srv \
+  --locale en --database /database/filebrowser.db
+
+# Phase 7 — Staff Call service (example)
+sudo tee /etc/systemd/system/staff-call.service &gt;/dev/null &lt;&lt;'EOF'
+[Unit]
+Description=AeroCoreOS Staff Call
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+User=svc-av
+WorkingDirectory=/opt/aerocoreos-staff-call
+ExecStart=/usr/bin/node server.staff.js
+Restart=always
+Environment=NODE_ENV=production
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
+sudo systemctl daemon-reload
+sudo systemctl enable --now staff-call
+
+# Bind staff call behind Tailscale HTTPS
+tailscale serve https / http://127.0.0.1:8443
+</code></pre>
+  </div>
+
+  <div class="footer">
+    Owner: Glyph · Status: ☑ Done · ☐ Not done · ◐ In progress
+  </div>
+</main>
+
+<script>
+const STORAGE_KEY = "nxcore_checklist_v1";
+const phases = [
+  {
+    id: "p0",
+    title: "Phase 0 — Hardware & Firmware Prep",
+    note: "Pre-boot checks, BIOS/UEFI settings.",
+    tasks: [
+      ["Record model/serial; asset tag applied", false],
+      ["BIOS/UEFI updated to target version (Fast Boot disabled, VT-x/VT-d enabled, TPM enabled)", false],
+      ["Boot order verified (NVMe/SATA first), secure boot as required", false],
+      ["SMART check on disks; baseline health report saved", false],
+    ]
+  },
+  {
+    id: "p1",
+    title: "Phase 1 — OS Install (Ubuntu 24.04 LTS)",
+    note: "Base install and updates.",
+    tasks: [
+      ["Install Ubuntu Server 24.04 LTS (minimal) — hostname nxcore", true],
+      ["Create primary admin user; enable OpenSSH during install", true],
+      ["System up-to-date: apt update && apt -y full-upgrade", true],
+      ["Static IP or DHCP reservation (optional; tailnet primary)", false],
+      ["Timezone set to America/Los_Angeles; NTP sync verified", false],
+    ]
+  },
+  {
+    id: "p2",
+    title: "Phase 2 — Identity & Access",
+    note: "Users, sudoers, SSH hardening.",
+    tasks: [
+      ["Add admin group + sudoers; SSH key auth added", true],
+      ["SSH hardening (PasswordAuth=no, PubkeyAuth=yes, fail2ban jail for sshd)", false],
+      ["Create service user(s) (e.g., svc-av); least-privilege directories", false],
+    ]
+  },
+  {
+    id: "p3",
+    title: "Phase 3 — Network Mesh (Tailscale)",
+    note: "Tailnet join, MagicDNS, ACL tags.",
+    tasks: [
+      ["Install Tailscale and bring up with SSH: tailscale up --ssh", true],
+      ["MagicDNS reachable; tailnet IP observed in diagnostics", true],
+      ["ACLs reviewed; device tagged (e.g., tag:nxcore)", false],
+    ]
+  },
+  {
+    id: "p4",
+    title: "Phase 4 — Runtime & Tooling",
+    note: "Docker Engine + baseline CLIs.",
+    tasks: [
+      ["Install Docker Engine + Compose plugin; add admin to docker group", true],
+      ["Validate with docker info and hello-world", true],
+      ["Install baseline CLI tools (git, unzip, htop, jq, make, curl, rsync)", true],
+    ]
+  },
+  {
+    id: "p5",
+    title: "Phase 5 — Storage Layout",
+    note: "Create and mount /srv and subdirs.",
+    tasks: [
+      ["Create and mount /srv (data root) — ensure exists and writable", false],
+      ["Create data subdirs: /srv/core, /srv/backups, /srv/files, /srv/compose", false],
+      ["fstab entries added; reboot validated", false],
+      ["Permissions/ownership set appropriately", false],
+    ]
+  },
+  {
+    id: "p6",
+    title: "Phase 6 — Core Services (Docker Compose)",
+    note: "Stacks alive; file gateway; admin UIs.",
+    tasks: [
+      ["Traefik reverse proxy up", true],
+      ["Portainer up", true],
+      ["Redis up", true],
+      ["Postgres up", true],
+      ["n8n up", true],
+      ["CopyParty file gateway up", true],
+      ["FileBrowser configured (admin user + scope=/srv)", false],
+      ["RustDesk self-hosted (if adopting), tailnet only", false],
+    ]
+  },
+  {
+    id: "p7",
+    title: "Phase 7 — AeroVista App Layer",
+    note: "Staff Call deploy + Tailscale Serve.",
+    tasks: [
+      ["Deploy Staff Call to /opt/aerocoreos-staff-call", false],
+      ["Create systemd service for Staff Call", false],
+      ["Expose via tailscale serve https http://127.0.0.1:8443", false],
+      ["Smoke test from another tailnet machine", false],
+      ["Capture version file in /opt/aerocoreos-staff-call/VERSION", false],
+    ]
+  },
+  {
+    id: "p8",
+    title: "Phase 8 — Security Hardening",
+    note: "UFW, fail2ban, unattended upgrades, secrets.",
+    tasks: [
+      ["ufw rules (allow 22/tcp from tailnet, service ports as needed)", false],
+      ["fail2ban for sshd and any public ingress", false],
+      ["Unattended upgrades enabled; reboot cadence in place", false],
+      ["Secrets management for env files (restrict perms; consider sops/age)", false],
+    ]
+  },
+  {
+    id: "p9",
+    title: "Phase 9 — Backup & Restore",
+    note: "restic + DB dumps + restore test.",
+    tasks: [
+      ["restic configured (target: B2/S3 or local disk)", false],
+      ["Postgres dumps scheduled (cron/systemd timers)", false],
+      ["n8n exports scheduled", false],
+      ["CopyParty/file shares snapshot", false],
+      ["Restore drill documented and tested", false],
+    ]
+  },
+  {
+    id: "p10",
+    title: "Phase 10 — Observability",
+    note: "node_exporter, Grafana, alerts.",
+    tasks: [
+      ["node_exporter running", false],
+      ["Prometheus + Grafana or lightweight healthchecks", false],
+      ["Alerting rules (CPU, RAM, disk, container restarts)", false],
+    ]
+  },
+  {
+    id: "p11",
+    title: "Phase 11 — Domain / Access",
+    note: "MagicDNS, optional public exposure.",
+    tasks: [
+      ["Tailscale MagicDNS entries confirmed for nxcore", true],
+      ["(Optional) Public exposure via Cloudflare Tunnel (risk reviewed)", false],
+    ]
+  },
+  {
+    id: "p12",
+    title: "Phase 12 — Ops Hygiene",
+    note: "Compose dirs, labels, runbooks.",
+    tasks: [
+      ["Centralize compose files under /srv/compose with .env templates", false],
+      ["Portainer stacks labeled; deployment notes committed", false],
+      ["Daily/weekly ops checklist created; patch cycle defined", false],
+    ]
+  },
+  {
+    id: "p13",
+    title: "Phase 13 — Finalize & Snapshot",
+    note: "Cleanup, document versions, baseline image.",
+    tasks: [
+      ["Clean unused images/volumes; confirm docker system df", false],
+      ["Document final service versions", false],
+      ["Create baseline snapshot (Proxmox/Clonezilla or image backup)", false],
+      ["Update AeroVista Image Build Playbook v1.1 link in Ops docs", false],
+    ]
+  }
+];
+
+function saveState() {
+  const state = Array.from(document.querySelectorAll('input[type=checkbox][data-id]')).map(cb => ({ id: cb.dataset.id, checked: cb.checked }));
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  computeProgress();
+}
+
+function loadState() {
+  const raw = localStorage.getItem(STORAGE_KEY);
+  if (!raw) return;
+  try {
+    const state = JSON.parse(raw);
+    state.forEach(s => {
+      const el = document.querySelector('input[type=checkbox][data-id="' + s.id + '"]');
+      if (el) el.checked = !!s.checked;
+    });
+  } catch (e) { console.warn("Failed to load saved state", e); }
+}
+
+function computeProgress() {
+  const phaseCards = document.querySelectorAll('.phase-card');
+  let total = 0, done = 0;
+  phaseCards.forEach(card => {
+    const cbs = card.querySelectorAll('input[type=checkbox][data-id]');
+    const checked = card.querySelectorAll('input[type=checkbox][data-id]:checked');
+    const bar = card.querySelector('.bar');
+    const pct = cbs.length ? Math.round(checked.length / cbs.length * 100) : 0;
+    if (bar) bar.style.width = pct + '%';
+    const pctEl = card.querySelector('.pct');
+    if (pctEl) pctEl.textContent = pct + '%';
+    total += cbs.length; done += checked.length;
+  });
+  const overall = total ? Math.round(done / total * 100) : 0;
+  document.getElementById('overallBar').style.width = overall + '%';
+  document.getElementById('overallPct').textContent = overall + '%';
+}
+
+function phaseActions(card, phaseId) {
+  card.querySelector('.markAll').addEventListener('click', () => {
+    card.querySelectorAll('input[type=checkbox][data-id]').forEach(cb => cb.checked = true);
+    saveState();
+  });
+  card.querySelector('.resetPhase').addEventListener('click', () => {
+    card.querySelectorAll('input[type=checkbox][data-id]').forEach(cb => cb.checked = false);
+    saveState();
+  });
+}
+
+function render() {
+  const container = document.getElementById('phases');
+  phases.forEach((p, idx) => {
+    const card = document.createElement('details');
+    card.className = 'card phase-card';
+    card.id = p.id;
+    // Open first two by default
+    if (idx < 2) card.open = true;
+    const tasks = p.tasks.map((t, i) => {
+      const tid = p.id + "-" + i;
+      const checked = t[1] ? "checked" : "";
+      return `<label class="task"><input type="checkbox" data-id="${tid}" ${checked} /> <span>${t[0]}</span></label>`;
+    }).join('');
+    card.innerHTML = `
+      <summary class="phase-header">
+        <div>
+          <div class="phase-title">${p.title}</div>
+          <div class="phase-sub">${p.note}</div>
+        </div>
+        <div style="min-width:210px">
+          <div class="progress"><div class="bar"></div></div>
+          <div class="phase-sub" style="text-align:right"><span class="pct">0%</span></div>
+        </div>
+      </summary>
+      <div class="tasks">${tasks}</div>
+      <div class="phase-actions">
+        <button class="markAll">Mark all in phase</button>
+        <button class="resetPhase">Reset phase</button>
+      </div>
+    `;
+    container.appendChild(card);
+    phaseActions(card, p.id);
+  });
+
+  // listeners
+  container.addEventListener('change', (e) => {
+    if (e.target.matches('input[type=checkbox][data-id]')) saveState();
+  });
+
+  // initial compute with defaults, then hydrate saved
+  computeProgress();
+  loadState();
+  computeProgress();
+}
+
+document.getElementById('expandAll').addEventListener('click', () => {
+  document.querySelectorAll('details.phase-card').forEach(d => d.open = true);
+});
+document.getElementById('collapseAll').addEventListener('click', () => {
+  document.querySelectorAll('details.phase-card').forEach(d => d.open = false);
+});
+
+document.getElementById('exportBtn').addEventListener('click', () => {
+  const raw = localStorage.getItem(STORAGE_KEY) || "[]";
+  const blob = new Blob([raw], {type: "application/json"});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = "nxcore_checklist_progress.json";
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
+});
+
+document.getElementById('importBtn').addEventListener('click', async () => {
+  const input = document.createElement('input');
+  input.type = 'file';
+  input.accept = 'application/json,.json';
+  input.onchange = () => {
+    const file = input.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      try {
+        localStorage.setItem(STORAGE_KEY, reader.result);
+        loadState();
+        computeProgress();
+        alert("Progress imported.");
+      } catch (e) {
+        alert("Import failed: " + e.message);
+      }
+    };
+    reader.readAsText(file);
+  };
+  input.click();
+});
+
+render();
+</script>
+</body>
+</html>

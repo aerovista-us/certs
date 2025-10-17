@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#0b0e12"/>
+  <title>AeroCaller</title>
+
+  <!-- PWA / Icons -->
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+  <link rel="icon" type="image/png" sizes="256x256" href="icon-256.png">
+  <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png">
+  <link rel="apple-touch-icon" href="apple-touch-icon.png"/>
+  
+  <!-- Industrial mono font -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
+
+  <!-- PeerJS client -->
+  <script src="https://unpkg.com/peerjs@1.4.7/dist/peerjs.min.js"></script>
+
+  <style>
+    :root {
+      --bg: #0b0e12;
+      --panel:#121821;
+      --muted:#8aa2b2;
+      --line:#1f2a38;
+      --brand:#1e90ff;
+      --accent:#00d4ff;
+      --danger:#d43c3c;
+      --ok:#53d769;
+      --text:#e6ebef;
+    }
+    * { box-sizing: border-box; }
+    body { margin:0; font-family:'Share Tech Mono', monospace, system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, sans-serif; background:radial-gradient(1200px 800px at 20% 15%, #14181e, #0a0c0f 60%, #060709); color:var(--text); }
+    .chrome { position: sticky; top:0; z-index:2; background:linear-gradient(180deg, rgba(18,24,33,0.95), rgba(18,24,33,0.85) 60%, rgba(18,24,33,0)); border-bottom:1px solid var(--line); backdrop-filter: blur(8px); }
+    .nav { max-width: 1100px; margin: 0 auto; padding: 10px 16px; display:flex; align-items:center; gap:12px; }
+    .nav img { width:32px; height:32px; border-radius:8px; }
+    .nav .title { font-weight:700; letter-spacing:0.3px; }
+    .nav .tag { margin-left:auto; font-size:0.85rem; color:var(--muted); }
+    .container { max-width: 980px; margin: 32px auto; padding: 24px; background: linear-gradient(145deg, var(--panel), #0b0e14); border-radius: 16px; border:2px solid var(--line); box-shadow: inset 0 0 40px #000, 0 18px 40px rgba(0,0,0,.35); outline:1px solid #1b1f24; outline-offset:-6px; }
+    h1 { margin:0 0 6px 0; }
+    .subtitle { margin:0 0 14px 0; color: var(--muted); }
+    .row { display:flex; flex-wrap:wrap; gap:10px; align-items:center; }
+    button, select { padding:10px 14px; border-radius:10px; border:2px solid #3a414b; background:#0f141a; color:#e8f5ff; cursor:pointer; box-shadow: inset 0 0 10px #000; }
+    button.primary { background: var(--brand); color:#fff; border-color: var(--brand); }
+    button.secondary { background:#18202b; }
+    button.danger { background: var(--danger); color:#fff; border:0; }
+    button:disabled { opacity:0.6; cursor:not-allowed; }
+    .pill { display:inline-flex; align-items:center; gap:6px; padding:2px 10px; border-radius:999px; background:#0f141c; border:1px solid var(--line); color:var(--muted); font-size:0.8rem; }
+    #status { font-size:0.95rem; color:var(--muted); margin:8px 0 14px; }
+    .grid { display:grid; grid-template-columns: 1fr; gap:12px; }
+    .card { background:#0f141c; border:2px solid var(--line); padding:12px; border-radius:12px; box-shadow: inset 0 0 24px #000; }
+    #connections { display:grid; grid-template-columns: repeat(auto-fill, minmax(240px,1fr)); gap:12px; }
+    audio { width:100%; }
+    .meter { height:10px; background:#0d1116; border:1px solid #2a2f36; border-radius:6px; overflow:hidden }
+    .meter > span { display:block; height:100%; width:0%; background: linear-gradient(90deg, var(--accent), var(--brand)); transition: width .2s }
+    
+    /* industrial bus lines */
+    .bus{position:absolute;inset:16px;pointer-events:none}
+    .bus:before,.bus:after{content:'';position:absolute;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent 0 4%,#26303a 4% 6%,transparent 6% 94%,#26303a 94% 96%,transparent 96% 100%);opacity:.4}
+    .bus:before{top:40%}.bus:after{top:70%}
+
+    /* module panels */
+    .panel{position:fixed; padding:14px; display:flex; flex-direction:column; gap:10px; background:linear-gradient(145deg,var(--panel),#080a0d); border:4px solid #2a2f36; border-radius:14px; box-shadow:inset 0 0 40px #000, 0 18px 40px rgba(0,0,0,.4); outline:1px solid #1b1f24; outline-offset:-6px; cursor:grab}
+    .panel:active{cursor:grabbing}
+    .title{display:flex; align-items:center; justify-content:center; gap:10px; letter-spacing:2px; padding-bottom:6px; border-bottom:2px solid #2b2f34}
+    .bolt{width:10px; height:10px; border-radius:50%; background:#1b1f24; border:2px solid #454b54; box-shadow:inset -1px -1px 2px #000, inset 1px 1px 2px #666}
+    .stretch{flex:1}
+    .hint{opacity:.7; font-size:.9rem}
+    .dial{display:flex; align-items:center; justify-content:center}
+    .dial .knob{position:relative; width:130px; height:130px; border-radius:50%; background:radial-gradient(circle at 30% 30%,#4a5059,#20252c); border:4px solid #3a414b; box-shadow:inset -6px -6px 14px #000, inset 6px 6px 14px #555}
+    .dial .indicator{position:absolute; left:50%; top:8px; width:4px; height:24px; background:#cfd6de; border-radius:2px; transform-origin:50% 56px; opacity:.9}
+    .dial input{position:absolute; inset:0; width:100%; height:100%; opacity:0}
+
+    /* layout */
+    .grid.panels{grid-template-columns: 1fr; gap:16px}
+    .toolbar { display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
+    @media (max-width:700px){ .container{ margin: 12px; } }
+  </style>
+</head>
+<body>
+  <div class="chrome">
+    <div class="nav">
+      <img src="icon-192.png" alt="AeroCaller">
+      <div class="title">AeroCaller</div>
+      <div class="tag">Tailnet</div>
+    </div>
+  </div>
+
+  <div class="container" style="position:relative; height:520px;">
+    <div class="bus"></div>
+    <div class="panel" id="radioPanel" style="top:36px; left:36px;">
+      <div class="title"><span class="bolt"></span> AEROCALLER — STAFF UNIT <span class="bolt"></span></div>
+      <div class="row">
+        <label class="pill" style="gap:8px;">Mic:
+          <select id="micSelect" title="Choose input device" disabled></select>
+        </label>
+        <span class="stretch"></span>
+        <span class="pill" title="Participants">👥 <span id="participants">0</span></span>
+      </div>
+      <div class="row">
+        <button id="joinBtn" class="primary">JOIN</button>
+        <button id="leaveBtn" class="secondary" disabled>LEAVE</button>
+        <button id="muteBtn" class="secondary" disabled>MUTE</button>
+        <button id="pttBtn" class="secondary" disabled title="Push-to-Talk mode">PTT: Off</button>
+        <button id="installBtn" class="secondary" style="margin-left:auto; display:none;">Install</button>
+      </div>
+      <div class="dial">
+        <div class="knob">
+          <div class="indicator" id="dialIndicator"></div>
+          <input id="volumeDial" type="range" min="0" max="100" value="70" />
+        </div>
+      </div>
+      <div class="meter"><span id="localMeter"></span></div>
+      <div class="card" style="background:transparent; border:0; padding:0;">
+        <strong>Active connections</strong>
+        <div id="connections" style="margin-top:8px;"></div>
+      </div>
+      <div class="hint" id="status">idle</div>
+    </div>
+  </div>
+
+  <script src="./app.staff.js"></script>
+  <script>
+    // Draggable floating panel
+    (function(){
+      const panel = document.getElementById('radioPanel');
+      if (!panel) return;
+      let dragging=false, ox=0, oy=0, startX=0, startY=0, hasThreshold=false, raf;
+      const savePos=(x,y)=>{ try{ localStorage.setItem('aerocaller_panel_pos', JSON.stringify({x,y})); }catch{} };
+      const loadPos=()=>{ try{ return JSON.parse(localStorage.getItem('aerocaller_panel_pos')||'null'); }catch{ return null } };
+      const clamp=(v,min,max)=> Math.max(min, Math.min(max, v));
+      const lerp=(a,b,t)=> a+(b-a)*t;
+
+      // restore last position
+      const saved = loadPos();
+      if (saved && typeof saved.x==='number' && typeof saved.y==='number') {
+        panel.style.left = saved.x + 'px';
+        panel.style.top  = saved.y + 'px';
+      }
+
+      panel.addEventListener('mousedown', (e)=>{ dragging=true; hasThreshold=false; startX=e.clientX; startY=e.clientY; ox=e.clientX-panel.offsetLeft; oy=e.clientY-panel.offsetTop; });
+      panel.addEventListener('touchstart', (e)=>{ const t=e.touches[0]; dragging=true; hasThreshold=false; startX=t.clientX; startY=t.clientY; ox=t.clientX-panel.offsetLeft; oy=t.clientY-panel.offsetTop; }, {passive:true});
+      const move = (cx, cy)=>{
+        const dx=Math.abs(cx-startX), dy=Math.abs(cy-startY);
+        if (!hasThreshold){
+          if (dx+dy < 8) return; // friction threshold before moving
+          hasThreshold = true;
+        }
+        const vw = window.innerWidth, vh = window.innerHeight;
+        const tx = clamp(cx-ox, 8, vw-panel.offsetWidth-8);
+        const ty = clamp(cy-oy, 8, vh-panel.offsetHeight-8);
+        cancelAnimationFrame(raf);
+        const step=()=>{
+          const cx0 = panel.offsetLeft, cy0 = panel.offsetTop;
+          const nx = Math.round(lerp(cx0, tx, 0.25));
+          const ny = Math.round(lerp(cy0, ty, 0.25));
+          panel.style.left = nx+'px';
+          panel.style.top  = ny+'px';
+          if (Math.abs(nx-tx)+Math.abs(ny-ty) > 1 && dragging) raf=requestAnimationFrame(step);
+        };
+        raf=requestAnimationFrame(step);
+      };
+
+      document.addEventListener('mousemove', (e)=>{
+        if(!dragging) return;
+        move(e.clientX, e.clientY);
+      });
+      document.addEventListener('touchmove', (e)=>{
+        if(!dragging) return; const t=e.touches[0]; move(t.clientX, t.clientY);
+      });
+      const stop=()=>{
+        if(!dragging) return; dragging=false;
+        const x = panel.offsetLeft, y = panel.offsetTop;
+        savePos(x,y);
+      };
+      document.addEventListener('mouseup', stop);
+      document.addEventListener('touchend', stop);
+    })();
+
+    // Analog dial → volume
+    (function(){
+      const dial = document.getElementById('volumeDial');
+      const ind  = document.getElementById('dialIndicator');
+      const setAngle=(val)=>{
+        const angle = -135 + (val/100)*270; // map 0..100 → -135..135deg
+        if (ind) ind.style.transform = `rotate(${angle}deg)`;
+      };
+      if (dial){
+        // restore volume
+        try{
+          const savedVol = localStorage.getItem('aerocaller_volume');
+          if (savedVol !== null){ dial.value = String(Math.round(Number(savedVol)*100)); }
+        }catch{}
+        setAngle(Number(dial.value||0));
+        // prevent dragging the unit when interacting with the dial
+        dial.addEventListener('mousedown', (e)=>{ e.stopPropagation(); });
+        dial.addEventListener('touchstart', (e)=>{ e.stopPropagation(); }, {passive:true});
+        dial.addEventListener('input', ()=>{
+          setAngle(Number(dial.value||0));
+          const v = Number(dial.value)/100;
+          try{ localStorage.setItem('aerocaller_volume', String(v)); }catch{}
+          if (window.setGlobalCallVolume) window.setGlobalCallVolume(v);
+        });
+      }
+    })();
+
+    // Basic PWA install prompt
+    let deferredPrompt = null;
+    const installBtn = document.getElementById('installBtn');
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredPrompt = e;
+      installBtn.style.display = 'inline-block';
+    });
+    installBtn?.addEventListener('click', async () => {
+      if (!deferredPrompt) return;
+      deferredPrompt.prompt();
+      await deferredPrompt.userChoice;
+      deferredPrompt = null;
+      installBtn.style.display = 'none';
+    });
+
+    // Register service worker (best-effort)
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('./sw.js').catch(console.warn);
+    }
+  </script>
+</body>
+</html>

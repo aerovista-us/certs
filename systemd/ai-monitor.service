@@ -1,0 +1,12 @@
+[Unit]
+Description=NXCore AI Service Monitor
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+User=glyph
+WorkingDirectory=/srv/core/nxcore
+ExecStart=/srv/core/nxcore/ai/ai-monitor.sh monitor
+StandardOutput=journal
+StandardError=journal

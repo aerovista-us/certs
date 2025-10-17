@@ -1,0 +1,940 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <title>EchoVerse Theme Customizer</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 50%, #16213e 100%);
+            color: #ffffff;
+            line-height: 1.6;
+            overflow-x: hidden;
+            transition: all 0.3s ease;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        /* Header */
+        .header {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+        
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 0;
+        }
+        
+        .logo {
+            font-size: 2rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 30px;
+            list-style: none;
+        }
+        
+        .nav-links a {
+            color: #ffffff;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+        
+        .nav-links a:hover {
+            color: #667eea;
+        }
+        
+        /* Hero Section */
+        .hero {
+            text-align: center;
+            padding: 80px 0;
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+            border-radius: 20px;
+            margin: 40px 0;
+        }
+        
+        .hero h1 {
+            font-size: 3.5rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .hero p {
+            font-size: 1.2rem;
+            color: #b8b8b8;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        /* Theme Customizer */
+        .theme-customizer {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            margin: 40px 0;
+        }
+        
+        .customizer-panel {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 30px;
+        }
+        
+        .panel-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: #ffffff;
+        }
+        
+        .color-group {
+            margin-bottom: 30px;
+        }
+        
+        .color-label {
+            display: block;
+            margin-bottom: 10px;
+            color: #ffffff;
+            font-weight: 500;
+        }
+        
+        .color-inputs {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        
+        .color-picker {
+            width: 50px;
+            height: 50px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .color-picker:hover {
+            transform: scale(1.1);
+        }
+        
+        .color-picker::-webkit-color-swatch-wrapper {
+            padding: 0;
+        }
+        
+        .color-picker::-webkit-color-swatch {
+            border: none;
+            border-radius: 8px;
+        }
+        
+        .gradient-toggle {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
+        .toggle-switch {
+            position: relative;
+            width: 50px;
+            height: 25px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 25px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+        
+        .toggle-switch.active {
+            background: #667eea;
+        }
+        
+        .toggle-switch::after {
+            content: '';
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 21px;
+            height: 21px;
+            background: white;
+            border-radius: 50%;
+            transition: transform 0.3s ease;
+        }
+        
+        .toggle-switch.active::after {
+            transform: translateX(25px);
+        }
+        
+        .gradient-controls {
+            display: none;
+            margin-top: 15px;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+        }
+        
+        .gradient-controls.active {
+            display: block;
+        }
+        
+        .gradient-direction {
+            margin-bottom: 15px;
+        }
+        
+        .gradient-direction select {
+            width: 100%;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            color: #ffffff;
+            font-size: 1rem;
+        }
+        
+        .gradient-direction select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        .gradient-direction option {
+            background: #1a1a2e;
+            color: #ffffff;
+        }
+        
+        /* Preview Panel */
+        .preview-panel {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 30px;
+            position: sticky;
+            top: 100px;
+        }
+        
+        .preview-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: #ffffff;
+        }
+        
+        .preview-demo {
+            background: var(--preview-bg, linear-gradient(135deg, #0f0f23 0%, #1a1a2e 50%, #16213e 100%));
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            min-height: 200px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .preview-card {
+            background: var(--preview-card-bg, rgba(255, 255, 255, 0.05));
+            border: 1px solid var(--preview-border, rgba(255, 255, 255, 0.1));
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .preview-text {
+            color: var(--preview-text, #ffffff);
+            margin-bottom: 10px;
+        }
+        
+        .preview-highlight {
+            color: var(--preview-highlight, #667eea);
+            font-weight: 600;
+        }
+        
+        .preview-selected {
+            background: var(--preview-selected-bg, rgba(102, 126, 234, 0.2));
+            color: var(--preview-selected-text, #667eea);
+            padding: 5px 10px;
+            border-radius: 5px;
+            display: inline-block;
+        }
+        
+        .preview-button {
+            background: var(--preview-button-bg, linear-gradient(135deg, #667eea 0%, #764ba2 100%));
+            color: var(--preview-button-text, #ffffff);
+            border: none;
+            padding: 10px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: transform 0.2s ease;
+        }
+        
+        .preview-button:hover {
+            transform: translateY(-2px);
+        }
+        
+        /* Preset Themes */
+        .preset-themes {
+            margin-top: 30px;
+        }
+        
+        .preset-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+        
+        .preset-theme {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+        
+        .preset-theme:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+        }
+        
+        .preset-preview {
+            width: 100%;
+            height: 60px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            background: var(--preset-bg);
+        }
+        
+        .preset-name {
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: #ffffff;
+        }
+        
+        /* Theme Actions */
+        .theme-actions {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: transform 0.2s ease;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+        
+        .btn.secondary {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .btn.secondary:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .theme-customizer {
+                grid-template-columns: 1fr;
+            }
+            
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+            
+            .nav-links {
+                display: none;
+            }
+        }
+        
+        /* Custom Properties for Dynamic Theming */
+        :root {
+            --theme-bg: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 50%, #16213e 100%);
+            --theme-card-bg: rgba(255, 255, 255, 0.05);
+            --theme-border: rgba(255, 255, 255, 0.1);
+            --theme-text: #ffffff;
+            --theme-highlight: #667eea;
+            --theme-selected-bg: rgba(102, 126, 234, 0.2);
+            --theme-selected-text: #667eea;
+            --theme-button-bg: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --theme-button-text: #ffffff;
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">🎨 EchoVerse Theme Customizer</div>
+                <nav>
+                    <ul class="nav-links">
+                        <li><a href="#customize">Customize</a></li>
+                        <li><a href="#presets">Presets</a></li>
+                        <li><a href="#export">Export</a></li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <div class="container">
+            <section class="hero">
+                <h1>🎨 Customize Your Theme</h1>
+                <p>Create your perfect EchoVerse experience with custom colors, gradients, and personalized styling.</p>
+            </section>
+
+            <div class="theme-customizer">
+                <div class="customizer-panel">
+                    <h2 class="panel-title">Color Customization</h2>
+                    
+                    <!-- Background Colors -->
+                    <div class="color-group">
+                        <label class="color-label">Background Colors</label>
+                        <div class="color-inputs">
+                            <input type="color" class="color-picker" id="bgColor1" value="#0f0f23">
+                            <input type="color" class="color-picker" id="bgColor2" value="#1a1a2e">
+                            <input type="color" class="color-picker" id="bgColor3" value="#16213e">
+                        </div>
+                        <div class="gradient-toggle">
+                            <span>Enable Gradient</span>
+                            <div class="toggle-switch" id="bgGradientToggle"></div>
+                        </div>
+                        <div class="gradient-controls" id="bgGradientControls">
+                            <div class="gradient-direction">
+                                <select id="bgGradientDirection">
+                                    <option value="135deg">Diagonal (135°)</option>
+                                    <option value="90deg">Vertical (90°)</option>
+                                    <option value="0deg">Horizontal (0°)</option>
+                                    <option value="45deg">Diagonal (45°)</option>
+                                    <option value="180deg">Diagonal (180°)</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Card/Content Colors -->
+                    <div class="color-group">
+                        <label class="color-label">Card/Content Colors</label>
+                        <div class="color-inputs">
+                            <input type="color" class="color-picker" id="cardColor1" value="#ffffff">
+                            <input type="color" class="color-picker" id="cardColor2" value="#ffffff">
+                            <input type="color" class="color-picker" id="cardColor3" value="#ffffff">
+                        </div>
+                        <div class="gradient-toggle">
+                            <span>Enable Gradient</span>
+                            <div class="toggle-switch" id="cardGradientToggle"></div>
+                        </div>
+                        <div class="gradient-controls" id="cardGradientControls">
+                            <div class="gradient-direction">
+                                <select id="cardGradientDirection">
+                                    <option value="135deg">Diagonal (135°)</option>
+                                    <option value="90deg">Vertical (90°)</option>
+                                    <option value="0deg">Horizontal (0°)</option>
+                                    <option value="45deg">Diagonal (45°)</option>
+                                    <option value="180deg">Diagonal (180°)</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Text Colors -->
+                    <div class="color-group">
+                        <label class="color-label">Text Colors</label>
+                        <div class="color-inputs">
+                            <input type="color" class="color-picker" id="textColor" value="#ffffff">
+                            <input type="color" class="color-picker" id="highlightColor" value="#667eea">
+                            <input type="color" class="color-picker" id="selectedTextColor" value="#667eea">
+                        </div>
+                    </div>
+
+                    <!-- Button Colors -->
+                    <div class="color-group">
+                        <label class="color-label">Button Colors</label>
+                        <div class="color-inputs">
+                            <input type="color" class="color-picker" id="buttonColor1" value="#667eea">
+                            <input type="color" class="color-picker" id="buttonColor2" value="#764ba2">
+                            <input type="color" class="color-picker" id="buttonTextColor" value="#ffffff">
+                        </div>
+                        <div class="gradient-toggle">
+                            <span>Enable Gradient</span>
+                            <div class="toggle-switch" id="buttonGradientToggle"></div>
+                        </div>
+                        <div class="gradient-controls" id="buttonGradientControls">
+                            <div class="gradient-direction">
+                                <select id="buttonGradientDirection">
+                                    <option value="135deg">Diagonal (135°)</option>
+                                    <option value="90deg">Vertical (90°)</option>
+                                    <option value="0deg">Horizontal (0°)</option>
+                                    <option value="45deg">Diagonal (45°)</option>
+                                    <option value="180deg">Diagonal (180°)</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Theme Actions -->
+                    <div class="theme-actions">
+                        <button class="btn" onclick="applyTheme()">Apply Theme</button>
+                        <button class="btn secondary" onclick="resetTheme()">Reset to Default</button>
+                        <button class="btn secondary" onclick="exportTheme()">Export Theme</button>
+                        <button class="btn secondary" onclick="importTheme()">Import Theme</button>
+                    </div>
+                </div>
+
+                <div class="preview-panel">
+                    <h2 class="preview-title">Live Preview</h2>
+                    <div class="preview-demo" id="previewDemo">
+                        <div class="preview-card">
+                            <div class="preview-text">This is normal text</div>
+                            <div class="preview-highlight">This is highlighted text</div>
+                            <div class="preview-selected">This is selected text</div>
+                            <button class="preview-button">Sample Button</button>
+                        </div>
+                    </div>
+
+                    <!-- Preset Themes -->
+                    <div class="preset-themes">
+                        <h3 class="panel-title">Preset Themes</h3>
+                        <div class="preset-grid">
+                            <div class="preset-theme" onclick="loadPreset('default')">
+                                <div class="preset-preview" style="background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 50%, #16213e 100%);"></div>
+                                <div class="preset-name">Default</div>
+                            </div>
+                            <div class="preset-theme" onclick="loadPreset('ocean')">
+                                <div class="preset-preview" style="background: linear-gradient(135deg, #0c4a6e 0%, #0369a1 50%, #0284c7 100%);"></div>
+                                <div class="preset-name">Ocean</div>
+                            </div>
+                            <div class="preset-theme" onclick="loadPreset('sunset')">
+                                <div class="preset-preview" style="background: linear-gradient(135deg, #7c2d12 0%, #ea580c 50%, #f97316 100%);"></div>
+                                <div class="preset-name">Sunset</div>
+                            </div>
+                            <div class="preset-theme" onclick="loadPreset('forest')">
+                                <div class="preset-preview" style="background: linear-gradient(135deg, #14532d 0%, #16a34a 50%, #22c55e 100%);"></div>
+                                <div class="preset-name">Forest</div>
+                            </div>
+                            <div class="preset-theme" onclick="loadPreset('purple')">
+                                <div class="preset-preview" style="background: linear-gradient(135deg, #581c87 0%, #7c3aed 50%, #a855f7 100%);"></div>
+                                <div class="preset-name">Purple</div>
+                            </div>
+                            <div class="preset-theme" onclick="loadPreset('minimal')">
+                                <div class="preset-preview" style="background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 50%, #cbd5e1 100%);"></div>
+                                <div class="preset-name">Minimal</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Theme Customizer
+        class ThemeCustomizer {
+            constructor() {
+                this.currentTheme = {
+                    background: {
+                        colors: ['#0f0f23', '#1a1a2e', '#16213e'],
+                        gradient: true,
+                        direction: '135deg'
+                    },
+                    card: {
+                        colors: ['#ffffff', '#ffffff', '#ffffff'],
+                        gradient: false,
+                        direction: '135deg'
+                    },
+                    text: {
+                        normal: '#ffffff',
+                        highlight: '#667eea',
+                        selected: '#667eea'
+                    },
+                    button: {
+                        colors: ['#667eea', '#764ba2'],
+                        text: '#ffffff',
+                        gradient: true,
+                        direction: '135deg'
+                    }
+                };
+                
+                this.initializeEventListeners();
+                this.loadSavedTheme();
+            }
+
+            initializeEventListeners() {
+                // Background color pickers
+                document.getElementById('bgColor1').addEventListener('change', (e) => this.updateBackground(0, e.target.value));
+                document.getElementById('bgColor2').addEventListener('change', (e) => this.updateBackground(1, e.target.value));
+                document.getElementById('bgColor3').addEventListener('change', (e) => this.updateBackground(2, e.target.value));
+                
+                // Card color pickers
+                document.getElementById('cardColor1').addEventListener('change', (e) => this.updateCard(0, e.target.value));
+                document.getElementById('cardColor2').addEventListener('change', (e) => this.updateCard(1, e.target.value));
+                document.getElementById('cardColor3').addEventListener('change', (e) => this.updateCard(2, e.target.value));
+                
+                // Text color pickers
+                document.getElementById('textColor').addEventListener('change', (e) => this.updateText('normal', e.target.value));
+                document.getElementById('highlightColor').addEventListener('change', (e) => this.updateText('highlight', e.target.value));
+                document.getElementById('selectedTextColor').addEventListener('change', (e) => this.updateText('selected', e.target.value));
+                
+                // Button color pickers
+                document.getElementById('buttonColor1').addEventListener('change', (e) => this.updateButton(0, e.target.value));
+                document.getElementById('buttonColor2').addEventListener('change', (e) => this.updateButton(1, e.target.value));
+                document.getElementById('buttonTextColor').addEventListener('change', (e) => this.updateButton('text', e.target.value));
+                
+                // Gradient toggles
+                document.getElementById('bgGradientToggle').addEventListener('click', () => this.toggleGradient('background'));
+                document.getElementById('cardGradientToggle').addEventListener('click', () => this.toggleGradient('card'));
+                document.getElementById('buttonGradientToggle').addEventListener('click', () => this.toggleGradient('button'));
+                
+                // Gradient directions
+                document.getElementById('bgGradientDirection').addEventListener('change', (e) => this.updateGradientDirection('background', e.target.value));
+                document.getElementById('cardGradientDirection').addEventListener('change', (e) => this.updateGradientDirection('card', e.target.value));
+                document.getElementById('buttonGradientDirection').addEventListener('change', (e) => this.updateGradientDirection('button', e.target.value));
+            }
+
+            updateBackground(index, color) {
+                this.currentTheme.background.colors[index] = color;
+                this.applyTheme();
+            }
+
+            updateCard(index, color) {
+                this.currentTheme.card.colors[index] = color;
+                this.applyTheme();
+            }
+
+            updateText(type, color) {
+                this.currentTheme.text[type] = color;
+                this.applyTheme();
+            }
+
+            updateButton(index, color) {
+                if (index === 'text') {
+                    this.currentTheme.button.text = color;
+                } else {
+                    this.currentTheme.button.colors[index] = color;
+                }
+                this.applyTheme();
+            }
+
+            toggleGradient(type) {
+                const toggle = document.getElementById(`${type}GradientToggle`);
+                const controls = document.getElementById(`${type}GradientControls`);
+                
+                toggle.classList.toggle('active');
+                controls.classList.toggle('active');
+                
+                this.currentTheme[type].gradient = toggle.classList.contains('active');
+                this.applyTheme();
+            }
+
+            updateGradientDirection(type, direction) {
+                this.currentTheme[type].direction = direction;
+                this.applyTheme();
+            }
+
+            applyTheme() {
+                // Update CSS custom properties
+                const root = document.documentElement;
+                
+                // Background
+                if (this.currentTheme.background.gradient) {
+                    const bg = `linear-gradient(${this.currentTheme.background.direction}, ${this.currentTheme.background.colors.join(', ')})`;
+                    root.style.setProperty('--theme-bg', bg);
+                } else {
+                    root.style.setProperty('--theme-bg', this.currentTheme.background.colors[0]);
+                }
+                
+                // Card
+                if (this.currentTheme.card.gradient) {
+                    const card = `linear-gradient(${this.currentTheme.card.direction}, ${this.currentTheme.card.colors.join(', ')})`;
+                    root.style.setProperty('--theme-card-bg', card);
+                } else {
+                    root.style.setProperty('--theme-card-bg', this.currentTheme.card.colors[0]);
+                }
+                
+                // Text
+                root.style.setProperty('--theme-text', this.currentTheme.text.normal);
+                root.style.setProperty('--theme-highlight', this.currentTheme.text.highlight);
+                root.style.setProperty('--theme-selected-text', this.currentTheme.text.selected);
+                
+                // Button
+                if (this.currentTheme.button.gradient) {
+                    const button = `linear-gradient(${this.currentTheme.button.direction}, ${this.currentTheme.button.colors.join(', ')})`;
+                    root.style.setProperty('--theme-button-bg', button);
+                } else {
+                    root.style.setProperty('--theme-button-bg', this.currentTheme.button.colors[0]);
+                }
+                root.style.setProperty('--theme-button-text', this.currentTheme.button.text);
+                
+                // Update preview
+                this.updatePreview();
+                
+                // Save theme
+                this.saveTheme();
+            }
+
+            updatePreview() {
+                const preview = document.getElementById('previewDemo');
+                const bg = this.currentTheme.background.gradient ? 
+                    `linear-gradient(${this.currentTheme.background.direction}, ${this.currentTheme.background.colors.join(', ')})` :
+                    this.currentTheme.background.colors[0];
+                
+                preview.style.background = bg;
+            }
+
+            saveTheme() {
+                localStorage.setItem('echoverse_theme', JSON.stringify(this.currentTheme));
+            }
+
+            loadSavedTheme() {
+                const saved = localStorage.getItem('echoverse_theme');
+                if (saved) {
+                    this.currentTheme = JSON.parse(saved);
+                    this.loadThemeToUI();
+                    this.applyTheme();
+                }
+            }
+
+            loadThemeToUI() {
+                // Load background colors
+                document.getElementById('bgColor1').value = this.currentTheme.background.colors[0];
+                document.getElementById('bgColor2').value = this.currentTheme.background.colors[1];
+                document.getElementById('bgColor3').value = this.currentTheme.background.colors[2];
+                
+                // Load card colors
+                document.getElementById('cardColor1').value = this.currentTheme.card.colors[0];
+                document.getElementById('cardColor2').value = this.currentTheme.card.colors[1];
+                document.getElementById('cardColor3').value = this.currentTheme.card.colors[2];
+                
+                // Load text colors
+                document.getElementById('textColor').value = this.currentTheme.text.normal;
+                document.getElementById('highlightColor').value = this.currentTheme.text.highlight;
+                document.getElementById('selectedTextColor').value = this.currentTheme.text.selected;
+                
+                // Load button colors
+                document.getElementById('buttonColor1').value = this.currentTheme.button.colors[0];
+                document.getElementById('buttonColor2').value = this.currentTheme.button.colors[1];
+                document.getElementById('buttonTextColor').value = this.currentTheme.button.text;
+                
+                // Load gradient states
+                this.setGradientState('background', this.currentTheme.background.gradient);
+                this.setGradientState('card', this.currentTheme.card.gradient);
+                this.setGradientState('button', this.currentTheme.button.gradient);
+                
+                // Load gradient directions
+                document.getElementById('bgGradientDirection').value = this.currentTheme.background.direction;
+                document.getElementById('cardGradientDirection').value = this.currentTheme.card.direction;
+                document.getElementById('buttonGradientDirection').value = this.currentTheme.button.direction;
+            }
+
+            setGradientState(type, enabled) {
+                const toggle = document.getElementById(`${type}GradientToggle`);
+                const controls = document.getElementById(`${type}GradientControls`);
+                
+                if (enabled) {
+                    toggle.classList.add('active');
+                    controls.classList.add('active');
+                } else {
+                    toggle.classList.remove('active');
+                    controls.classList.remove('active');
+                }
+            }
+
+            resetTheme() {
+                this.currentTheme = {
+                    background: {
+                        colors: ['#0f0f23', '#1a1a2e', '#16213e'],
+                        gradient: true,
+                        direction: '135deg'
+                    },
+                    card: {
+                        colors: ['#ffffff', '#ffffff', '#ffffff'],
+                        gradient: false,
+                        direction: '135deg'
+                    },
+                    text: {
+                        normal: '#ffffff',
+                        highlight: '#667eea',
+                        selected: '#667eea'
+                    },
+                    button: {
+                        colors: ['#667eea', '#764ba2'],
+                        text: '#ffffff',
+                        gradient: true,
+                        direction: '135deg'
+                    }
+                };
+                
+                this.loadThemeToUI();
+                this.applyTheme();
+            }
+
+            exportTheme() {
+                const themeData = {
+                    name: 'Custom Theme',
+                    version: '1.0',
+                    theme: this.currentTheme,
+                    exported: new Date().toISOString()
+                };
+                
+                const blob = new Blob([JSON.stringify(themeData, null, 2)], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'echoverse-theme.json';
+                a.click();
+                URL.revokeObjectURL(url);
+            }
+
+            importTheme() {
+                const input = document.createElement('input');
+                input.type = 'file';
+                input.accept = '.json';
+                input.onchange = (e) => {
+                    const file = e.target.files[0];
+                    if (file) {
+                        const reader = new FileReader();
+                        reader.onload = (e) => {
+                            try {
+                                const themeData = JSON.parse(e.target.result);
+                                if (themeData.theme) {
+                                    this.currentTheme = themeData.theme;
+                                    this.loadThemeToUI();
+                                    this.applyTheme();
+                                    alert('Theme imported successfully!');
+                                } else {
+                                    alert('Invalid theme file format.');
+                                }
+                            } catch (error) {
+                                alert('Error importing theme: ' + error.message);
+                            }
+                        };
+                        reader.readAsText(file);
+                    }
+                };
+                input.click();
+            }
+        }
+
+        // Preset themes
+        const presets = {
+            default: {
+                background: { colors: ['#0f0f23', '#1a1a2e', '#16213e'], gradient: true, direction: '135deg' },
+                card: { colors: ['#ffffff', '#ffffff', '#ffffff'], gradient: false, direction: '135deg' },
+                text: { normal: '#ffffff', highlight: '#667eea', selected: '#667eea' },
+                button: { colors: ['#667eea', '#764ba2'], text: '#ffffff', gradient: true, direction: '135deg' }
+            },
+            ocean: {
+                background: { colors: ['#0c4a6e', '#0369a1', '#0284c7'], gradient: true, direction: '135deg' },
+                card: { colors: ['#ffffff', '#f0f9ff', '#e0f2fe'], gradient: true, direction: '135deg' },
+                text: { normal: '#ffffff', highlight: '#0ea5e9', selected: '#0284c7' },
+                button: { colors: ['#0ea5e9', '#0284c7'], text: '#ffffff', gradient: true, direction: '135deg' }
+            },
+            sunset: {
+                background: { colors: ['#7c2d12', '#ea580c', '#f97316'], gradient: true, direction: '135deg' },
+                card: { colors: ['#ffffff', '#fef3c7', '#fed7aa'], gradient: true, direction: '135deg' },
+                text: { normal: '#ffffff', highlight: '#f97316', selected: '#ea580c' },
+                button: { colors: ['#f97316', '#ea580c'], text: '#ffffff', gradient: true, direction: '135deg' }
+            },
+            forest: {
+                background: { colors: ['#14532d', '#16a34a', '#22c55e'], gradient: true, direction: '135deg' },
+                card: { colors: ['#ffffff', '#f0fdf4', '#dcfce7'], gradient: true, direction: '135deg' },
+                text: { normal: '#ffffff', highlight: '#22c55e', selected: '#16a34a' },
+                button: { colors: ['#22c55e', '#16a34a'], text: '#ffffff', gradient: true, direction: '135deg' }
+            },
+            purple: {
+                background: { colors: ['#581c87', '#7c3aed', '#a855f7'], gradient: true, direction: '135deg' },
+                card: { colors: ['#ffffff', '#faf5ff', '#f3e8ff'], gradient: true, direction: '135deg' },
+                text: { normal: '#ffffff', highlight: '#a855f7', selected: '#7c3aed' },
+                button: { colors: ['#a855f7', '#7c3aed'], text: '#ffffff', gradient: true, direction: '135deg' }
+            },
+            minimal: {
+                background: { colors: ['#f8fafc', '#e2e8f0', '#cbd5e1'], gradient: true, direction: '135deg' },
+                card: { colors: ['#ffffff', '#f8fafc', '#f1f5f9'], gradient: true, direction: '135deg' },
+                text: { normal: '#1e293b', highlight: '#3b82f6', selected: '#1d4ed8' },
+                button: { colors: ['#3b82f6', '#1d4ed8'], text: '#ffffff', gradient: true, direction: '135deg' }
+            }
+        };
+
+        // Global functions
+        let themeCustomizer;
+
+        function loadPreset(presetName) {
+            if (presets[presetName]) {
+                themeCustomizer.currentTheme = JSON.parse(JSON.stringify(presets[presetName]));
+                themeCustomizer.loadThemeToUI();
+                themeCustomizer.applyTheme();
+            }
+        }
+
+        function applyTheme() {
+            themeCustomizer.applyTheme();
+        }
+
+        function resetTheme() {
+            themeCustomizer.resetTheme();
+        }
+
+        function exportTheme() {
+            themeCustomizer.exportTheme();
+        }
+
+        function importTheme() {
+            themeCustomizer.importTheme();
+        }
+
+        // Initialize when page loads
+        window.addEventListener('DOMContentLoaded', function() {
+            themeCustomizer = new ThemeCustomizer();
+        });
+    </script>
+</body>
+</html>

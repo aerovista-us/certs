@@ -1,0 +1,11 @@
+[Unit]
+Description=Exchange Inbox Path Monitor
+Wants=exchange-inbox.service
+
+[Path]
+PathExists=/srv/exchange/inbox
+PathModified=/srv/exchange/inbox
+PathExistsGlob=/srv/exchange/inbox/*
+
+[Install]
+WantedBy=multi-user.target

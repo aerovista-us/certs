@@ -16,6 +16,7 @@ services:
       - WEBUI_NAME=AeroVista AI Assistant
       - WEBUI_AUTH=true
       - WEBUI_URL=https://nxcore.tail79107c.ts.net/ai
+      - WEBUI_BASE_PATH=/ai
       - ENABLE_RAG_WEB_SEARCH=false
       - ENABLE_IMAGE_GENERATION=false
       - ENABLE_COMMUNITY_SHARING=false
@@ -28,9 +29,10 @@ services:
     #   - ollama  # Ollama runs in separate compose file
     labels:
       - traefik.enable=true
-      - traefik.http.routers.openwebui.rule=Host(`ai.nxcore.tail79107c.ts.net`)
+      - traefik.http.routers.openwebui.rule=Host(`nxcore.tail79107c.ts.net`) && PathPrefix(`/ai`)
       - traefik.http.routers.openwebui.entrypoints=websecure
       - traefik.http.routers.openwebui.tls=true
+      - traefik.http.routers.openwebui.priority=50
 # - traefik.http.routers.openwebui.middlewares=authelia@docker
       - traefik.http.services.openwebui.loadbalancer.server.port=8080
     healthcheck:

@@ -1,0 +1,11 @@
+
+[Unit]
+Description=Run media backup daily
+
+[Timer]
+OnCalendar=daily
+Persistent=true
+Unit=media-backup.service
+
+[Install]
+WantedBy=timers.target

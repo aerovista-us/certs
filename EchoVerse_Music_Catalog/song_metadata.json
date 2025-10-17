@@ -1,0 +1,172 @@
+{
+  "metadata_version": "1.0",
+  "last_updated": "2025-01-17T00:00:00Z",
+  "songs": {
+    "539a5d9804ce6a698235e778aeb46ae8b53861c8d1a302c83fd30accd6b3b0be": {
+      "unique_id": "539a5d9804ce6a698235e778aeb46ae8b53861c8d1a302c83fd30accd6b3b0be",
+      "file_name": "Paper Flag Parade.mp3",
+      "title": "Paper Flag Parade",
+      "artist": "AeroVista",
+      "album": "4th 2025",
+      "rating": 5,
+      "notes": "Powerful patriotic anthem with soaring melodies. Perfect for July 4th celebrations. The orchestral arrangement is particularly impressive.",
+      "tags": ["patriotic", "orchestral", "anthem", "july4th", "powerful", "melodic"],
+      "play_count": 23,
+      "last_played": "2025-01-16T20:30:00Z",
+      "favorite": true,
+      "created_date": "2025-01-15T10:00:00Z",
+      "modified_date": "2025-01-16T20:30:00Z",
+      "custom_fields": {
+        "mood": "uplifting",
+        "energy_level": "high",
+        "genre_tags": ["patriotic", "orchestral"],
+        "production_notes": "Excellent mixing, clear separation of instruments"
+      }
+    },
+    "14a6fd8f16aa399532019b5a5a18ae0c4f117a20a753a218acce1c4e40c40e74": {
+      "unique_id": "14a6fd8f16aa399532019b5a5a18ae0c4f117a20a753a218acce1c4e40c40e74",
+      "file_name": "Red, Lit & Rogue.mp3",
+      "title": "Red, Lit & Rogue",
+      "artist": "AeroVista",
+      "album": "4th 2025",
+      "rating": 4,
+      "notes": "Energetic track with great guitar work. The chorus is catchy and memorable. Good for workout playlists.",
+      "tags": ["energetic", "guitar", "catchy", "workout", "chorus"],
+      "play_count": 15,
+      "last_played": "2025-01-15T18:45:00Z",
+      "favorite": false,
+      "created_date": "2025-01-15T10:00:00Z",
+      "modified_date": "2025-01-15T18:45:00Z",
+      "custom_fields": {
+        "mood": "energetic",
+        "energy_level": "high",
+        "genre_tags": ["rock", "alternative"],
+        "production_notes": "Great guitar tone, could use more bass in the mix"
+      }
+    },
+    "74b6aaa8f308a1bbe99a88412492acb3e63608ed36bb8e67a001f3c7d9ae1bd5": {
+      "unique_id": "74b6aaa8f308a1bbe99a88412492acb3e63608ed36bb8e67a001f3c7d9ae1bd5",
+      "file_name": "Star-Spangled Ghost.mp3",
+      "title": "Star-Spangled Ghost",
+      "artist": "AeroVista",
+      "album": "4th 2025",
+      "rating": 5,
+      "notes": "Hauntingly beautiful track. The ethereal vocals combined with the patriotic theme create something truly unique. One of my favorites.",
+      "tags": ["haunting", "ethereal", "patriotic", "unique", "beautiful", "vocals"],
+      "play_count": 31,
+      "last_played": "2025-01-16T22:15:00Z",
+      "favorite": true,
+      "created_date": "2025-01-15T10:00:00Z",
+      "modified_date": "2025-01-16T22:15:00Z",
+      "custom_fields": {
+        "mood": "melancholic",
+        "energy_level": "medium",
+        "genre_tags": ["ambient", "patriotic", "experimental"],
+        "production_notes": "Stunning vocal production, perfect reverb choices"
+      }
+    },
+    "c71d12fa608807b3dc29d2ad6f0fc0ae038b95a6e1901dde2873045b02d13844": {
+      "unique_id": "c71d12fa608807b3dc29d2ad6f0fc0ae038b95a6e1901dde2873045b02d13844",
+      "file_name": "AeroVista (1).mp3",
+      "title": "AeroVista",
+      "artist": "AeroVista",
+      "album": "AeroVista",
+      "rating": 3,
+      "notes": "Decent track but feels a bit repetitive. The production quality is good but the song structure could be more varied.",
+      "tags": ["repetitive", "decent", "production"],
+      "play_count": 8,
+      "last_played": "2025-01-14T15:20:00Z",
+      "favorite": false,
+      "created_date": "2025-01-15T10:00:00Z",
+      "modified_date": "2025-01-14T15:20:00Z",
+      "custom_fields": {
+        "mood": "neutral",
+        "energy_level": "medium",
+        "genre_tags": ["electronic", "ambient"],
+        "production_notes": "Good production but needs more variation in arrangement"
+      }
+    },
+    "44514d9bc694d81d92f6fd6bf7e347df772271f8bf745197d1c70c6740d1ceee": {
+      "unique_id": "44514d9bc694d81d92f6fd6bf7e347df772271f8bf745197d1c70c6740d1ceee",
+      "file_name": "Clock Out Vibes.m4a",
+      "title": "Clock Out Vibes",
+      "artist": "AeroVista",
+      "album": "Call Center Life",
+      "rating": 4,
+      "notes": "Perfect end-of-workday track. The mellow vibes really capture that 'finally done' feeling. Great for commuting home.",
+      "tags": ["mellow", "work", "commute", "end-of-day", "relaxing"],
+      "play_count": 19,
+      "last_played": "2025-01-16T17:30:00Z",
+      "favorite": true,
+      "created_date": "2025-01-15T10:00:00Z",
+      "modified_date": "2025-01-16T17:30:00Z",
+      "custom_fields": {
+        "mood": "relaxed",
+        "energy_level": "low",
+        "genre_tags": ["ambient", "chill", "electronic"],
+        "production_notes": "Perfect for unwinding, great use of reverb and delay"
+      }
+    }
+  },
+  "tags": {
+    "patriotic": {
+      "count": 2,
+      "color": "#ff6b6b",
+      "description": "Songs with patriotic themes"
+    },
+    "orchestral": {
+      "count": 1,
+      "color": "#4ecdc4",
+      "description": "Songs with orchestral arrangements"
+    },
+    "energetic": {
+      "count": 1,
+      "color": "#45b7d1",
+      "description": "High-energy tracks"
+    },
+    "haunting": {
+      "count": 1,
+      "color": "#96ceb4",
+      "description": "Ethereal, haunting melodies"
+    },
+    "work": {
+      "count": 1,
+      "color": "#feca57",
+      "description": "Work-related themes"
+    },
+    "favorite": {
+      "count": 3,
+      "color": "#ff9ff3",
+      "description": "User's favorite tracks"
+    }
+  },
+  "playlists": {
+    "favorites": {
+      "name": "My Favorites",
+      "description": "Personal favorite tracks",
+      "songs": [
+        "539a5d9804ce6a698235e778aeb46ae8b53861c8d1a302c83fd30accd6b3b0be",
+        "74b6aaa8f308a1bbe99a88412492acb3e63608ed36bb8e67a001f3c7d9ae1bd5",
+        "44514d9bc694d81d92f6fd6bf7e347df772271f8bf745197d1c70c6740d1ceee"
+      ],
+      "created_date": "2025-01-15T10:00:00Z"
+    },
+    "workout": {
+      "name": "Workout Mix",
+      "description": "High-energy tracks for exercise",
+      "songs": [
+        "14a6fd8f16aa399532019b5a5a18ae0c4f117a20a753a218acce1c4e40c40e74"
+      ],
+      "created_date": "2025-01-15T10:00:00Z"
+    }
+  },
+  "statistics": {
+    "total_songs": 5,
+    "total_play_count": 96,
+    "average_rating": 4.2,
+    "most_played": "74b6aaa8f308a1bbe99a88412492acb3e63608ed36bb8e67a001f3c7d9ae1bd5",
+    "favorite_count": 3,
+    "total_tags": 15,
+    "last_activity": "2025-01-16T22:15:00Z"
+  }
+}

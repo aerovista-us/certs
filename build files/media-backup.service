@@ -1,0 +1,7 @@
+
+[Unit]
+Description=Media backup & snapshot
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/bin/media-backup.sh

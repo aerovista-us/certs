@@ -1,0 +1,19 @@
+{
+  "name": "nxcore-control",
+  "version": "1.0.0",
+  "description": "This pack lets you manage **NXCore** (192.168.7.209/22) from a Windows workstation using built-in OpenSSH + PowerShell, with optional automation via **Cursor** (.cursorrules).",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs",
+    "test": "tests"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@playwright/test": "^1.56.0"
+  }
+}

@@ -32,9 +32,12 @@ services:
       - backend
     labels:
       - traefik.enable=true
-      - traefik.http.routers.n8n.rule=Host(`n8n.nxcore.tail79107c.ts.net`)
+      - traefik.http.routers.n8n.rule=Host(`nxcore.tail79107c.ts.net`) && PathPrefix(`/n8n`)
       - traefik.http.routers.n8n.entrypoints=websecure
       - traefik.http.routers.n8n.tls=true
+      - traefik.http.routers.n8n.priority=50
+      - traefik.http.middlewares.n8n-strip.stripprefix.prefixes=/n8n
+      - traefik.http.routers.n8n.middlewares=n8n-strip@docker
       - traefik.http.services.n8n.loadbalancer.server.port=5678
       - autoheal=true
     healthcheck:

@@ -1,0 +1,19 @@
+[Unit]
+Description=Exchange Inbox Watcher
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=glyph
+WorkingDirectory=/srv/exchange
+ExecStart=/srv/core/nxcore/scripts/watch_inbox.sh
+Restart=always
+RestartSec=10
+StandardOutput=journal
+StandardError=journal
+
+# Environment
+Environment=INBOX_DIR=/srv/exchange/inbox
+Environment=PROCESSING_DIR=/srv/exchange/processing
+Environment=ARCHIVE_DIR=/srv/exchange/archive

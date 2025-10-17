@@ -1,0 +1,152 @@
+# /traefik/dynamic/tailnet-routes.yml
+# Single-host (nxcore.tail79107c.ts.net) path-based routing for all internal apps.
+
+http:
+  routers:
+    # Traefik dashboard under /traefik (api@internal)
+    traefik-dash:
+      rule: Host(`nxcore.tail79107c.ts.net`) && PathPrefix(`/traefik`)
+      entryPoints: [ websecure ]
+      tls: {}
+      middlewares: [ strip-traefik ]
+      service: api@internal
+
+    # Portainer under /portainer → points to existing external container "portainer" on 9443 (https)
+    portainer:
+      rule: Host(`nxcore.tail79107c.ts.net`) && PathPrefix(`/portainer`)
+      entryPoints: [ websecure ]
+      tls: {}
+      middlewares: [ strip-portainer ]
+      service: portainer-svc
+
+    # Grafana under /grafana (container port 3000)
+    grafana:
+      rule: Host(`nxcore.tail79107c.ts.net`) && PathPrefix(`/grafana`)
+      entryPoints: [ websecure ]
+      tls: {}
+      middlewares: [ strip-grafana, grafana-headers ]
+      service: grafana-svc
+
+    # Prometheus under /prometheus (9090)
+    prometheus:
+      rule: Host(`nxcore.tail79107c.ts.net`) && PathPrefix(`/prometheus`)
+      entryPoints: [ websecure ]
+      tls: {}
+      middlewares: [ strip-prometheus ]
+      service: prometheus-svc
+
+    # Fileshare under /files (nginx on 80)
+    files:
+      rule: Host(`nxcore.tail79107c.ts.net`) && PathPrefix(`/files`)
+      entryPoints: [ websecure ]
+      tls: {}
+      middlewares: [ strip-files ]
+      service: files-svc
+
+    # Authelia under /auth (9091)
+    auth:
+      rule: Host(`nxcore.tail79107c.ts.net`) && PathPrefix(`/auth`)
+      entryPoints: [ websecure ]
+      tls: {}
+      middlewares: [ strip-auth ]
+      service: auth-svc
+
+    # Status page under /status (nginx or static html on 80)
+    status:
+      rule: Host(`nxcore.tail79107c.ts.net`) && PathPrefix(`/status`)
+      entryPoints: [ websecure ]
+      tls: {}
+      middlewares: [ strip-status ]
+      service: status-svc
+
+    # AeroCaller under /aerocaller (container serves HTTPS 4443)
+    aerocaller:
+      rule: Host(`nxcore.tail79107c.ts.net`) && PathPrefix(`/aerocaller`)
+      entryPoints: [ websecure ]
+      tls: {}
+      middlewares: [ strip-aerocaller ]
+      service: aerocaller-svc
+
+  middlewares:
+    strip-traefik:
+      stripPrefix:
+        prefixes: ["/traefik"]
+        forceSlash: true
+    strip-portainer:
+      stripPrefix:
+        prefixes: ["/portainer"]
+        forceSlash: true
+    strip-grafana:
+      stripPrefix:
+        prefixes: ["/grafana"]
+        forceSlash: true
+    strip-prometheus:
+      stripPrefix:
+        prefixes: ["/prometheus"]
+        forceSlash: true
+    strip-files:
+      stripPrefix:
+        prefixes: ["/files"]
+        forceSlash: true
+    strip-auth:
+      stripPrefix:
+        prefixes: ["/auth"]
+        forceSlash: true
+    strip-status:
+      stripPrefix:
+        prefixes: ["/status"]
+        forceSlash: true
+    strip-aerocaller:
+      stripPrefix:
+        prefixes: ["/aerocaller"]
+        forceSlash: true
+
+    grafana-headers:
+      headers:
+        referrerPolicy: no-referrer
+        customRequestHeaders:
+          X-Script-Name: /grafana
+
+  services:
+    portainer-svc:
+      loadBalancer:
+        serversTransport: portainer-insecure
+        servers:
+          - url: https://portainer:9443
+
+    grafana-svc:
+      loadBalancer:
+        servers:
+          - url: http://grafana:3000
+
+    prometheus-svc:
+      loadBalancer:
+        servers:
+          - url: http://prometheus:9090
+
+    files-svc:
+      loadBalancer:
+        servers:
+          - url: http://nxcore-fileshare-nginx:80
+
+    auth-svc:
+      loadBalancer:
+        servers:
+          - url: http://authelia:9091
+
+    status-svc:
+      loadBalancer:
+        servers:
+          - url: http://nxcore-dashboard:80
+
+    aerocaller-svc:
+      loadBalancer:
+        serversTransport: aerocaller-insecure
+        servers:
+          - url: https://aerocaller:4443
+
+  serversTransports:
+    portainer-insecure:
+      insecureSkipVerify: true
+    aerocaller-insecure:
+      insecureSkipVerify: true

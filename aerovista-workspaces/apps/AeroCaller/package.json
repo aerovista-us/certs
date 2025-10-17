@@ -1,0 +1,14 @@
+{
+  "name": "aerocoreos-staff-call-branded",
+  "version": "1.0.0",
+  "private": true,
+  "description": "AeroCoreOS branded one-click staff call over Tailscale.",
+  "scripts": {
+    "start": "node server.staff.js",
+    "start:https": "USE_HTTPS=1 node server.staff.js"
+  },
+  "dependencies": {
+    "express": "^4.19.2",
+    "peer": "^1.0.0"
+  }
+}

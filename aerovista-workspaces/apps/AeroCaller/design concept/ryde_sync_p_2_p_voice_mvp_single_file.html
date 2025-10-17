@@ -1,0 +1,242 @@
+<!--
+RydeSync P2P Voice MVP — single-file demo
+- Uses Firebase Realtime Database as signaling (offers/answers/ICE)
+- Anonymous auth; 2‑peer mesh (walkie‑talkie style once connected)
+- Minimal UI: Room ID, Join, Mute/Unmute, Leave
+- Add your Firebase config below. Optionally add TURN for reliability.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>RydeSync P2P Voice MVP</title>
+  <style>
+    body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,Helvetica,Arial,sans-serif;line-height:1.4;margin:24px;}
+    .row{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
+    input[type=text]{padding:8px 10px;border:1px solid #ccc;border-radius:8px;min-width:220px}
+    button{padding:8px 12px;border:1px solid #aaa;border-radius:8px;background:#111;color:#fff;cursor:pointer}
+    button[disabled]{opacity:.5;cursor:not-allowed}
+    .pill{display:inline-block;padding:4px 8px;border-radius:999px;background:#eee;margin-right:6px}
+    .grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:16px}
+    .card{border:1px solid #ddd;border-radius:12px;padding:12px}
+    code{background:#f6f6f6;padding:2px 6px;border-radius:6px}
+  </style>
+</head>
+<body>
+  <h1>RydeSync P2P Voice MVP</h1>
+  <div class="row">
+    <label for="roomId">Room:</label>
+    <input id="roomId" type="text" placeholder="alpha" />
+    <button id="joinBtn">Join</button>
+    <button id="leaveBtn" disabled>Leave</button>
+    <button id="muteBtn" disabled>Mute</button>
+    <span class="pill" id="status">idle</span>
+  </div>
+
+  <div class="grid">
+    <div class="card">
+      <h3>Local</h3>
+      <audio id="localAudio" autoplay muted></audio>
+      <div>mic: <code id="micState">unknown</code></div>
+    </div>
+    <div class="card">
+      <h3>Remote</h3>
+      <audio id="remoteAudio" autoplay></audio>
+      <div>peer: <code id="peerState">none</code></div>
+    </div>
+  </div>
+
+  <details style="margin-top:16px">
+    <summary>Firebase Security Rules (signaling)</summary>
+    <pre><code>{
+  "rules": {
+    "voice": {
+      "rooms": {
+        "$room": {
+          ".read": "auth != null",
+          ".write": "auth != null",
+          "participants": {
+            "$uid": {
+              ".write": "auth != null && auth.uid === $uid",
+              ".read": "auth != null"
+            }
+          },
+          "signals": {
+            "$to": { "$from": {
+              ".write": "auth != null && auth.uid === $from",
+              ".read":  "auth != null && (auth.uid === $to || auth.uid === $from)"
+            }}
+          }
+        }
+      }
+    }
+  }
+}
+</code></pre>
+  </details>
+
+  <!-- Firebase v10 CDN -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-app.js";
+    import { getDatabase, ref, set, get, onValue, onChildAdded, onDisconnect, push, remove, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-database.js";
+    import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-auth.js";
+
+    // 1) ADD YOUR FIREBASE CONFIG HERE
+    const firebaseConfig = {
+      apiKey: "YOUR_API_KEY",
+      authDomain: "YOUR_PROJECT.firebaseapp.com",
+      databaseURL: "https://YOUR_PROJECT-default-rtdb.firebaseio.com",
+      projectId: "YOUR_PROJECT",
+      appId: "YOUR_APP_ID"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db  = getDatabase(app);
+    const auth = getAuth(app);
+
+    const $ = (id)=>document.getElementById(id);
+    const status = (t)=>{ $("status").textContent = t; };
+
+    let me = null;        // my uid
+    let roomId = null;    // current room
+    let pc = null;        // RTCPeerConnection
+    let localStream = null;
+    let remoteStream = null;
+    let otherPeerId = null;  // discovered partner
+
+    // Optional: add your TURN here for reliability
+    const rtcConfig = {
+      iceServers: [
+        { urls: ["stun:stun.l.google.com:19302"] },
+        // { urls: ["turn:YOUR_TURN_HOST:3478"], username: "user", credential: "pass" }
+      ]
+    };
+
+    // UI bindings
+    $("joinBtn").addEventListener("click", joinRoom);
+    $("leaveBtn").addEventListener("click", leaveRoom);
+    $("muteBtn").addEventListener("click", toggleMute);
+
+    onAuthStateChanged(auth, async (u)=>{
+      if (!u) return;
+      me = u.uid;
+    });
+
+    // Sign in anon immediately
+    signInAnonymously(auth).catch(console.error);
+
+    async function joinRoom(){
+      if (pc) return; // already in
+      roomId = $("roomId").value.trim() || "alpha";
+      status("joining "+roomId+"…");
+
+      // 1) Presence
+      const meRef = ref(db, `voice/rooms/${roomId}/participants/${me}`);
+      await set(meRef, { uid: me, joinedAt: serverTimestamp() });
+      onDisconnect(meRef).remove();
+
+      // 2) Local media
+      try {
+        localStream = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: true, noiseSuppression: true }, video: false });
+        $("localAudio").srcObject = localStream; $("micState").textContent = "active";
+      } catch (e){
+        $("micState").textContent = "mic denied"; console.error(e); return;
+      }
+
+      // 3) PeerConnection
+      pc = new RTCPeerConnection(rtcConfig);
+      remoteStream = new MediaStream();
+      $("remoteAudio").srcObject = remoteStream;
+
+      // Add local tracks
+      localStream.getTracks().forEach(t=> pc.addTrack(t, localStream));
+
+      // Incoming remote tracks
+      pc.ontrack = (ev)=>{ ev.streams[0].getTracks().forEach(tr=> remoteStream.addTrack(tr)); $("peerState").textContent = otherPeerId || "connected"; };
+
+      // ICE: send to recipient
+      pc.onicecandidate = (ev)=>{
+        if (!ev.candidate || !otherPeerId) return;
+        push(ref(db, `voice/rooms/${roomId}/signals/${otherPeerId}/${me}/candidates`), ev.candidate.toJSON());
+      };
+
+      // 4) Determine the other peer (2‑peer MVP). Initiator rule: smaller uid calls first.
+      const partsSnap = await get(ref(db, `voice/rooms/${roomId}/participants`));
+      const peers = Object.keys(partsSnap.val()||{}).filter(id=> id!==me).sort();
+
+      if (peers.length){
+        otherPeerId = peers[0];
+        const iAmInitiator = me < otherPeerId;
+        subscribeSignals();
+        if (iAmInitiator) await makeOffer();
+      } else {
+        // Wait for someone to join; when they appear, decide initiator and proceed
+        onValue(ref(db, `voice/rooms/${roomId}/participants`), async (snap)=>{
+          const ids = Object.keys(snap.val()||{}).filter(id=> id!==me).sort();
+          if (!otherPeerId && ids.length){
+            otherPeerId = ids[0];
+            subscribeSignals();
+            const iAmInitiator = me < otherPeerId;
+            if (iAmInitiator) await makeOffer();
+          }
+        }, { onlyOnce: true });
+      }
+
+      $("joinBtn").disabled = true; $("leaveBtn").disabled = false; $("muteBtn").disabled = false; status("joined");
+    }
+
+    function subscribeSignals(){
+      // Offers addressed to me from the other peer
+      onValue(ref(db, `voice/rooms/${roomId}/signals/${me}/${otherPeerId}/offer`), async (s)=>{
+        const offer = s.val(); if (!offer) return;
+        if (!pc.currentRemoteDescription){
+          await pc.setRemoteDescription(offer);
+          const answer = await pc.createAnswer();
+          await pc.setLocalDescription(answer);
+          await set(ref(db, `voice/rooms/${roomId}/signals/${otherPeerId}/${me}/answer`), answer);
+        }
+      });
+
+      // Answers addressed to me
+      onValue(ref(db, `voice/rooms/${roomId}/signals/${me}/${otherPeerId}/answer`), async (s)=>{
+        const ans = s.val(); if (!ans) return;
+        if (!pc.currentRemoteDescription){ await pc.setRemoteDescription(ans); }
+      });
+
+      // ICE candidates sent to me
+      onChildAdded(ref(db, `voice/rooms/${roomId}/signals/${me}/${otherPeerId}/candidates`), async (snap)=>{
+        const c = snap.val(); if (!c) return;
+        try { await pc.addIceCandidate(c); } catch(e){ console.error(e); }
+      });
+    }
+
+    async function makeOffer(){
+      const offer = await pc.createOffer({ offerToReceiveAudio: true });
+      await pc.setLocalDescription(offer);
+      await set(ref(db, `voice/rooms/${roomId}/signals/${otherPeerId}/${me}/offer`), offer);
+    }
+
+    async function leaveRoom(){
+      status("leaving…");
+      try {
+        if (roomId) await remove(ref(db, `voice/rooms/${roomId}/participants/${me}`));
+      } catch {}
+      if (pc){ pc.getSenders().forEach(s=>{ try{s.track.stop()}catch{} }); pc.close(); }
+      if (localStream){ localStream.getTracks().forEach(t=> t.stop()); }
+      pc = null; localStream=null; remoteStream=null; otherPeerId=null; roomId=null;
+      $("joinBtn").disabled = false; $("leaveBtn").disabled = true; $("muteBtn").disabled = true;
+      $("peerState").textContent = "none"; $("micState").textContent = "idle";
+      status("idle");
+    }
+
+    function toggleMute(){
+      if (!localStream) return;
+      const enabled = localStream.getAudioTracks().every(t=> t.enabled);
+      localStream.getAudioTracks().forEach(t=> t.enabled = !enabled);
+      $("muteBtn").textContent = enabled ? "Unmute" : "Mute";
+      $("micState").textContent = enabled ? "muted" : "active";
+    }
+  </script>
+</body>
+</html>

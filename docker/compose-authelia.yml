@@ -24,7 +24,14 @@ services:
       - gateway
       - backend
     labels:
-      - traefik.enable=false  # Using path-based routing instead
+      - traefik.enable=true
+      - traefik.http.routers.authelia.rule=Host(`nxcore.tail79107c.ts.net`) && PathPrefix(`/auth`)
+      - traefik.http.routers.authelia.entrypoints=websecure
+      - traefik.http.routers.authelia.tls=true
+      - traefik.http.routers.authelia.priority=50
+      - traefik.http.middlewares.authelia-strip.stripprefix.prefixes=/auth
+      - traefik.http.routers.authelia.middlewares=authelia-strip@docker
+      - traefik.http.services.authelia.loadbalancer.server.port=9091
       - traefik.http.middlewares.authelia.forwardAuth.authResponseHeaders=Remote-User,Remote-Groups,Remote-Name,Remote-Email
     healthcheck:
       test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:9091/api/health"]

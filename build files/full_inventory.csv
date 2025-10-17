@@ -1,0 +1,54 @@
+bundle,relpath,filename,ext,size_bytes,sha1,fullpath
+AeroCoreOS_Splash_Pack,aerocoreos_splash/assets/animated_logo.svg,animated_logo.svg,.svg,2860,4a9164419a1726a21df0acba0b22e45c70a199f3,/mnt/data/workspace_inventory/AeroCoreOS_Splash_Pack/aerocoreos_splash/assets/animated_logo.svg
+AeroCoreOS_Splash_Pack,aerocoreos_splash/assets/bg_1024x768.png,bg_1024x768.png,.png,76781,f6c5816cbbf42d695124dcbf708ee8f0c36d2e8c,/mnt/data/workspace_inventory/AeroCoreOS_Splash_Pack/aerocoreos_splash/assets/bg_1024x768.png
+AeroCoreOS_Splash_Pack,aerocoreos_splash/assets/bg_1920x1080.png,bg_1920x1080.png,.png,132457,fc92aab199a52f570dd816211d9f0c35ae8ef468,/mnt/data/workspace_inventory/AeroCoreOS_Splash_Pack/aerocoreos_splash/assets/bg_1920x1080.png
+AeroCoreOS_Splash_Pack,aerocoreos_splash/assets/wordmark.svg,wordmark.svg,.svg,1013,240550969cc4469f6971bdc1a0bb707753ab4d5e,/mnt/data/workspace_inventory/AeroCoreOS_Splash_Pack/aerocoreos_splash/assets/wordmark.svg
+AeroCoreOS_Splash_Pack,aerocoreos_splash/assets/wordmark_1600x400.png,wordmark_1600x400.png,.png,45779,b77a7978ec53835ba07a3db3aae7c3dbd54b8e52,/mnt/data/workspace_inventory/AeroCoreOS_Splash_Pack/aerocoreos_splash/assets/wordmark_1600x400.png
+AeroCoreOS_Splash_Pack,aerocoreos_splash/index.html,index.html,.html,2188,c113d0d02c6c8c37e524f6e00e12a9640f6db1e9,/mnt/data/workspace_inventory/AeroCoreOS_Splash_Pack/aerocoreos_splash/index.html
+NXCore-Control,NXCore-Control/.cursorrules,.cursorrules,,1251,3521cbaa47db9fee1cf4207c172343feabc98c83,/mnt/data/workspace_inventory/NXCore-Control/NXCore-Control/.cursorrules
+NXCore-Control,NXCore-Control/.env.example,.env.example,.example,114,be643c71a56abde117402977ef8cd5db9a1077fe,/mnt/data/workspace_inventory/NXCore-Control/NXCore-Control/.env.example
+NXCore-Control,NXCore-Control/README.md,README.md,.md,1240,d31f03c8daf8e90761a1f1f0baa34534c215eca3,/mnt/data/workspace_inventory/NXCore-Control/NXCore-Control/README.md
+NXCore-Control,NXCore-Control/agent/cursor_agent.py,cursor_agent.py,.py,673,814337f57d589b965673421f636aa1697961716a,/mnt/data/workspace_inventory/NXCore-Control/NXCore-Control/agent/cursor_agent.py
+NXCore-Control,NXCore-Control/agent/nxcore-agent.rules,nxcore-agent.rules,.rules,232,df1088f430f0aac184b66b4c73df07685d2a169e,/mnt/data/workspace_inventory/NXCore-Control/NXCore-Control/agent/nxcore-agent.rules
+NXCore-Control,NXCore-Control/agent/systemd/cursor-agent.service,cursor-agent.service,.service,267,a388dbd1f3ce1c4d4286833694667227d09b666d,/mnt/data/workspace_inventory/NXCore-Control/NXCore-Control/agent/systemd/cursor-agent.service
+NXCore-Control,NXCore-Control/ai/ai-core.sh,ai-core.sh,.sh,287,5e9dd116d72f9ff4322df71552cc974c3b29b1f9,/mnt/data/workspace_inventory/NXCore-Control/NXCore-Control/ai/ai-core.sh
+NXCore-Control,NXCore-Control/ai/ollama/pull-models.sh,pull-models.sh,.sh,61,49827e9776605d051596147f94919475f6b3d480,/mnt/data/workspace_inventory/NXCore-Control/NXCore-Control/ai/ollama/pull-models.sh
+NXCore-Control,NXCore-Control/configs/tailscale-acl.json,tailscale-acl.json,.json,176,b7fb9cefabf2f485410b780ae5bd6e3ed44a807d,/mnt/data/workspace_inventory/NXCore-Control/NXCore-Control/configs/tailscale-acl.json
+NXCore-Control,NXCore-Control/configs/ufw-rules.txt,ufw-rules.txt,.txt,155,b53f1f118d0d787267b82076886002be267bee10,/mnt/data/workspace_inventory/NXCore-Control/NXCore-Control/configs/ufw-rules.txt
+NXCore-Control,NXCore-Control/cursor.json,cursor.json,.json,411,741ca334f3542b98ecb5117bc8975ab6f1a0156c,/mnt/data/workspace_inventory/NXCore-Control/NXCore-Control/cursor.json
+NXCore-Control,NXCore-Control/docker/compose-filebrowser.yml,compose-filebrowser.yml,.yml,288,b366a97d0ac4f0d41c03b13baafa23c88ea1fe90,/mnt/data/workspace_inventory/NXCore-Control/NXCore-Control/docker/compose-filebrowser.yml
+NXCore-Control,NXCore-Control/docker/compose-n8n.yml,compose-n8n.yml,.yml,326,301829fa01f26a38e99a2ab6b26c03bc6c3bbb31,/mnt/data/workspace_inventory/NXCore-Control/NXCore-Control/docker/compose-n8n.yml
+NXCore-Control,NXCore-Control/inventory/hosts.ini,hosts.ini,.ini,42,742ace45de87a6bee9650795f98171231c89ed69,/mnt/data/workspace_inventory/NXCore-Control/NXCore-Control/inventory/hosts.ini
+NXCore-Control,NXCore-Control/scripts/ps/backup-nxcore.ps1,backup-nxcore.ps1,.ps1,480,efe198273a1e2cbd228f7874a0784aa3c380c247,/mnt/data/workspace_inventory/NXCore-Control/NXCore-Control/scripts/ps/backup-nxcore.ps1
+NXCore-Control,NXCore-Control/scripts/ps/deploy-containers.ps1,deploy-containers.ps1,.ps1,711,f11de613bb2dccbc49a01dcc292a6a93bf2afcd9,/mnt/data/workspace_inventory/NXCore-Control/NXCore-Control/scripts/ps/deploy-containers.ps1
+NXCore-Control,NXCore-Control/scripts/ps/sync-config.ps1,sync-config.ps1,.ps1,584,db5a9fb74a02e6afcfab024254112341353a6ed8,/mnt/data/workspace_inventory/NXCore-Control/NXCore-Control/scripts/ps/sync-config.ps1
+NXCore-Control,NXCore-Control/scripts/scp-to-nxcore.bat,scp-to-nxcore.bat,.bat,225,aa7c811aedce854f4ab75005d6babd17e6390245,/mnt/data/workspace_inventory/NXCore-Control/NXCore-Control/scripts/scp-to-nxcore.bat
+NXCore-Control,NXCore-Control/scripts/ssh-nxcore.bat,ssh-nxcore.bat,.bat,66,b29240ff45870e3e28ed05b8e55ffcd21a7278c5,/mnt/data/workspace_inventory/NXCore-Control/NXCore-Control/scripts/ssh-nxcore.bat
+NXCore-Control,NXCore-Control/utils/windows/install-ssh.ps1,install-ssh.ps1,.ps1,100,42205e530a4de06d17a209e388b0de930554edab,/mnt/data/workspace_inventory/NXCore-Control/NXCore-Control/utils/windows/install-ssh.ps1
+NXCore-Control,NXCore-Control/utils/windows/winget-install.bat,winget-install.bat,.bat,113,02ac050e689bb5c0b6954ec2097067542051fe05,/mnt/data/workspace_inventory/NXCore-Control/NXCore-Control/utils/windows/winget-install.bat
+aerocaller-coturn-pack (1),.env,.env,,289,eb24d27364192f63e3578c214b5db15347a0961e,/mnt/data/workspace_inventory/aerocaller-coturn-pack (1)/.env
+aerocaller-coturn-pack (1),README.md,README.md,.md,1698,e45bca57fc318af889a7dccd40458ac1ddb24fb1,/mnt/data/workspace_inventory/aerocaller-coturn-pack (1)/README.md
+aerocaller-coturn-pack (1),client_snippets.md,client_snippets.md,.md,1256,633e6359221b74242f5c719cbf4366673775b51e,/mnt/data/workspace_inventory/aerocaller-coturn-pack (1)/client_snippets.md
+aerocaller-coturn-pack (1),docker-compose.yml,docker-compose.yml,.yml,1027,c9d6cd985c7c29b7f1e2c3c727a9cb2efafe3e62,/mnt/data/workspace_inventory/aerocaller-coturn-pack (1)/docker-compose.yml
+aerocaller-coturn-pack (1),generate_turn_cred.js,generate_turn_cred.js,.js,549,d08c286e45b0a70f1c578a5a2b9deebeca3e1c85,/mnt/data/workspace_inventory/aerocaller-coturn-pack (1)/generate_turn_cred.js
+aerocaller-coturn-pack (1),install_coturn_docker.sh,install_coturn_docker.sh,.sh,1581,4721647799173168754ca02ddead6eb192f64ff1,/mnt/data/workspace_inventory/aerocaller-coturn-pack (1)/install_coturn_docker.sh
+aerocaller-coturn-pack (1),install_coturn_native.sh,install_coturn_native.sh,.sh,772,2349e2e6c4e4d1bbde8f8a866d672749e29cb08a,/mnt/data/workspace_inventory/aerocaller-coturn-pack (1)/install_coturn_native.sh
+aerocaller-coturn-pack (1),verify_turn.sh,verify_turn.sh,.sh,523,8a6037d77c98b586afce3b45c6d7d9a49686c0e8,/mnt/data/workspace_inventory/aerocaller-coturn-pack (1)/verify_turn.sh
+dev_env_bundle,.devcontainer/devcontainer.json,devcontainer.json,.json,1029,79774dba5ec1a9e80bd869bf559e4bfe77e49755,/mnt/data/workspace_inventory/dev_env_bundle/.devcontainer/devcontainer.json
+dev_env_bundle,.editorconfig,.editorconfig,,139,7c77a72e362d26b9d96df6e6908e83d7d9fbd62e,/mnt/data/workspace_inventory/dev_env_bundle/.editorconfig
+dev_env_bundle,.envrc.example,.envrc.example,.example,157,483daefd41515a40472264c8cf87c92869aa119a,/mnt/data/workspace_inventory/dev_env_bundle/.envrc.example
+dev_env_bundle,.prettierrc,.prettierrc,,90,8c1a1f23f5f588f01b1c118f5c896e9df0dc653d,/mnt/data/workspace_inventory/dev_env_bundle/.prettierrc
+dev_env_bundle,README.md,README.md,.md,914,7b65572b2f4ce2d579ce41075d4e9d9ece752bfd,/mnt/data/workspace_inventory/dev_env_bundle/README.md
+dev_env_bundle,scripts/bootstrap_dev.sh,bootstrap_dev.sh,.sh,2967,6babd7a73dd5750cdf7acb3b96183429a0cd6098,/mnt/data/workspace_inventory/dev_env_bundle/scripts/bootstrap_dev.sh
+dev_env_bundle,vscode/extensions.txt,extensions.txt,.txt,229,fbad98a79c33b05f19122d1a509e3965913d7b10,/mnt/data/workspace_inventory/dev_env_bundle/vscode/extensions.txt
+fleet_layer_bundle,.env.example,.env.example,.example,167,d4ef0691f25ca0012632d51dbc7257d7820ea031,/mnt/data/workspace_inventory/fleet_layer_bundle/.env.example
+fleet_layer_bundle,README.md,README.md,.md,346,1c5396f78e680008a113e49a8979d2db5002dbe9,/mnt/data/workspace_inventory/fleet_layer_bundle/README.md
+fleet_layer_bundle,dashboard/index.html,index.html,.html,294,b9e487c92936340922ae58331642e1f25904768f,/mnt/data/workspace_inventory/fleet_layer_bundle/dashboard/index.html
+fleet_layer_bundle,docker-compose.yml,docker-compose.yml,.yml,1050,131645c6f86392e973dbf19110da2dc661816e32,/mnt/data/workspace_inventory/fleet_layer_bundle/docker-compose.yml
+nxcore_bootstrap_bundle,README.md,README.md,.md,46,5288fbaffe3903f2039f00181d797b0cb050c4b4,/mnt/data/workspace_inventory/nxcore_bootstrap_bundle/README.md
+nxcore_bootstrap_bundle,bootstrap_nxcore.sh,bootstrap_nxcore.sh,.sh,56,fa4954b610dcef155947d3a53d5df0e2843bc8b4,/mnt/data/workspace_inventory/nxcore_bootstrap_bundle/bootstrap_nxcore.sh
+nxcore_bootstrap_bundle,coturn/turnserver.conf.example,turnserver.conf.example,.example,22,d65fd9b23ae3de159fd1c576657cc8b25a2381cc,/mnt/data/workspace_inventory/nxcore_bootstrap_bundle/coturn/turnserver.conf.example
+nxcore_bootstrap_bundle,filebrowser/docker-compose.yml,docker-compose.yml,.yml,12,7017318a747f472d6f0b3854e0f6961cc75b4946,/mnt/data/workspace_inventory/nxcore_bootstrap_bundle/filebrowser/docker-compose.yml
+nxcore_bootstrap_bundle,n8n-stack/.env.example,.env.example,.example,31,a83f86282c404d2c3137820b15efb1c2d471cc2d,/mnt/data/workspace_inventory/nxcore_bootstrap_bundle/n8n-stack/.env.example
+nxcore_bootstrap_bundle,n8n-stack/traefik/dynamic/tailscale-certs.yml,tailscale-certs.yml,.yml,7,7516837638a7649f2f2254162ee3be75e60b005f,/mnt/data/workspace_inventory/nxcore_bootstrap_bundle/n8n-stack/traefik/dynamic/tailscale-certs.yml
+nxcore_bootstrap_bundle,services-landing/index.html,index.html,.html,15,7ed524a163d9c13508889b274ee499fab511fb1c,/mnt/data/workspace_inventory/nxcore_bootstrap_bundle/services-landing/index.html

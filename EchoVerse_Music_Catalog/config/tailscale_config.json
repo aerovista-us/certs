@@ -1,0 +1,13 @@
+{
+  "tailscale": {
+    "domain": "https://aerocoreos.tail79107c.ts.net/echoverse/Albums/",
+    "music_path": "",
+    "enabled": true,
+    "fallback_to_direct": true
+  },
+  "local_paths": {
+    "network_share": "\\\\envy2-0\\EchoVerse_Music\\Albums\\",
+    "local_drive": "M:\\Albums\\",
+    "backup_drive": "D:\\Clients\\AeroVista\\Projects\\EchoVerse_Music\\Albums\\"
+  }
+}

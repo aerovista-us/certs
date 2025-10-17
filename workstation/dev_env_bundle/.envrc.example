@@ -1,0 +1,4 @@
+# .envrc example (allow with `direnv allow`)
+export NODE_OPTIONS="--max-old-space-size=4096"
+export PIP_DISABLE_PIP_VERSION_CHECK=1
+layout python python3.12

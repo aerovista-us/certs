@@ -1,0 +1,912 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NeXuS Music Catalog - Interactive Manual</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            box-shadow: 0 0 30px rgba(0,0,0,0.1);
+            min-height: 100vh;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 2rem;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .nav {
+            background: #f8f9fa;
+            padding: 1rem 2rem;
+            border-bottom: 2px solid #e9ecef;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .nav ul {
+            list-style: none;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .nav a {
+            text-decoration: none;
+            color: #667eea;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        .nav a:hover, .nav a.active {
+            background: #667eea;
+            color: white;
+        }
+
+        .content {
+            padding: 2rem;
+        }
+
+        .section {
+            margin-bottom: 3rem;
+            padding: 2rem;
+            border-radius: 15px;
+            background: #f8f9fa;
+            border-left: 4px solid #667eea;
+        }
+
+        .section h2 {
+            color: #667eea;
+            margin-bottom: 1rem;
+            font-size: 1.8rem;
+        }
+
+        .section h3 {
+            color: #495057;
+            margin: 1.5rem 0 1rem 0;
+            font-size: 1.3rem;
+        }
+
+        .checklist {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin: 1rem 0;
+            border: 2px solid #e9ecef;
+        }
+
+        .checklist-item {
+            display: flex;
+            align-items: center;
+            margin: 0.5rem 0;
+            padding: 0.5rem;
+            border-radius: 5px;
+            transition: background 0.3s ease;
+        }
+
+        .checklist-item:hover {
+            background: #f8f9fa;
+        }
+
+        .checklist-item input[type="checkbox"] {
+            margin-right: 1rem;
+            transform: scale(1.2);
+        }
+
+        .checklist-item.completed {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .code-block {
+            background: #2d3748;
+            color: #e2e8f0;
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin: 1rem 0;
+            font-family: 'Courier New', monospace;
+            overflow-x: auto;
+        }
+
+        .btn {
+            display: inline-block;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 0.75rem 1.5rem;
+            text-decoration: none;
+            border-radius: 25px;
+            margin: 0.5rem;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #6c757d 0%, #495057 100%);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+        }
+
+        .btn-warning {
+            background: linear-gradient(135deg, #ffc107 0%, #fd7e14 100%);
+        }
+
+        .status-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin: 1rem 0;
+            border-left: 4px solid #667eea;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .status-card.success {
+            border-left-color: #28a745;
+        }
+
+        .status-card.warning {
+            border-left-color: #ffc107;
+        }
+
+        .status-card.error {
+            border-left-color: #dc3545;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 20px;
+            background: #e9ecef;
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 1rem 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .file-structure {
+            background: #f8f9fa;
+            padding: 1rem;
+            border-radius: 10px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            margin: 1rem 0;
+        }
+
+        .file-structure .folder {
+            color: #667eea;
+            font-weight: bold;
+        }
+
+        .file-structure .file {
+            color: #495057;
+        }
+
+        .tip-box {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 10px;
+            padding: 1rem;
+            margin: 1rem 0;
+        }
+
+        .tip-box h4 {
+            color: #856404;
+            margin-bottom: 0.5rem;
+        }
+
+        .troubleshooting-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1rem 0;
+        }
+
+        .troubleshooting-table th,
+        .troubleshooting-table td {
+            padding: 0.75rem;
+            text-align: left;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .troubleshooting-table th {
+            background: #f8f9fa;
+            font-weight: 600;
+            color: #667eea;
+        }
+
+        .troubleshooting-table tr:hover {
+            background: #f8f9fa;
+        }
+
+        .workflow-step {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin: 1rem 0;
+            border-left: 4px solid #667eea;
+            position: relative;
+        }
+
+        .workflow-step::before {
+            content: attr(data-step);
+            position: absolute;
+            top: -10px;
+            left: -10px;
+            background: #667eea;
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+
+        .emoji {
+            font-size: 1.2em;
+            margin-right: 0.5rem;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .show-more {
+            background: none;
+            border: none;
+            color: #667eea;
+            cursor: pointer;
+            text-decoration: underline;
+            margin-top: 1rem;
+        }
+
+        .show-more:hover {
+            color: #764ba2;
+        }
+
+        @media (max-width: 768px) {
+            .nav ul {
+                flex-direction: column;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .content {
+                padding: 1rem;
+            }
+            
+            .section {
+                padding: 1rem;
+            }
+        }
+
+        .floating-nav {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #667eea;
+            color: white;
+            padding: 1rem;
+            border-radius: 50px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            z-index: 1000;
+        }
+
+        .floating-nav button {
+            background: none;
+            border: none;
+            color: white;
+            cursor: pointer;
+            margin: 0 0.5rem;
+            font-size: 1.2rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎵 NeXuS Music Catalog</h1>
+            <p>Interactive Project Manual & Quick Reference Guide</p>
+        </div>
+
+        <nav class="nav">
+            <ul>
+                <li><a href="#overview" onclick="showSection('overview')">📋 Overview</a></li>
+                <li><a href="#setup" onclick="showSection('setup')">⚙️ Setup</a></li>
+                <li><a href="#quickstart" onclick="showSection('quickstart')">🚀 Quick Start</a></li>
+                <li><a href="#workflow" onclick="showSection('workflow')">🔄 Workflow</a></li>
+                <li><a href="#troubleshooting" onclick="showSection('troubleshooting')">🔧 Troubleshooting</a></li>
+                <li><a href="#best-practices" onclick="showSection('best-practices')">⭐ Best Practices</a></li>
+                <li><a href="#progress" onclick="showSection('progress')">📊 Progress Tracker</a></li>
+            </ul>
+        </nav>
+
+        <div class="content">
+            <!-- Overview Section -->
+            <section id="overview" class="section">
+                <h2>📋 Project Overview</h2>
+                <p>Your NeXuS Music Catalog system is a comprehensive solution for transcribing music, creating lyric sheets, and building complete music catalogs with album art and band information.</p>
+                
+                <div class="status-card">
+                    <h3>🎯 What You Can Do</h3>
+                    <ul>
+                        <li>🎤 Transcribe lyrics from any audio file using Whisper AI</li>
+                        <li>📝 Generate professional lyric sheets</li>
+                        <li>🖼️ Extract and organize album artwork</li>
+                        <li>📊 Build comprehensive music catalogs</li>
+                        <li>📈 Generate detailed analytics and reports</li>
+                        <li>📤 Export data in multiple formats (JSON, CSV)</li>
+                    </ul>
+                </div>
+
+                <div class="file-structure">
+                    <div class="folder">D:/NeXuS/</div>
+                    <div class="folder">├── music/                    # Your music files</div>
+                    <div class="folder">├── music_catalog/           # Generated data</div>
+                    <div class="folder">│   ├── lyrics/              # Individual lyric files</div>
+                    <div class="folder">│   ├── lyric_sheets/        # Professional sheets</div>
+                    <div class="folder">│   ├── album_art/           # Extracted artwork</div>
+                    <div class="folder">│   └── reports/             # Catalog reports</div>
+                    <div class="file">├── nexus_music_catalog.py     # Core system</div>
+                    <div class="file">├── nexus_music_dashboard.py   # Web interface</div>
+                    <div class="file">└── launch_music_dashboard.bat # Launcher</div>
+                </div>
+            </section>
+
+            <!-- Setup Section -->
+            <section id="setup" class="section hidden">
+                <h2>⚙️ System Setup</h2>
+                
+                <div class="checklist">
+                    <h3>Pre-Launch Checklist</h3>
+                    <div class="checklist-item">
+                        <input type="checkbox" id="check1" onchange="updateProgress()">
+                        <label for="check1">Verify NeXuS Music Catalog system is installed</label>
+                    </div>
+                    <div class="checklist-item">
+                        <input type="checkbox" id="check2" onchange="updateProgress()">
+                        <label for="check2">Run system test: <code>python test_music_catalog.py</code></label>
+                    </div>
+                    <div class="checklist-item">
+                        <input type="checkbox" id="check3" onchange="updateProgress()">
+                        <label for="check3">Ensure music directory is organized and accessible</label>
+                    </div>
+                    <div class="checklist-item">
+                        <input type="checkbox" id="check4" onchange="updateProgress()">
+                        <label for="check4">Verify audio files have proper metadata</label>
+                    </div>
+                    <div class="checklist-item">
+                        <input type="checkbox" id="check5" onchange="updateProgress()">
+                        <label for="check5">Check available disk space for transcriptions</label>
+                    </div>
+                </div>
+
+                <div class="status-card">
+                    <h3>🔧 System Requirements</h3>
+                    <ul>
+                        <li><strong>Python:</strong> 3.8+ with virtual environment</li>
+                        <li><strong>Dependencies:</strong> Flask, Whisper, Mutagen, Pandas</li>
+                        <li><strong>Storage:</strong> Sufficient space for transcriptions</li>
+                        <li><strong>Memory:</strong> 4GB+ RAM recommended</li>
+                        <li><strong>Network:</strong> Internet for first Whisper model download</li>
+                    </ul>
+                </div>
+
+                <div class="code-block">
+# Test your system
+python test_music_catalog.py
+
+# Expected output:
+# ✅ Successfully imported NeXuS Music Catalog modules
+# 🎉 All tests passed! Music catalog system is working correctly.
+                </div>
+            </section>
+
+            <!-- Quick Start Section -->
+            <section id="quickstart" class="section hidden">
+                <h2>🚀 Quick Start Guide</h2>
+
+                <div class="workflow-step" data-step="1">
+                    <h3>🎯 Step 1: Launch the System</h3>
+                    <div class="code-block">
+# Option A: Use the launcher (recommended)
+.\launch_music_dashboard.bat
+
+# Option B: Manual launch
+cd D:\NeXuS
+python nexus_music_dashboard.py
+                    </div>
+                    <p><strong>Expected:</strong> Dashboard available at http://localhost:5001</p>
+                </div>
+
+                <div class="workflow-step" data-step="2">
+                    <h3>🎯 Step 2: Access the Dashboard</h3>
+                    <p>Open your browser and navigate to: <strong>http://localhost:5001</strong></p>
+                    <p>You should see the NeXuS Music Catalog interface with system status and processing options.</p>
+                </div>
+
+                <div class="workflow-step" data-step="3">
+                    <h3>🎯 Step 3: First Music Processing</h3>
+                    <ol>
+                        <li>Enter your music directory path in the "Music Directory Path" field</li>
+                        <li>Click "Scan Music Files" to preview what will be processed</li>
+                        <li>Click "Process Music" to start transcription and cataloging</li>
+                        <li>Monitor progress in the real-time activity log</li>
+                    </ol>
+                </div>
+
+                <div class="workflow-step" data-step="4">
+                    <h3>🎯 Step 4: Generate Your First Lyric Sheets</h3>
+                    <p>Once processing is complete:</p>
+                    <ul>
+                        <li>Click "Generate All Sheets" for batch lyric sheet creation</li>
+                        <li>Or click individual 📄 buttons next to tracks for single sheets</li>
+                        <li>Check the "lyric_sheets" folder for generated files</li>
+                    </ul>
+                </div>
+
+                <div class="tip-box">
+                    <h4>💡 Pro Tip</h4>
+                    <p>Start with a small music directory (5-10 songs) to test the system before processing your entire library.</p>
+                </div>
+            </section>
+
+            <!-- Workflow Section -->
+            <section id="workflow" class="section hidden">
+                <h2>🔄 Complete Workflow</h2>
+
+                <div class="workflow-step" data-step="1">
+                    <h3>📁 Phase 1: File Preparation</h3>
+                    <div class="file-structure">
+                        <div class="folder">M:/Albums/</div>
+                        <div class="folder">├── Artist Name/</div>
+                        <div class="folder">│   ├── Album Name/</div>
+                        <div class="file">│   │   ├── 01 - Song Title.mp3</div>
+                        <div class="file">│   │   ├── 02 - Song Title.mp3</div>
+                        <div class="file">│   │   └── ...</div>
+                    </div>
+                    <p><strong>Best Practice:</strong> Ensure all audio files have proper metadata (artist, title, album, year, genre).</p>
+                </div>
+
+                <div class="workflow-step" data-step="2">
+                    <h3>⚡ Phase 2: Processing</h3>
+                    <div class="code-block">
+# Process entire library
+python nexus_music_catalog.py --music-dir "M:/Albums"
+
+# Or use web dashboard
+# 1. Enter path: M:/Albums
+# 2. Click "Process Music"
+# 3. Monitor real-time progress
+                    </div>
+                    <p><strong>What happens:</strong> Each audio file is transcribed, metadata extracted, album art saved, and cataloged.</p>
+                </div>
+
+                <div class="workflow-step" data-step="3">
+                    <h3>📝 Phase 3: Lyric Sheet Generation</h3>
+                    <div class="code-block">
+# Generate all lyric sheets
+# Dashboard: Click "Generate All Sheets"
+# Command line: Use lyric sheet functions
+
+# Individual sheets
+# Dashboard: Click 📄 button next to tracks
+                    </div>
+                    <p><strong>Output:</strong> Professional lyric sheets saved to <code>music_catalog/lyric_sheets/</code></p>
+                </div>
+
+                <div class="workflow-step" data-step="4">
+                    <h3>📊 Phase 4: Reports & Analytics</h3>
+                    <div class="code-block">
+# Generate comprehensive report
+python nexus_music_catalog.py --report
+
+# Export catalog
+python nexus_music_catalog.py --export json
+python nexus_music_catalog.py --export csv
+                    </div>
+                    <p><strong>Reports include:</strong> Total tracks, albums, artists, duration, genre breakdown, and more.</p>
+                </div>
+
+                <div class="workflow-step" data-step="5">
+                    <h3>🔄 Phase 5: Ongoing Management</h3>
+                    <ul>
+                        <li><strong>New Albums:</strong> Add to music directory and reprocess</li>
+                        <li><strong>Updates:</strong> Use "Force Reprocess" for re-transcription</li>
+                        <li><strong>Backup:</strong> Export catalog regularly</li>
+                        <li><strong>Integration:</strong> Link with ICETAP for album art annotation</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- Troubleshooting Section -->
+            <section id="troubleshooting" class="section hidden">
+                <h2>🔧 Troubleshooting Guide</h2>
+
+                <table class="troubleshooting-table">
+                    <thead>
+                        <tr>
+                            <th>Issue</th>
+                            <th>Quick Fix</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>"Music directory not found"</td>
+                            <td>Check path spelling and file permissions</td>
+                            <td><span class="emoji">⚠️</span> Common</td>
+                        </tr>
+                        <tr>
+                            <td>"Transcription failed"</td>
+                            <td>Verify audio file isn't corrupted, check format support</td>
+                            <td><span class="emoji">🔧</span> Fixable</td>
+                        </tr>
+                        <tr>
+                            <td>"Whisper model not loading"</td>
+                            <td>Ensure internet connection for first run, check RAM</td>
+                            <td><span class="emoji">🌐</span> Network</td>
+                        </tr>
+                        <tr>
+                            <td>"Dashboard not accessible"</td>
+                            <td>Check if port 5001 is available, verify firewall</td>
+                            <td><span class="emoji">🔌</span> Port</td>
+                        </tr>
+                        <tr>
+                            <td>"Module not found"</td>
+                            <td>Run: <code>pip install flask flask-socketio whisper mutagen</code></td>
+                            <td><span class="emoji">📦</span> Dependencies</td>
+                        </tr>
+                        <tr>
+                            <td>"Low transcription quality"</td>
+                            <td>Check audio quality, try different Whisper model size</td>
+                            <td><span class="emoji">🎵</span> Quality</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div class="status-card warning">
+                    <h3>🚨 Emergency Recovery</h3>
+                    <p><strong>If system becomes unresponsive:</strong></p>
+                    <ol>
+                        <li>Stop the dashboard (Ctrl+C)</li>
+                        <li>Check disk space and memory usage</li>
+                        <li>Restart with: <code>.\launch_music_dashboard.bat</code></li>
+                        <li>If issues persist, check logs in <code>music_catalog/reports/</code></li>
+                    </ol>
+                </div>
+
+                <div class="tip-box">
+                    <h4>🔍 Debug Commands</h4>
+                    <div class="code-block">
+# Check system status
+python test_music_catalog.py
+
+# Check disk space
+dir D:\NeXuS\music_catalog
+
+# Check Python environment
+python --version
+pip list | findstr flask
+                    </div>
+                </div>
+            </section>
+
+            <!-- Best Practices Section -->
+            <section id="best-practices" class="section hidden">
+                <h2>⭐ Best Practices</h2>
+
+                <div class="status-card success">
+                    <h3>🎯 File Organization</h3>
+                    <ul>
+                        <li><strong>Consistent naming:</strong> Use "Artist - Album - Track.mp3" format</li>
+                        <li><strong>Track numbers:</strong> Include "01 - Song Title.mp3" for proper ordering</li>
+                        <li><strong>Folder structure:</strong> Artist → Album → Tracks hierarchy</li>
+                        <li><strong>Metadata:</strong> Fill all ID3 tags (artist, title, album, year, genre)</li>
+                    </ul>
+                </div>
+
+                <div class="status-card success">
+                    <h3>⚡ Processing Strategy</h3>
+                    <ul>
+                        <li><strong>Start small:</strong> Test with 5-10 songs before large batches</li>
+                        <li><strong>Batch processing:</strong> Process 50-100 songs at a time</li>
+                        <li><strong>Monitor resources:</strong> Close other apps during processing</li>
+                        <li><strong>Regular saves:</strong> System auto-saves every 5 tracks</li>
+                    </ul>
+                </div>
+
+                <div class="status-card success">
+                    <h3>📊 Quality Control</h3>
+                    <ul>
+                        <li><strong>Review transcriptions:</strong> Check accuracy for important songs</li>
+                        <li><strong>Manual corrections:</strong> Edit lyrics files if needed</li>
+                        <li><strong>Re-transcribe:</strong> Use "Force Reprocess" for better quality</li>
+                        <li><strong>Backup regularly:</strong> Export catalog after major updates</li>
+                    </ul>
+                </div>
+
+                <div class="status-card success">
+                    <h3>🔄 Workflow Optimization</h3>
+                    <ul>
+                        <li><strong>Peak hours:</strong> Process large libraries during off-peak times</li>
+                        <li><strong>SSD storage:</strong> Use solid-state drives for faster processing</li>
+                        <li><strong>Network files:</strong> Copy files locally for faster access</li>
+                        <li><strong>Parallel processing:</strong> System handles multiple files efficiently</li>
+                    </ul>
+                </div>
+
+                <div class="tip-box">
+                    <h4>💡 Pro Tips</h4>
+                    <ul>
+                        <li>Use consistent artist names (avoid "The Beatles" vs "Beatles")</li>
+                        <li>Include release years for better cataloging and analytics</li>
+                        <li>Add genre tags for better organization and filtering</li>
+                        <li>Keep original files backed up before processing</li>
+                        <li>Integrate with ICETAP for album art annotation</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- Progress Tracker Section -->
+            <section id="progress" class="section hidden">
+                <h2>📊 Project Progress Tracker</h2>
+
+                <div class="progress-bar">
+                    <div class="progress-fill" id="overallProgress"></div>
+                </div>
+                <p><strong>Overall Progress: <span id="progressText">0%</span></strong></p>
+
+                <div class="checklist">
+                    <h3>Week 1 Goals</h3>
+                    <div class="checklist-item">
+                        <input type="checkbox" id="goal1" onchange="updateProgress()">
+                        <label for="goal1">✅ System successfully tested and verified</label>
+                    </div>
+                    <div class="checklist-item">
+                        <input type="checkbox" id="goal2" onchange="updateProgress()">
+                        <label for="goal2">✅ 10-20 songs processed and cataloged</label>
+                    </div>
+                    <div class="checklist-item">
+                        <input type="checkbox" id="goal3" onchange="updateProgress()">
+                        <label for="goal3">✅ First lyric sheets generated successfully</label>
+                    </div>
+                    <div class="checklist-item">
+                        <input type="checkbox" id="goal4" onchange="updateProgress()">
+                        <label for="goal4">✅ Basic catalog report created and reviewed</label>
+                    </div>
+                </div>
+
+                <div class="checklist">
+                    <h3>Week 2 Goals</h3>
+                    <div class="checklist-item">
+                        <input type="checkbox" id="goal5" onchange="updateProgress()">
+                        <label for="goal5">✅ 100+ songs processed and cataloged</label>
+                    </div>
+                    <div class="checklist-item">
+                        <input type="checkbox" id="goal6" onchange="updateProgress()">
+                        <label for="goal6">✅ Multiple albums fully processed</label>
+                    </div>
+                    <div class="checklist-item">
+                        <input type="checkbox" id="goal7" onchange="updateProgress()">
+                        <label for="goal7">✅ Export formats tested (JSON, CSV)</label>
+                    </div>
+                    <div class="checklist-item">
+                        <input type="checkbox" id="goal8" onchange="updateProgress()">
+                        <label for="goal8">✅ Workflow optimized for efficiency</label>
+                    </div>
+                </div>
+
+                <div class="checklist">
+                    <h3>Month 1 Goals</h3>
+                    <div class="checklist-item">
+                        <input type="checkbox" id="goal9" onchange="updateProgress()">
+                        <label for="goal9">✅ Complete music library processed</label>
+                    </div>
+                    <div class="checklist-item">
+                        <input type="checkbox" id="goal10" onchange="updateProgress()">
+                        <label for="goal10">✅ Professional lyric sheets for all songs</label>
+                    </div>
+                    <div class="checklist-item">
+                        <input type="checkbox" id="goal11" onchange="updateProgress()">
+                        <label for="goal11">✅ Comprehensive catalog reports generated</label>
+                    </div>
+                    <div class="checklist-item">
+                        <input type="checkbox" id="goal12" onchange="updateProgress()">
+                        <label for="goal12">✅ Integration with existing NeXuS workflows</label>
+                    </div>
+                </div>
+
+                <div class="status-card">
+                    <h3>📈 Success Metrics</h3>
+                    <ul>
+                        <li><strong>Processing Speed:</strong> Track time per song</li>
+                        <li><strong>Transcription Quality:</strong> Review accuracy rates</li>
+                        <li><strong>Catalog Completeness:</strong> Percentage of songs with lyrics</li>
+                        <li><strong>System Reliability:</strong> Uptime and error rates</li>
+                        <li><strong>User Satisfaction:</strong> Ease of use and feature utilization</li>
+                    </ul>
+                </div>
+            </section>
+        </div>
+    </div>
+
+    <div class="floating-nav">
+        <button onclick="scrollToTop()" title="Back to Top">⬆️</button>
+        <button onclick="toggleDarkMode()" title="Toggle Dark Mode">🌙</button>
+        <button onclick="saveProgress()" title="Save Progress">💾</button>
+    </div>
+
+    <script>
+        // Navigation functionality
+        function showSection(sectionId) {
+            // Hide all sections
+            document.querySelectorAll('.section').forEach(section => {
+                section.classList.add('hidden');
+            });
+            
+            // Show selected section
+            document.getElementById(sectionId).classList.remove('hidden');
+            
+            // Update navigation
+            document.querySelectorAll('.nav a').forEach(link => {
+                link.classList.remove('active');
+            });
+            event.target.classList.add('active');
+        }
+
+        // Progress tracking
+        function updateProgress() {
+            const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+            const checked = document.querySelectorAll('input[type="checkbox"]:checked');
+            const progress = (checked.length / checkboxes.length) * 100;
+            
+            document.getElementById('overallProgress').style.width = progress + '%';
+            document.getElementById('progressText').textContent = Math.round(progress) + '%';
+            
+            // Save to localStorage
+            localStorage.setItem('nexusProgress', JSON.stringify({
+                checkboxes: Array.from(checkboxes).map(cb => cb.checked),
+                progress: progress
+            }));
+        }
+
+        // Load saved progress
+        function loadProgress() {
+            const saved = localStorage.getItem('nexusProgress');
+            if (saved) {
+                const data = JSON.parse(saved);
+                const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+                data.checkboxes.forEach((checked, index) => {
+                    if (checkboxes[index]) {
+                        checkboxes[index].checked = checked;
+                    }
+                });
+                updateProgress();
+            }
+        }
+
+        // Save progress
+        function saveProgress() {
+            updateProgress();
+            alert('Progress saved!');
+        }
+
+        // Scroll to top
+        function scrollToTop() {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Toggle dark mode
+        function toggleDarkMode() {
+            document.body.classList.toggle('dark-mode');
+        }
+
+        // Auto-save progress every 30 seconds
+        setInterval(updateProgress, 30000);
+
+        // Load progress on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            loadProgress();
+            showSection('overview');
+        });
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', function(e) {
+            if (e.ctrlKey || e.metaKey) {
+                switch(e.key) {
+                    case '1':
+                        e.preventDefault();
+                        showSection('overview');
+                        break;
+                    case '2':
+                        e.preventDefault();
+                        showSection('setup');
+                        break;
+                    case '3':
+                        e.preventDefault();
+                        showSection('quickstart');
+                        break;
+                    case '4':
+                        e.preventDefault();
+                        showSection('workflow');
+                        break;
+                    case '5':
+                        e.preventDefault();
+                        showSection('troubleshooting');
+                        break;
+                    case '6':
+                        e.preventDefault();
+                        showSection('best-practices');
+                        break;
+                    case '7':
+                        e.preventDefault();
+                        showSection('progress');
+                        break;
+                }
+            }
+        });
+
+        // Add some interactivity to checklist items
+        document.querySelectorAll('.checklist-item').forEach(item => {
+            item.addEventListener('click', function(e) {
+                if (e.target.type !== 'checkbox') {
+                    const checkbox = this.querySelector('input[type="checkbox"]');
+                    if (checkbox) {
+                        checkbox.checked = !checkbox.checked;
+                        updateProgress();
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>
