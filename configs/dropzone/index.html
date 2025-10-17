@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AeroVista Drop Zone</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .drop-zone {
+            border: 3px dashed #3b82f6;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+        }
+        .drop-zone.dragover {
+            border-color: #10b981;
+            background-color: rgba(16, 185, 129, 0.1);
+            transform: scale(1.02);
+        }
+        .upload-progress {
+            transition: width 0.3s ease;
+        }
+        .file-item {
+            animation: slideIn 0.3s ease-out;
+        }
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 min-h-screen text-white">
+    <div class="container mx-auto px-4 py-8">
+        <!-- Header -->
+        <header class="text-center mb-8">
+            <h1 class="text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-600 mb-2">
+                AeroVista Drop Zone
+            </h1>
+            <p class="text-slate-400">Drag & drop files for instant sharing</p>
+        </header>
+
+        <!-- Main Drop Zone -->
+        <div class="max-w-4xl mx-auto">
+            <div id="dropZone" class="drop-zone bg-slate-800/50 backdrop-blur-sm p-12 text-center cursor-pointer hover:bg-slate-700/50">
+                <div class="space-y-4">
+                    <div class="text-6xl">📁</div>
+                    <h2 class="text-2xl font-semibold">Drop files here</h2>
+                    <p class="text-slate-400">or click to browse</p>
+                    <input type="file" id="fileInput" multiple class="hidden">
+                </div>
+            </div>
+
+            <!-- Upload Progress -->
+            <div id="uploadProgress" class="mt-6 space-y-3 hidden">
+                <div class="bg-slate-800 rounded-lg p-4">
+                    <div class="flex justify-between items-center mb-2">
+                        <span class="font-medium">Uploading...</span>
+                        <span id="uploadStatus" class="text-sm text-slate-400">0%</span>
+                    </div>
+                    <div class="w-full bg-slate-700 rounded-full h-2">
+                        <div id="progressBar" class="upload-progress bg-blue-500 h-2 rounded-full" style="width: 0%"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- File List -->
+            <div id="fileList" class="mt-8 space-y-3">
+                <!-- Files will be populated here -->
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="mt-8 grid grid-cols-1 md:grid-cols-3 gap-4">
+                <a href="https://fileshare.nxcore.tail79107c.ts.net/" target="_blank" 
+                   class="bg-blue-600 hover:bg-blue-700 p-4 rounded-lg text-center transition-colors">
+                    <div class="text-2xl mb-2">📂</div>
+                    <div class="font-medium">File Manager</div>
+                    <div class="text-sm text-blue-200">Browse all files</div>
+                </a>
+                
+                <a href="https://n8n.nxcore.tail79107c.ts.net/" target="_blank"
+                   class="bg-green-600 hover:bg-green-700 p-4 rounded-lg text-center transition-colors">
+                    <div class="text-2xl mb-2">⚡</div>
+                    <div class="font-medium">Workflows</div>
+                    <div class="text-sm text-green-200">Automate tasks</div>
+                </a>
+                
+                <a href="https://ai.nxcore.tail79107c.ts.net/" target="_blank"
+                   class="bg-purple-600 hover:bg-purple-700 p-4 rounded-lg text-center transition-colors">
+                    <div class="text-2xl mb-2">🤖</div>
+                    <div class="font-medium">AI Assistant</div>
+                    <div class="text-sm text-purple-200">Process files</div>
+                </a>
+                
+                <a href="files.html"
+                   class="bg-green-600 hover:bg-green-700 p-4 rounded-lg text-center transition-colors">
+                    <div class="text-2xl mb-2">📁</div>
+                    <div class="font-medium">File Manager</div>
+                    <div class="text-sm text-green-200">Manage files</div>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const dropZone = document.getElementById('dropZone');
+        const fileInput = document.getElementById('fileInput');
+        const uploadProgress = document.getElementById('uploadProgress');
+        const progressBar = document.getElementById('progressBar');
+        const uploadStatus = document.getElementById('uploadStatus');
+        const fileList = document.getElementById('fileList');
+
+        let uploadedFiles = [];
+
+        // Drop zone events
+        dropZone.addEventListener('click', () => fileInput.click());
+        dropZone.addEventListener('dragover', handleDragOver);
+        dropZone.addEventListener('dragleave', handleDragLeave);
+        dropZone.addEventListener('drop', handleDrop);
+
+        // File input change
+        fileInput.addEventListener('change', handleFiles);
+
+        function handleDragOver(e) {
+            e.preventDefault();
+            dropZone.classList.add('dragover');
+        }
+
+        function handleDragLeave(e) {
+            e.preventDefault();
+            dropZone.classList.remove('dragover');
+        }
+
+        function handleDrop(e) {
+            e.preventDefault();
+            dropZone.classList.remove('dragover');
+            const files = Array.from(e.dataTransfer.files);
+            uploadFiles(files);
+        }
+
+        function handleFiles(e) {
+            const files = Array.from(e.target.files);
+            uploadFiles(files);
+        }
+
+        async function uploadFiles(files) {
+            if (files.length === 0) return;
+
+            uploadProgress.classList.remove('hidden');
+            progressBar.style.width = '0%';
+            uploadStatus.textContent = '0%';
+
+            for (let i = 0; i < files.length; i++) {
+                const file = files[i];
+                const progress = ((i + 1) / files.length) * 100;
+                
+                try {
+                    await uploadFile(file);
+                    addFileToList(file);
+                    progressBar.style.width = `${progress}%`;
+                    uploadStatus.textContent = `${Math.round(progress)}%`;
+                } catch (error) {
+                    console.error('Upload failed:', error);
+                    addFileToList(file, true);
+                }
+            }
+
+            setTimeout(() => {
+                uploadProgress.classList.add('hidden');
+            }, 2000);
+        }
+
+        async function uploadFile(file) {
+            const formData = new FormData();
+            formData.append('file', file);
+
+            const response = await fetch('/upload', {
+                method: 'POST',
+                body: formData
+            });
+
+            if (!response.ok) {
+                throw new Error('Upload failed');
+            }
+
+            return response.json();
+        }
+
+        function addFileToList(file, error = false) {
+            const fileItem = document.createElement('div');
+            fileItem.className = `file-item bg-slate-800 rounded-lg p-4 ${error ? 'border-l-4 border-red-500' : 'border-l-4 border-green-500'}`;
+            
+            const fileSize = formatFileSize(file.size);
+            const uploadTime = new Date().toLocaleTimeString();
+            
+            fileItem.innerHTML = `
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center space-x-3">
+                        <div class="text-2xl">${getFileIcon(file.type)}</div>
+                        <div>
+                            <div class="font-medium">${file.name}</div>
+                            <div class="text-sm text-slate-400">${fileSize} • ${uploadTime}</div>
+                        </div>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        ${error ? 
+                            '<span class="text-red-400 text-sm">❌ Failed</span>' : 
+                            '<span class="text-green-400 text-sm">✅ Uploaded</span>'
+                        }
+                        <button onclick="copyLink('${file.name}')" class="text-blue-400 hover:text-blue-300 text-sm">
+                            📋 Copy Link
+                        </button>
+                    </div>
+                </div>
+            `;
+
+            fileList.appendChild(fileItem);
+            uploadedFiles.push(file);
+        }
+
+        function getFileIcon(type) {
+            if (type.startsWith('image/')) return '🖼️';
+            if (type.startsWith('video/')) return '🎥';
+            if (type.startsWith('audio/')) return '🎵';
+            if (type.includes('pdf')) return '📄';
+            if (type.includes('text')) return '📝';
+            if (type.includes('zip') || type.includes('rar')) return '📦';
+            return '📁';
+        }
+
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        }
+
+        function copyLink(filename) {
+            const url = `https://fileshare.nxcore.tail79107c.ts.net/uploads/${filename}`;
+            navigator.clipboard.writeText(url).then(() => {
+                // Show toast notification
+                const toast = document.createElement('div');
+                toast.className = 'fixed top-4 right-4 bg-green-600 text-white px-4 py-2 rounded-lg shadow-lg z-50';
+                toast.textContent = 'Link copied to clipboard!';
+                document.body.appendChild(toast);
+                setTimeout(() => toast.remove(), 3000);
+            });
+        }
+
+        // Auto-refresh file list every 30 seconds
+        setInterval(() => {
+            if (uploadedFiles.length > 0) {
+                // Could implement real-time file list updates here
+            }
+        }, 30000);
+    </script>
+</body>
+</html>

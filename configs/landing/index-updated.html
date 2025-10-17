@@ -1,0 +1,446 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>AeroVista • NXCore Dashboard</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cpath fill='%23a78bfa' d='M31 4l8 18 19 3-14 13 3 19-16-9-16 9 3-19L4 25l19-3z'/%3E%3C/svg%3E">
+  <style>
+    .card { @apply relative bg-zinc-900/70 border border-zinc-700/60 rounded-2xl p-4 shadow-lg hover:shadow-xl transition; }
+    .chip { @apply px-2 py-0.5 rounded-full text-xs font-medium; }
+    .chip-up { @apply bg-emerald-500/15 text-emerald-300 border border-emerald-400/30; }
+    .chip-down { @apply bg-rose-500/15 text-rose-300 border border-rose-400/30; }
+    .chip-warn { @apply bg-amber-500/15 text-amber-300 border border-amber-400/30; }
+    .service-card { @apply bg-zinc-800/50 border border-zinc-700/40 rounded-xl p-4 hover:border-indigo-500/50 hover:bg-zinc-800/80 transition-all duration-200 cursor-pointer; }
+    .section-title { @apply text-xl font-semibold mb-4 flex items-center gap-2; }
+  </style>
+</head>
+<body class="min-h-screen bg-gradient-to-b from-zinc-950 via-zinc-950 to-zinc-900 text-zinc-200">
+  
+  <script>
+    // Live service status checking
+    async function checkService(url, timeout = 3000) {
+      try {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), timeout);
+        
+        const response = await fetch(url, {
+          method: 'HEAD',
+          mode: 'no-cors',
+          cache: 'no-store',
+          signal: controller.signal
+        });
+        
+        clearTimeout(timeoutId);
+        return true; // If fetch completes without error, service is reachable
+      } catch (error) {
+        // For no-cors mode, any response (even error) means service responded
+        if (error.name === 'AbortError') {
+          return false; // Timeout
+        }
+        return true; // CORS error or other network response = service is up
+      }
+    }
+
+    async function updateServiceStatus() {
+      const services = document.querySelectorAll('[data-check-url]');
+      
+      for (const service of services) {
+        const url = service.getAttribute('data-check-url');
+        const statusChip = service.querySelector('.chip');
+        
+        // Set checking state
+        statusChip.className = 'chip chip-warn';
+        statusChip.textContent = 'Checking...';
+        
+        // Check service
+        const isOnline = await checkService(url);
+        
+        // Update status
+        if (isOnline) {
+          statusChip.className = 'chip chip-up';
+          statusChip.textContent = 'Online';
+        } else {
+          statusChip.className = 'chip chip-down';
+          statusChip.textContent = 'Offline';
+        }
+      }
+      
+      // Update stats
+      const onlineCount = document.querySelectorAll('.chip-up').length;
+      const totalCount = services.length;
+      document.getElementById('online-count').textContent = onlineCount;
+      document.getElementById('total-count').textContent = totalCount;
+    }
+
+    // Check status on load and every 30 seconds
+    document.addEventListener('DOMContentLoaded', () => {
+      updateServiceStatus();
+      setInterval(updateServiceStatus, 30000);
+    });
+  </script>
+  
+  <!-- Header -->
+  <header class="border-b border-zinc-800 bg-zinc-900/50 sticky top-0 z-50 backdrop-blur-sm">
+    <div class="container mx-auto px-4 py-4 max-w-7xl">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl flex items-center justify-center">
+            <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+            </svg>
+          </div>
+          <div>
+            <h1 class="text-2xl font-bold bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent">
+              AeroVista NXCore
+            </h1>
+            <p class="text-xs text-zinc-500">nxcore.tail79107c.ts.net</p>
+          </div>
+        </div>
+        <div class="flex items-center gap-3">
+          <span class="chip chip-up">● All Systems Online</span>
+          <span class="text-sm text-zinc-400">100.115.9.61</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <div class="container mx-auto px-4 py-8 max-w-7xl">
+    
+    <!-- Quick Stats -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+      <div class="card">
+        <div class="text-3xl font-bold text-indigo-400"><span id="online-count">-</span>/<span id="total-count">-</span></div>
+        <div class="text-sm text-zinc-400">Services Online</div>
+      </div>
+      <div class="card">
+        <div class="text-3xl font-bold text-emerald-400">8</div>
+        <div class="text-sm text-zinc-400">HTTPS Routes</div>
+      </div>
+      <div class="card">
+        <div class="text-3xl font-bold text-purple-400">23</div>
+        <div class="text-sm text-zinc-400">Containers Running</div>
+      </div>
+      <div class="card">
+        <div class="text-3xl font-bold text-cyan-400">🤖</div>
+        <div class="text-sm text-zinc-400">AI Enabled (llama3.2)</div>
+      </div>
+    </div>
+
+    <!-- HTTPS Services (Path-Based Routing) -->
+    <section class="mb-10">
+      <h2 class="section-title">
+        <svg class="w-5 h-5 text-emerald-400" fill="currentColor" viewBox="0 0 24 24">
+          <path d="M12,1L3,5V11C3,16.55 6.84,21.74 12,23C17.16,21.74 21,16.55 21,11V5L12,1Z"/>
+        </svg>
+        HTTPS Services (Path-Based Routing)
+      </h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        
+        <!-- Grafana -->
+        <a href="https://nxcore.tail79107c.ts.net/grafana/" target="_blank" class="service-card" data-check-url="https://nxcore.tail79107c.ts.net/grafana/">
+          <div class="flex items-start justify-between mb-2">
+            <div class="text-2xl">📊</div>
+            <span class="chip chip-warn">Checking...</span>
+          </div>
+          <div class="font-semibold text-lg mb-1">Grafana</div>
+          <div class="text-sm text-zinc-400 mb-2">Dashboards & Metrics</div>
+          <div class="text-xs text-indigo-300 font-mono">/grafana/</div>
+          <div class="text-xs text-zinc-500 mt-1">Login: admin/admin</div>
+        </a>
+
+        <!-- Prometheus -->
+        <a href="https://nxcore.tail79107c.ts.net/prometheus/" target="_blank" class="service-card" data-check-url="https://nxcore.tail79107c.ts.net/prometheus/">
+          <div class="flex items-start justify-between mb-2">
+            <div class="text-2xl">📈</div>
+            <span class="chip chip-warn">Checking...</span>
+          </div>
+          <div class="font-semibold text-lg mb-1">Prometheus</div>
+          <div class="text-sm text-zinc-400 mb-2">Metrics Collection</div>
+          <div class="text-xs text-indigo-300 font-mono">/prometheus/</div>
+        </a>
+
+        <!-- Uptime Kuma -->
+        <a href="https://nxcore.tail79107c.ts.net/status/" target="_blank" class="service-card" data-check-url="https://nxcore.tail79107c.ts.net/status/">
+          <div class="flex items-start justify-between mb-2">
+            <div class="text-2xl">🩺</div>
+            <span class="chip chip-warn">Checking...</span>
+          </div>
+          <div class="font-semibold text-lg mb-1">Uptime Kuma</div>
+          <div class="text-sm text-zinc-400 mb-2">Status Monitoring</div>
+          <div class="text-xs text-indigo-300 font-mono">/status/</div>
+          <div class="text-xs text-zinc-500 mt-1">Setup on first visit</div>
+        </a>
+
+        <!-- FileBrowser -->
+        <a href="https://nxcore.tail79107c.ts.net/files/" target="_blank" class="service-card" data-check-url="https://nxcore.tail79107c.ts.net/files/">
+          <div class="flex items-start justify-between mb-2">
+            <div class="text-2xl">📁</div>
+            <span class="chip chip-warn">Checking...</span>
+          </div>
+          <div class="font-semibold text-lg mb-1">FileBrowser</div>
+          <div class="text-sm text-zinc-400 mb-2">File Management</div>
+          <div class="text-xs text-indigo-300 font-mono">/files/</div>
+        </a>
+
+        <!-- AeroCaller -->
+        <a href="https://nxcore.tail79107c.ts.net/aerocaller/" target="_blank" class="service-card" data-check-url="https://nxcore.tail79107c.ts.net/aerocaller/">
+          <div class="flex items-start justify-between mb-2">
+            <div class="text-2xl">📞</div>
+            <span class="chip chip-warn">Checking...</span>
+          </div>
+          <div class="font-semibold text-lg mb-1">AeroCaller</div>
+          <div class="text-sm text-zinc-400 mb-2">WebRTC Calling</div>
+          <div class="text-xs text-indigo-300 font-mono">/aerocaller/</div>
+        </a>
+
+        <!-- Portainer -->
+        <a href="https://nxcore.tail79107c.ts.net/portainer/" target="_blank" class="service-card" data-check-url="https://nxcore.tail79107c.ts.net/portainer/">
+          <div class="flex items-start justify-between mb-2">
+            <div class="text-2xl">📦</div>
+            <span class="chip chip-warn">Checking...</span>
+          </div>
+          <div class="font-semibold text-lg mb-1">Portainer</div>
+          <div class="text-sm text-zinc-400 mb-2">Container Management</div>
+          <div class="text-xs text-indigo-300 font-mono">/portainer/</div>
+        </a>
+
+      </div>
+    </section>
+
+    <!-- AI Services (Phase C) -->
+    <section class="mb-10">
+      <h2 class="section-title">
+        <svg class="w-5 h-5 text-purple-400" fill="currentColor" viewBox="0 0 24 24">
+          <path d="M12,2A10,10 0 0,1 22,12A10,10 0 0,1 12,22A10,10 0 0,1 2,12A10,10 0 0,1 12,2M12,4A8,8 0 0,0 4,12A8,8 0 0,0 12,20A8,8 0 0,0 20,12A8,8 0 0,0 12,4M12,6A6,6 0 0,1 18,12A6,6 0 0,1 12,18A6,6 0 0,1 6,12A6,6 0 0,1 12,6M12,8A4,4 0 0,0 8,12A4,4 0 0,0 12,16A4,4 0 0,0 16,12A4,4 0 0,0 12,8Z"/>
+        </svg>
+        AI & Machine Learning (Phase C)
+      </h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        
+        <!-- Open WebUI (AI Chat) -->
+        <a href="https://nxcore.tail79107c.ts.net/ai/" target="_blank" class="service-card" data-check-url="https://nxcore.tail79107c.ts.net/ai/">
+          <div class="flex items-start justify-between mb-2">
+            <div class="text-2xl">🤖</div>
+            <span class="chip chip-warn">Checking...</span>
+          </div>
+          <div class="font-semibold text-lg mb-1">Open WebUI</div>
+          <div class="text-sm text-zinc-400 mb-2">AI Chat Interface</div>
+          <div class="text-xs text-indigo-300 font-mono">/ai/</div>
+          <div class="text-xs text-zinc-500 mt-1">Model: llama3.2</div>
+        </a>
+
+        <!-- Ollama (Backend) -->
+        <div class="service-card opacity-75">
+          <div class="flex items-start justify-between mb-2">
+            <div class="text-2xl">🦙</div>
+            <span class="chip chip-up">Online</span>
+          </div>
+          <div class="font-semibold text-lg mb-1">Ollama</div>
+          <div class="text-sm text-zinc-400 mb-2">LLM Backend</div>
+          <div class="text-xs text-zinc-500">Port 11434 (internal)</div>
+          <div class="text-xs text-emerald-400 mt-1">✓ llama3.2 ready</div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- Development Tools (HTTP Direct Access) -->
+    <section class="mb-10">
+      <h2 class="section-title">
+        <svg class="w-5 h-5 text-cyan-400" fill="currentColor" viewBox="0 0 24 24">
+          <path d="M9.4,16.6L4.8,12L9.4,7.4L8,6L2,12L8,18L9.4,16.6M14.6,16.6L19.2,12L14.6,7.4L16,6L22,12L16,18L14.6,16.6Z"/>
+        </svg>
+        Development Tools (HTTP Direct Access)
+      </h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        
+        <!-- Code-Server -->
+        <a href="http://100.115.9.61:8080/" target="_blank" class="service-card" data-check-url="http://100.115.9.61:8080/">
+          <div class="flex items-start justify-between mb-2">
+            <div class="text-2xl">💻</div>
+            <span class="chip chip-warn">Checking...</span>
+          </div>
+          <div class="font-semibold mb-1">Code-Server</div>
+          <div class="text-xs text-zinc-400 mb-1">VS Code in Browser</div>
+          <div class="text-xs text-zinc-500">Port 8080</div>
+          <div class="text-xs text-amber-300 mt-1 font-mono truncate">Pass: ChangeMe_...</div>
+        </a>
+
+        <!-- Jupyter -->
+        <a href="http://100.115.9.61:8888/" target="_blank" class="service-card" data-check-url="http://100.115.9.61:8888/">
+          <div class="flex items-start justify-between mb-2">
+            <div class="text-2xl">📓</div>
+            <span class="chip chip-warn">Checking...</span>
+          </div>
+          <div class="font-semibold mb-1">Jupyter</div>
+          <div class="text-xs text-zinc-400 mb-1">Notebook</div>
+          <div class="text-xs text-zinc-500">Port 8888</div>
+          <div class="text-xs text-zinc-500 mt-1">Token in logs</div>
+        </a>
+
+        <!-- RStudio -->
+        <a href="http://100.115.9.61:8787/" target="_blank" class="service-card" data-check-url="http://100.115.9.61:8787/">
+          <div class="flex items-start justify-between mb-2">
+            <div class="text-2xl">📊</div>
+            <span class="chip chip-warn">Checking...</span>
+          </div>
+          <div class="font-semibold mb-1">RStudio</div>
+          <div class="text-xs text-zinc-400 mb-1">R Development</div>
+          <div class="text-xs text-zinc-500">Port 8787</div>
+          <div class="text-xs text-zinc-500 mt-1">rstudio/rstudio</div>
+        </a>
+
+        <!-- NoVNC -->
+        <a href="http://100.115.9.61:6080/" target="_blank" class="service-card" data-check-url="http://100.115.9.61:6080/">
+          <div class="flex items-start justify-between mb-2">
+            <div class="text-2xl">🖥️</div>
+            <span class="chip chip-warn">Checking...</span>
+          </div>
+          <div class="font-semibold mb-1">NoVNC</div>
+          <div class="text-xs text-zinc-400 mb-1">VNC Desktop</div>
+          <div class="text-xs text-zinc-500">Port 6080</div>
+        </a>
+
+        <!-- Dashboard -->
+        <a href="http://100.115.9.61:8081/" target="_blank" class="service-card" data-check-url="http://100.115.9.61:8081/">
+          <div class="flex items-start justify-between mb-2">
+            <div class="text-2xl">📊</div>
+            <span class="chip chip-warn">Checking...</span>
+          </div>
+          <div class="font-semibold mb-1">Dashboard</div>
+          <div class="text-xs text-zinc-400 mb-1">System Stats</div>
+          <div class="text-xs text-zinc-500">Port 8081</div>
+        </a>
+
+        <!-- Portainer Direct -->
+        <a href="http://100.115.9.61:9444/" target="_blank" class="service-card" data-check-url="http://100.115.9.61:9444/">
+          <div class="flex items-start justify-between mb-2">
+            <div class="text-2xl">🐳</div>
+            <span class="chip chip-warn">Checking...</span>
+          </div>
+          <div class="font-semibold mb-1">Portainer</div>
+          <div class="text-xs text-zinc-400 mb-1">Direct Access</div>
+          <div class="text-xs text-zinc-500">Port 9444</div>
+        </a>
+
+        <!-- Grafana Direct -->
+        <a href="http://100.115.9.61:3000/" target="_blank" class="service-card" data-check-url="http://100.115.9.61:3000/">
+          <div class="flex items-start justify-between mb-2">
+            <div class="text-2xl">📈</div>
+            <span class="chip chip-warn">Checking...</span>
+          </div>
+          <div class="font-semibold mb-1">Grafana</div>
+          <div class="text-xs text-zinc-400 mb-1">Direct Access</div>
+          <div class="text-xs text-zinc-500">Port 3000</div>
+        </a>
+
+        <!-- Uptime Kuma Direct -->
+        <a href="http://100.115.9.61:3001/" target="_blank" class="service-card" data-check-url="http://100.115.9.61:3001/">
+          <div class="flex items-start justify-between mb-2">
+            <div class="text-2xl">⏱️</div>
+            <span class="chip chip-warn">Checking...</span>
+          </div>
+          <div class="font-semibold mb-1">Kuma</div>
+          <div class="text-xs text-zinc-400 mb-1">Direct Access</div>
+          <div class="text-xs text-zinc-500">Port 3001</div>
+        </a>
+
+      </div>
+    </section>
+
+    <!-- Infrastructure Services -->
+    <section class="mb-10">
+      <h2 class="section-title">
+        <svg class="w-5 h-5 text-purple-400" fill="currentColor" viewBox="0 0 24 24">
+          <path d="M4,1C2.89,1 2,1.89 2,3V7C2,8.11 2.89,9 4,9H1V11H13V9H10C11.11,9 12,8.11 12,7V3C12,1.89 11.11,1 10,1H4M4,3H10V7H4V3M14,13C12.89,13 12,13.89 12,15V19C12,20.11 12.89,21 14,21H11V23H23V21H20C21.11,21 22,20.11 22,19V15C22,13.89 21.11,13 20,13H14M14,15H20V19H14V15Z"/>
+        </svg>
+        Infrastructure
+      </h2>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        
+        <div class="card">
+          <div class="flex items-center justify-between mb-3">
+            <div class="text-lg font-semibold">PostgreSQL</div>
+            <span class="chip chip-up">Running</span>
+          </div>
+          <div class="text-sm text-zinc-400">Primary Database</div>
+          <div class="text-xs text-zinc-500 mt-1">Port 5432 (local)</div>
+        </div>
+
+        <div class="card">
+          <div class="flex items-center justify-between mb-3">
+            <div class="text-lg font-semibold">Redis</div>
+            <span class="chip chip-up">Running</span>
+          </div>
+          <div class="text-sm text-zinc-400">Cache & Queue</div>
+          <div class="text-xs text-zinc-500 mt-1">Port 6379 (local)</div>
+        </div>
+
+        <div class="card">
+          <div class="flex items-center justify-between mb-3">
+            <div class="text-lg font-semibold">Traefik</div>
+            <span class="chip chip-up">Running</span>
+          </div>
+          <div class="text-sm text-zinc-400">Reverse Proxy</div>
+          <div class="text-xs text-zinc-500 mt-1">Ports 80, 443, 8083</div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- Quick Actions -->
+    <section class="mb-10">
+      <h2 class="section-title">
+        <svg class="w-5 h-5 text-amber-400" fill="currentColor" viewBox="0 0 24 24">
+          <path d="M13,9H18.5L13,3.5V9M6,2H14L20,8V20A2,2 0 0,1 18,22H6C4.89,22 4,21.1 4,20V4C4,2.89 4.89,2 6,2M15,18V16H6V18H15M18,14V12H6V14H18Z"/>
+        </svg>
+        Documentation & Guides
+      </h2>
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+        
+        <div class="card hover:border-indigo-500/50 transition-colors cursor-pointer">
+          <div class="text-lg font-semibold mb-2">📋 Setup Guide</div>
+          <div class="text-sm text-zinc-400">SETUP_COMPLETE.md</div>
+        </div>
+
+        <div class="card hover:border-indigo-500/50 transition-colors cursor-pointer">
+          <div class="text-lg font-semibold mb-2">⚡ Quick Access</div>
+          <div class="text-sm text-zinc-400">QUICK_ACCESS.md</div>
+        </div>
+
+        <div class="card hover:border-indigo-500/50 transition-colors cursor-pointer">
+          <div class="text-lg font-semibold mb-2">📊 Service Status</div>
+          <div class="text-sm text-zinc-400">SERVICE_STATUS.md</div>
+        </div>
+
+        <div class="card hover:border-indigo-500/50 transition-colors cursor-pointer">
+          <div class="text-lg font-semibold mb-2">🔐 Certificates</div>
+          <div class="text-sm text-zinc-400">Valid until Oct 2026</div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="text-center text-sm text-zinc-500 py-6 border-t border-zinc-800">
+      <div class="mb-2">
+        <span class="font-semibold text-zinc-400">AeroVista NXCore</span> • Self-Signed TLS • Tailscale Network
+      </div>
+      <div class="text-xs">
+        <span class="chip chip-up inline-block mr-2">Phase A-C Complete</span>
+        23 Containers • 8 HTTPS Routes • AI Enabled (llama3.2)
+      </div>
+      <div class="text-xs mt-2 text-zinc-600">
+        Last Updated: October 16, 2025 • nxcore.tail79107c.ts.net
+      </div>
+    </footer>
+
+  </div>
+
+</body>
+</html>
+

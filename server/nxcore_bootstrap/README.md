@@ -1,0 +1,1 @@
+See bootstrap_nxcore.sh for full instructions.

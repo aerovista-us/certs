@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AeroVista - Cyber Monitor</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap');
+        
+        body { 
+            font-family: 'Orbitron', monospace;
+            background: #000;
+            color: #00ff00;
+            overflow: hidden;
+        }
+        
+        .cyber-grid {
+            background-image: 
+                linear-gradient(rgba(0, 255, 0, 0.1) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 255, 0, 0.1) 1px, transparent 1px);
+            background-size: 20px 20px;
+        }
+        
+        .cyber-panel {
+            background: rgba(0, 0, 0, 0.8);
+            border: 2px solid #00ff00;
+            box-shadow: 0 0 20px rgba(0, 255, 0, 0.3);
+        }
+        
+        .glitch {
+            animation: glitch 2s infinite;
+        }
+        
+        @keyframes glitch {
+            0%, 100% { transform: translate(0); }
+            20% { transform: translate(-2px, 2px); }
+            40% { transform: translate(-2px, -2px); }
+            60% { transform: translate(2px, 2px); }
+            80% { transform: translate(2px, -2px); }
+        }
+        
+        .scan-line {
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .scan-line::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #00ff00, transparent);
+            animation: scan 3s linear infinite;
+        }
+        
+        @keyframes scan {
+            0% { transform: translateY(-100vh); }
+            100% { transform: translateY(100vh); }
+        }
+        
+        .neon-text {
+            text-shadow: 0 0 10px #00ff00, 0 0 20px #00ff00, 0 0 30px #00ff00;
+        }
+        
+        .data-stream {
+            font-family: 'Courier New', monospace;
+            color: #00ff00;
+            background: rgba(0, 0, 0, 0.9);
+            border: 1px solid #00ff00;
+        }
+    </style>
+</head>
+<body class="cyber-grid scan-line">
+    <div class="h-screen flex flex-col">
+        <!-- Cyber Header -->
+        <header class="cyber-panel p-4">
+            <div class="flex justify-between items-center">
+                <div class="flex items-center space-x-4">
+                    <div class="w-12 h-12 border-2 border-green-500 flex items-center justify-center">
+                        <span class="text-green-500 text-xl">▲</span>
+                    </div>
+                    <div>
+                        <h1 class="text-3xl font-black neon-text glitch">AEROVISTA</h1>
+                        <p class="text-green-400 text-sm">SYSTEM STATUS: ONLINE</p>
+                    </div>
+                </div>
+                <div class="text-right">
+                    <div class="text-2xl font-mono neon-text" id="current-time">--:--:--</div>
+                    <div class="text-sm text-green-400" id="current-date">LOADING...</div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Grid -->
+        <div class="flex-1 grid grid-cols-12 grid-rows-6 gap-4 p-4">
+            
+            <!-- System Metrics -->
+            <div class="col-span-4 row-span-6 cyber-panel p-4">
+                <h3 class="text-lg font-bold neon-text mb-4">SYSTEM METRICS</h3>
+                
+                <div class="space-y-4">
+                    <div class="border border-green-500 p-3">
+                        <div class="flex justify-between text-sm mb-1">
+                            <span>CPU</span>
+                            <span id="cpu-usage" class="font-mono">--%</span>
+                        </div>
+                        <div class="w-full bg-black border border-green-500 h-2">
+                            <div class="bg-green-500 h-full transition-all duration-1000" id="cpu-bar" style="width: 0%"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="border border-green-500 p-3">
+                        <div class="flex justify-between text-sm mb-1">
+                            <span>MEMORY</span>
+                            <span id="memory-usage" class="font-mono">--%</span>
+                        </div>
+                        <div class="w-full bg-black border border-green-500 h-2">
+                            <div class="bg-green-500 h-full transition-all duration-1000" id="memory-bar" style="width: 0%"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="border border-green-500 p-3">
+                        <div class="flex justify-between text-sm mb-1">
+                            <span>DISK</span>
+                            <span id="disk-usage" class="font-mono">--%</span>
+                        </div>
+                        <div class="w-full bg-black border border-green-500 h-2">
+                            <div class="bg-green-500 h-full transition-all duration-1000" id="disk-bar" style="width: 0%"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mt-6 space-y-2">
+                    <div class="flex justify-between text-sm">
+                        <span>SERVICES:</span>
+                        <span class="font-mono text-green-400" id="services-count">15</span>
+                    </div>
+                    <div class="flex justify-between text-sm">
+                        <span>UPTIME:</span>
+                        <span class="font-mono text-green-400" id="system-uptime">--</span>
+                    </div>
+                    <div class="flex justify-between text-sm">
+                        <span>USERS:</span>
+                        <span class="font-mono text-green-400" id="active-users">--</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Service Status -->
+            <div class="col-span-5 row-span-6 cyber-panel p-4">
+                <h3 class="text-lg font-bold neon-text mb-4">SERVICE STATUS</h3>
+                <div class="grid grid-cols-2 gap-2" id="service-grid">
+                    <!-- Services populated by JS -->
+                </div>
+            </div>
+
+            <!-- Data Stream -->
+            <div class="col-span-3 row-span-6 cyber-panel p-4">
+                <h3 class="text-lg font-bold neon-text mb-4">DATA STREAM</h3>
+                <div class="data-stream p-3 h-96 overflow-y-auto text-xs" id="data-stream">
+                    <div>[06:14:23] SYSTEM INITIALIZED</div>
+                    <div>[06:14:15] SERVICES ONLINE</div>
+                    <div>[06:13:58] MONITORING ACTIVE</div>
+                    <div>[06:13:42] HEALTH CHECK PASSED</div>
+                    <div>[06:13:25] ALL SYSTEMS NOMINAL</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const serviceStatus = [
+            { name: 'TRAEFIK', status: 'up' },
+            { name: 'POSTGRES', status: 'up' },
+            { name: 'REDIS', status: 'up' },
+            { name: 'AUTHELIA', status: 'up' },
+            { name: 'GRAFANA', status: 'up' },
+            { name: 'PROMETHEUS', status: 'up' },
+            { name: 'UPTIME', status: 'up' },
+            { name: 'DOZZLE', status: 'up' },
+            { name: 'CADVISOR', status: 'up' },
+            { name: 'PORTAINER', status: 'up' },
+            { name: 'FILESHARE', status: 'up' },
+            { name: 'DASHBOARD', status: 'up' }
+        ];
+
+        function initDashboard() {
+            updateTime();
+            updateServiceGrid();
+            updateSystemStats();
+            setInterval(updateTime, 1000);
+            setInterval(updateSystemStats, 5000);
+            setInterval(updateServiceGrid, 10000);
+            setInterval(addDataStream, 8000);
+        }
+
+        function updateTime() {
+            const now = new Date();
+            document.getElementById('current-time').textContent = now.toLocaleTimeString();
+            document.getElementById('current-date').textContent = now.toLocaleDateString().toUpperCase();
+        }
+
+        function updateServiceGrid() {
+            const grid = document.getElementById('service-grid');
+            grid.innerHTML = '';
+            
+            serviceStatus.forEach(service => {
+                const statusColor = service.status === 'up' ? 'text-green-400' : 'text-red-400';
+                const statusBg = service.status === 'up' ? 'border-green-500' : 'border-red-500';
+                
+                grid.innerHTML += `
+                    <div class="border ${statusBg} p-2 text-xs">
+                        <div class="font-mono">${service.name}</div>
+                        <div class="${statusColor} font-bold">${service.status.toUpperCase()}</div>
+                    </div>
+                `;
+            });
+        }
+
+        function updateSystemStats() {
+            const cpu = Math.floor(Math.random() * 30) + 20;
+            const memory = Math.floor(Math.random() * 40) + 30;
+            const disk = Math.floor(Math.random() * 20) + 15;
+            
+            document.getElementById('cpu-usage').textContent = `${cpu}%`;
+            document.getElementById('cpu-bar').style.width = `${cpu}%`;
+            
+            document.getElementById('memory-usage').textContent = `${memory}%`;
+            document.getElementById('memory-bar').style.width = `${memory}%`;
+            
+            document.getElementById('disk-usage').textContent = `${disk}%`;
+            document.getElementById('disk-bar').style.width = `${disk}%`;
+            
+            document.getElementById('active-users').textContent = Math.floor(Math.random() * 3) + 1;
+        }
+
+        function addDataStream() {
+            const messages = [
+                '[06:15:42] BACKUP COMPLETED',
+                '[06:15:28] HEALTH CHECK PASSED',
+                '[06:15:15] USER SESSION ACTIVE',
+                '[06:15:03] DATABASE OPTIMIZED',
+                '[06:14:58] NETWORK STABLE',
+                '[06:14:45] SECURITY SCAN CLEAN',
+                '[06:14:32] FILESYSTEM CLEANED',
+                '[06:14:18] METRICS UPDATED'
+            ];
+            
+            const stream = document.getElementById('data-stream');
+            const message = messages[Math.floor(Math.random() * messages.length)];
+            const newEntry = document.createElement('div');
+            newEntry.textContent = message;
+            stream.insertBefore(newEntry, stream.firstChild);
+            
+            while (stream.children.length > 10) {
+                stream.removeChild(stream.lastChild);
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', initDashboard);
+    </script>
+</body>
+</html>

@@ -1,0 +1,818 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AeroVista • NXCore Infrastructure</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            'nx-blue': '#1e40af',
+            'nx-purple': '#7c3aed',
+            'nx-green': '#059669',
+            'nx-orange': '#ea580c',
+            'nx-red': '#dc2626',
+            'nx-cyan': '#0891b2',
+            'nx-pink': '#db2777',
+            'nx-yellow': '#d97706',
+            'nx-indigo': '#4f46e5',
+            'nx-emerald': '#10b981',
+            'nx-rose': '#f43f5e',
+            'nx-violet': '#8b5cf6',
+            'nx-amber': '#f59e0b',
+            'nx-lime': '#84cc16',
+            'nx-teal': '#14b8a6',
+            'nx-sky': '#0ea5e9',
+            'nx-slate': '#64748b',
+            'nx-zinc': '#71717a',
+            'nx-neutral': '#737373',
+            'nx-stone': '#78716c',
+            'nx-gray': '#6b7280',
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+    
+    body {
+      font-family: 'Inter', sans-serif;
+    }
+    
+    .gradient-bg {
+      background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%);
+    }
+    
+    .card-hover {
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    
+    .card-hover:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    }
+    
+    .status-pulse {
+      animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    }
+    
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: .5; }
+    }
+    
+    .glow {
+      box-shadow: 0 0 20px rgba(59, 130, 246, 0.3);
+    }
+    
+    .service-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      font-weight: 600;
+    }
+    
+    .status-badge {
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    
+    .status-online {
+      background: rgba(16, 185, 129, 0.1);
+      color: #10b981;
+      border: 1px solid rgba(16, 185, 129, 0.2);
+    }
+    
+    .status-offline {
+      background: rgba(239, 68, 68, 0.1);
+      color: #ef4444;
+      border: 1px solid rgba(239, 68, 68, 0.2);
+    }
+    
+    .status-checking {
+      background: rgba(245, 158, 11, 0.1);
+      color: #f59e0b;
+      border: 1px solid rgba(245, 158, 11, 0.2);
+    }
+    
+    .metric-card {
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+    }
+    
+    .section-header {
+      background: linear-gradient(90deg, rgba(59, 130, 246, 0.1) 0%, rgba(147, 51, 234, 0.1) 100%);
+      border: 1px solid rgba(59, 130, 246, 0.2);
+    }
+  </style>
+</head>
+<body class="gradient-bg min-h-screen text-white">
+  
+  <!-- Header -->
+  <header class="border-b border-slate-800 bg-slate-900/50 backdrop-blur-sm sticky top-0 z-50">
+    <div class="container mx-auto px-6 py-4">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center space-x-4">
+          <div class="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center">
+            <span class="text-2xl font-bold">A</span>
+          </div>
+          <div>
+            <h1 class="text-2xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
+              AeroVista NXCore
+            </h1>
+            <p class="text-sm text-slate-400">Infrastructure Control Panel</p>
+          </div>
+        </div>
+        
+        <div class="flex items-center space-x-6">
+          <div class="text-right">
+            <div class="text-sm text-slate-400">Domain</div>
+            <div class="font-mono text-sm text-blue-300">nxcore.tail79107c.ts.net</div>
+          </div>
+          <div class="w-3 h-3 bg-green-400 rounded-full status-pulse"></div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <div class="container mx-auto px-6 py-8 max-w-7xl">
+    
+    <!-- Certificate Download Section -->
+    <div id="cert-download" class="mb-8 relative z-[60] mt-4" style="display: none;">
+      <div class="bg-gradient-to-r from-amber-500/10 to-orange-500/10 border border-amber-500/20 rounded-2xl p-6 backdrop-blur-sm shadow-2xl">
+        <div class="flex items-start space-x-4">
+          <div class="text-3xl">🔒</div>
+          <div class="flex-1">
+            <h3 class="text-xl font-semibold text-amber-300 mb-2">Certificate Installation Required</h3>
+            <p class="text-slate-300 mb-4">For secure access to all services, please install our certificate to eliminate security warnings.</p>
+            
+            <div class="flex flex-wrap gap-3 mb-4">
+            X 
+              <a href="/certs/download/nxcore-certificate.crt" download="nxcore-certificate.crt" 
+                 class="inline-flex items-center px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white rounded-lg transition-colors">
+                <span class="mr-2">📥</span>
+                Download Certificate
+              </a>
+              <button onclick="showInstallGuide()" 
+                      class="inline-flex items-center px-4 py-2 bg-slate-700 hover:bg-slate-600 text-white rounded-lg transition-colors">
+                <span class="mr-2">📖</span>
+                Installation Guide
+              </button>
+            </div>
+            
+            <div class="text-sm text-slate-400">
+              <p>After installation, refresh this page for secure access with a green lock icon.</p>
+            </div>
+          </div>
+          <button onclick="hideCertDownload()" class="text-slate-400 hover:text-white transition-colors">
+            <span class="text-xl">×</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Installation Guide Modal -->
+    <div id="install-guide-modal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 hidden">
+      <div class="flex items-center justify-center min-h-screen p-4">
+        <div class="bg-slate-800 rounded-2xl p-6 max-w-2xl w-full max-h-[80vh] overflow-y-auto">
+          <div class="flex items-center justify-between mb-4">
+            <h3 class="text-xl font-semibold text-white">Certificate Installation Guide</h3>
+            <button onclick="hideInstallGuide()" class="text-slate-400 hover:text-white transition-colors">
+              <span class="text-xl">×</span>
+            </button>
+          </div>
+          
+          <div class="space-y-4">
+            <!-- Browser Tabs -->
+            <div class="flex space-x-2 border-b border-slate-700">
+              <button onclick="showBrowserGuide('chrome')" id="chrome-tab" 
+                      class="px-4 py-2 text-sm font-medium text-blue-400 border-b-2 border-blue-400">
+                Chrome/Edge
+              </button>
+              <button onclick="showBrowserGuide('firefox')" id="firefox-tab" 
+                      class="px-4 py-2 text-sm font-medium text-slate-400 border-b-2 border-transparent hover:text-white">
+                Firefox
+              </button>
+              <button onclick="showBrowserGuide('safari')" id="safari-tab" 
+                      class="px-4 py-2 text-sm font-medium text-slate-400 border-b-2 border-transparent hover:text-white">
+                Safari
+              </button>
+            </div>
+            
+            <!-- Guide Content -->
+            <div id="guide-content" class="text-slate-300">
+              <!-- Chrome/Edge content will be loaded here -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- System Overview -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+      <div class="metric-card rounded-2xl p-6 card-hover">
+        <div class="flex items-center justify-between mb-4">
+          <div class="text-3xl">📊</div>
+          <div class="text-2xl font-bold text-blue-400"><span id="online-count">-</span>/<span id="total-count">-</span></div>
+        </div>
+        <div class="text-sm text-slate-400">Services Online</div>
+        <div class="text-xs text-slate-500 mt-1">Real-time monitoring</div>
+      </div>
+      
+      <div class="metric-card rounded-2xl p-6 card-hover">
+        <div class="flex items-center justify-between mb-4">
+          <div class="text-3xl">🔗</div>
+          <div class="text-2xl font-bold text-emerald-400">8</div>
+        </div>
+        <div class="text-sm text-slate-400">HTTPS Routes</div>
+        <div class="text-xs text-slate-500 mt-1">Path-based routing</div>
+      </div>
+      
+      <div class="metric-card rounded-2xl p-6 card-hover">
+        <div class="flex items-center justify-between mb-4">
+          <div class="text-3xl">🐳</div>
+          <div class="text-2xl font-bold text-purple-400">24</div>
+        </div>
+        <div class="text-sm text-slate-400">Containers</div>
+        <div class="text-xs text-slate-500 mt-1">Docker services</div>
+      </div>
+      
+      <div class="metric-card rounded-2xl p-6 card-hover">
+        <div class="flex items-center justify-between mb-4">
+          <div class="text-3xl">🤖</div>
+          <div class="text-2xl font-bold text-cyan-400">AI</div>
+        </div>
+        <div class="text-sm text-slate-400">llama3.2 Ready</div>
+        <div class="text-xs text-slate-500 mt-1">Local LLM</div>
+      </div>
+    </div>
+
+    <!-- Core Infrastructure -->
+    <section class="mb-10">
+      <div class="section-header rounded-2xl p-6 mb-6">
+        <div class="flex items-center space-x-3">
+          <div class="service-icon bg-blue-500/20 text-blue-400">
+            🏗️
+          </div>
+          <div>
+            <h2 class="text-xl font-semibold">Core Infrastructure</h2>
+            <p class="text-sm text-slate-400">Foundation services and routing</p>
+          </div>
+        </div>
+      </div>
+      
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        
+        <!-- Traefik -->
+        <a href="https://nxcore.tail79107c.ts.net/traefik/" target="_blank" class="metric-card rounded-2xl p-6 card-hover" data-check-url="https://nxcore.tail79107c.ts.net/traefik/">
+          <div class="flex items-start justify-between mb-4">
+            <div class="service-icon bg-blue-500/20 text-blue-400">
+              T
+            </div>
+            <span class="status-badge status-checking">Checking...</span>
+          </div>
+          <div class="font-semibold text-lg mb-2">Traefik</div>
+          <div class="text-sm text-slate-400 mb-3">Reverse Proxy & Router</div>
+          <div class="text-xs text-blue-300 font-mono">/traefik/</div>
+          <div class="text-xs text-slate-500 mt-2">Load balancer & SSL termination</div>
+        </a>
+
+        <!-- Landing Dashboard -->
+        <div class="metric-card rounded-2xl p-6 card-hover glow">
+          <div class="flex items-start justify-between mb-4">
+            <div class="service-icon bg-purple-500/20 text-purple-400">
+              🏠
+            </div>
+            <span class="status-badge status-online">Online</span>
+          </div>
+          <div class="font-semibold text-lg mb-2">Landing Dashboard</div>
+          <div class="text-sm text-slate-400 mb-3">This page</div>
+          <div class="text-xs text-purple-300 font-mono">/</div>
+          <div class="text-xs text-slate-500 mt-2">Service overview & monitoring</div>
+        </div>
+
+        <!-- Authelia -->
+        <a href="https://nxcore.tail79107c.ts.net/auth/" target="_blank" class="metric-card rounded-2xl p-6 card-hover" data-check-url="https://nxcore.tail79107c.ts.net/auth/">
+          <div class="flex items-start justify-between mb-4">
+            <div class="service-icon bg-yellow-500/20 text-yellow-400">
+              🔐
+            </div>
+            <span class="status-badge status-checking">Checking...</span>
+          </div>
+          <div class="font-semibold text-lg mb-2">Authelia</div>
+          <div class="text-sm text-slate-400 mb-3">SSO & MFA</div>
+          <div class="text-xs text-yellow-300 font-mono">/auth/</div>
+          <div class="text-xs text-slate-500 mt-2">Authentication gateway</div>
+        </a>
+
+      </div>
+    </section>
+
+    <!-- AI & Automation -->
+    <section class="mb-10">
+      <div class="section-header rounded-2xl p-6 mb-6">
+        <div class="flex items-center space-x-3">
+          <div class="service-icon bg-cyan-500/20 text-cyan-400">
+            🤖
+          </div>
+          <div>
+            <h2 class="text-xl font-semibold">AI & Automation</h2>
+            <p class="text-sm text-slate-400">Local AI and workflow automation</p>
+          </div>
+        </div>
+      </div>
+      
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        
+        <!-- Open WebUI -->
+        <a href="https://nxcore.tail79107c.ts.net/ai/" target="_blank" class="metric-card rounded-2xl p-6 card-hover" data-check-url="https://nxcore.tail79107c.ts.net/ai/">
+          <div class="flex items-start justify-between mb-4">
+            <div class="service-icon bg-cyan-500/20 text-cyan-400">
+              💬
+            </div>
+            <span class="status-badge status-checking">Checking...</span>
+          </div>
+          <div class="font-semibold text-lg mb-2">Open WebUI</div>
+          <div class="text-sm text-slate-400 mb-3">AI Chat Interface</div>
+          <div class="text-xs text-cyan-300 font-mono">/ai/</div>
+          <div class="text-xs text-slate-500 mt-2">ChatGPT-like interface</div>
+        </a>
+
+        <!-- Ollama -->
+        <div class="metric-card rounded-2xl p-6 card-hover">
+          <div class="flex items-start justify-between mb-4">
+            <div class="service-icon bg-orange-500/20 text-orange-400">
+              🦙
+            </div>
+            <span class="status-badge status-online">Online</span>
+          </div>
+          <div class="font-semibold text-lg mb-2">Ollama</div>
+          <div class="text-sm text-slate-400 mb-3">LLM Backend</div>
+          <div class="text-xs text-orange-300 font-mono">Port 11434</div>
+          <div class="text-xs text-slate-500 mt-2">llama3.2 model loaded</div>
+        </div>
+
+        <!-- n8n -->
+        <a href="http://100.115.9.61:5678/" target="_blank" class="metric-card rounded-2xl p-6 card-hover" data-check-url="http://100.115.9.61:5678/">
+          <div class="flex items-start justify-between mb-4">
+            <div class="service-icon bg-purple-500/20 text-purple-400">
+              ⚡
+            </div>
+            <span class="status-badge status-checking">Checking...</span>
+          </div>
+          <div class="font-semibold text-lg mb-2">n8n</div>
+          <div class="text-sm text-slate-400 mb-3">Workflow Automation</div>
+          <div class="text-xs text-purple-300 font-mono">:5678</div>
+          <div class="text-xs text-slate-500 mt-2">Visual workflow builder</div>
+        </a>
+
+      </div>
+    </section>
+
+    <!-- Observability -->
+    <section class="mb-10">
+      <div class="section-header rounded-2xl p-6 mb-6">
+        <div class="flex items-center space-x-3">
+          <div class="service-icon bg-emerald-500/20 text-emerald-400">
+            📊
+          </div>
+          <div>
+            <h2 class="text-xl font-semibold">Observability</h2>
+            <p class="text-sm text-slate-400">Monitoring, metrics, and logs</p>
+          </div>
+        </div>
+      </div>
+      
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        
+        <!-- Grafana -->
+        <a href="https://nxcore.tail79107c.ts.net/grafana/" target="_blank" class="metric-card rounded-2xl p-6 card-hover" data-check-url="https://nxcore.tail79107c.ts.net/grafana/">
+          <div class="flex items-start justify-between mb-4">
+            <div class="service-icon bg-emerald-500/20 text-emerald-400">
+              📈
+            </div>
+            <span class="status-badge status-checking">Checking...</span>
+          </div>
+          <div class="font-semibold text-lg mb-2">Grafana</div>
+          <div class="text-sm text-slate-400 mb-3">Dashboards & Visualization</div>
+          <div class="text-xs text-emerald-300 font-mono">/grafana/</div>
+          <div class="text-xs text-slate-500 mt-2">Metrics visualization</div>
+        </a>
+
+        <!-- Prometheus -->
+        <a href="https://nxcore.tail79107c.ts.net/prometheus/" target="_blank" class="metric-card rounded-2xl p-6 card-hover" data-check-url="https://nxcore.tail79107c.ts.net/prometheus/">
+          <div class="flex items-start justify-between mb-4">
+            <div class="service-icon bg-red-500/20 text-red-400">
+              P
+            </div>
+            <span class="status-badge status-checking">Checking...</span>
+          </div>
+          <div class="font-semibold text-lg mb-2">Prometheus</div>
+          <div class="text-sm text-slate-400 mb-3">Metrics Collection</div>
+          <div class="text-xs text-red-300 font-mono">/prometheus/</div>
+          <div class="text-xs text-slate-500 mt-2">Time-series database</div>
+        </a>
+
+        <!-- Uptime Kuma -->
+        <a href="https://nxcore.tail79107c.ts.net/status/" target="_blank" class="metric-card rounded-2xl p-6 card-hover" data-check-url="https://nxcore.tail79107c.ts.net/status/">
+          <div class="flex items-start justify-between mb-4">
+            <div class="service-icon bg-green-500/20 text-green-400">
+              💚
+            </div>
+            <span class="status-badge status-checking">Checking...</span>
+          </div>
+          <div class="font-semibold text-lg mb-2">Uptime Kuma</div>
+          <div class="text-sm text-slate-400 mb-3">Status Monitoring</div>
+          <div class="text-xs text-green-300 font-mono">/status/</div>
+          <div class="text-xs text-slate-500 mt-2">Service uptime tracking</div>
+        </a>
+
+        <!-- Dozzle -->
+        <a href="http://100.115.9.61:9999/" target="_blank" class="metric-card rounded-2xl p-6 card-hover" data-check-url="http://100.115.9.61:9999/">
+          <div class="flex items-start justify-between mb-4">
+            <div class="service-icon bg-teal-500/20 text-teal-400">
+              📋
+            </div>
+            <span class="status-badge status-checking">Checking...</span>
+          </div>
+          <div class="font-semibold text-lg mb-2">Dozzle</div>
+          <div class="text-sm text-slate-400 mb-3">Live Container Logs</div>
+          <div class="text-xs text-teal-300 font-mono">:9999</div>
+          <div class="text-xs text-slate-500 mt-2">Real-time log viewer</div>
+        </a>
+
+        <!-- cAdvisor -->
+        <a href="http://100.115.9.61:9090/" target="_blank" class="metric-card rounded-2xl p-6 card-hover" data-check-url="http://100.115.9.61:9090/">
+          <div class="flex items-start justify-between mb-4">
+            <div class="service-icon bg-indigo-500/20 text-indigo-400">
+              📊
+            </div>
+            <span class="status-badge status-checking">Checking...</span>
+          </div>
+          <div class="font-semibold text-lg mb-2">cAdvisor</div>
+          <div class="text-sm text-slate-400 mb-3">Container Metrics</div>
+          <div class="text-xs text-indigo-300 font-mono">:9090</div>
+          <div class="text-xs text-slate-500 mt-2">Resource usage monitoring</div>
+        </a>
+
+      </div>
+    </section>
+
+    <!-- Management Tools -->
+    <section class="mb-10">
+      <div class="section-header rounded-2xl p-6 mb-6">
+        <div class="flex items-center space-x-3">
+          <div class="service-icon bg-slate-500/20 text-slate-400">
+            🛠️
+          </div>
+          <div>
+            <h2 class="text-xl font-semibold">Management Tools</h2>
+            <p class="text-sm text-slate-400">Container and file management</p>
+          </div>
+        </div>
+      </div>
+      
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        
+        <!-- Portainer -->
+        <a href="https://nxcore.tail79107c.ts.net/portainer/" target="_blank" class="metric-card rounded-2xl p-6 card-hover" data-check-url="https://nxcore.tail79107c.ts.net/portainer/">
+          <div class="flex items-start justify-between mb-4">
+            <div class="service-icon bg-slate-500/20 text-slate-400">
+              🐳
+            </div>
+            <span class="status-badge status-checking">Checking...</span>
+          </div>
+          <div class="font-semibold text-lg mb-2">Portainer</div>
+          <div class="text-sm text-slate-400 mb-3">Container Management</div>
+          <div class="text-xs text-slate-300 font-mono">/portainer/</div>
+          <div class="text-xs text-slate-500 mt-2">Docker UI & orchestration</div>
+        </a>
+
+        <!-- FileBrowser -->
+        <a href="https://nxcore.tail79107c.ts.net/files/" target="_blank" class="metric-card rounded-2xl p-6 card-hover" data-check-url="https://nxcore.tail79107c.ts.net/files/">
+          <div class="flex items-start justify-between mb-4">
+            <div class="service-icon bg-yellow-500/20 text-yellow-400">
+              📁
+            </div>
+            <span class="status-badge status-checking">Checking...</span>
+          </div>
+          <div class="font-semibold text-lg mb-2">FileBrowser</div>
+          <div class="text-sm text-slate-400 mb-3">File Management</div>
+          <div class="text-xs text-yellow-300 font-mono">/files/</div>
+          <div class="text-xs text-slate-500 mt-2">Web-based file manager</div>
+        </a>
+
+        <!-- Code-Server -->
+        <a href="http://100.115.9.61:8080/" target="_blank" class="metric-card rounded-2xl p-6 card-hover" data-check-url="http://100.115.9.61:8080/">
+          <div class="flex items-start justify-between mb-4">
+            <div class="service-icon bg-blue-500/20 text-blue-400">
+              💻
+            </div>
+            <span class="status-badge status-checking">Checking...</span>
+          </div>
+          <div class="font-semibold text-lg mb-2">Code-Server</div>
+          <div class="text-sm text-slate-400 mb-3">VS Code in Browser</div>
+          <div class="text-xs text-blue-300 font-mono">:8080</div>
+          <div class="text-xs text-slate-500 mt-2">Cloud development environment</div>
+        </a>
+
+      </div>
+    </section>
+
+    <!-- Additional Services -->
+    <section class="mb-10">
+      <div class="section-header rounded-2xl p-6 mb-6">
+        <div class="flex items-center space-x-3">
+          <div class="service-icon bg-rose-500/20 text-rose-400">
+            🔧
+          </div>
+          <div>
+            <h2 class="text-xl font-semibold">Additional Services</h2>
+            <p class="text-sm text-slate-400">Specialized tools and utilities</p>
+          </div>
+        </div>
+      </div>
+      
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        
+        <!-- AeroCaller -->
+        <a href="https://nxcore.tail79107c.ts.net/aerocaller/" target="_blank" class="metric-card rounded-2xl p-6 card-hover" data-check-url="https://nxcore.tail79107c.ts.net/aerocaller/">
+          <div class="flex items-start justify-between mb-4">
+            <div class="service-icon bg-rose-500/20 text-rose-400">
+              📞
+            </div>
+            <span class="status-badge status-checking">Checking...</span>
+          </div>
+          <div class="font-semibold text-lg mb-2">AeroCaller</div>
+          <div class="text-sm text-slate-400 mb-3">WebRTC Helper</div>
+          <div class="text-xs text-rose-300 font-mono">/aerocaller/</div>
+          <div class="text-xs text-slate-500 mt-2">Voice/video calling service</div>
+        </a>
+
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="text-center text-sm text-slate-500 py-8 border-t border-slate-800">
+      <div class="mb-4">
+        <span class="font-semibold text-slate-400">AeroVista NXCore Infrastructure</span> • 
+        <span class="text-green-400">Phase A-C Complete</span> • 
+        <a href="#" onclick="showCertDownload(); return false;" class="text-amber-400 hover:text-amber-300 underline cursor-pointer transition-colors">🔒 Self-Signed TLS</a> • Tailscale Network
+      </div>
+      <div class="text-xs">
+        <span class="status-badge status-online inline-block mr-2">All Systems Operational</span>
+        24 Containers • 8 HTTPS Routes • AI Enabled (llama3.2)
+      </div>
+      <div class="text-xs mt-3 text-slate-600">
+        Last Updated: October 16, 2025 • nxcore.tail79107c.ts.net
+      </div>
+    </footer>
+
+  </div>
+
+  <script>
+    // Live service status checking - simplified approach
+    async function checkService(url, timeout = 2000) {
+      return new Promise((resolve) => {
+        const img = new Image();
+        const timer = setTimeout(() => {
+          resolve(false);
+        }, timeout);
+        
+        img.onload = () => {
+          clearTimeout(timer);
+          resolve(true);
+        };
+        
+        img.onerror = () => {
+          clearTimeout(timer);
+          resolve(false);
+        };
+        
+        // Try to load the service's favicon or a small resource
+        img.src = url + '/favicon.ico?t=' + Date.now();
+      });
+    }
+
+    async function updateServiceStatus() {
+      const services = document.querySelectorAll('[data-check-url]');
+      console.log('Checking status for', services.length, 'services');
+      
+      for (const service of services) {
+        const url = service.getAttribute('data-check-url');
+        const statusBadge = service.querySelector('.status-badge');
+        const serviceName = service.querySelector('.font-semibold').textContent;
+        
+        // Set checking state
+        statusBadge.className = 'status-badge status-checking';
+        statusBadge.textContent = 'Checking...';
+        
+        // Check service
+        const isOnline = await checkService(url);
+        console.log(`${serviceName}: ${isOnline ? 'Online' : 'Offline'}`);
+        
+        // Update status
+        if (isOnline) {
+          statusBadge.className = 'status-badge status-online';
+          statusBadge.textContent = 'Online';
+        } else {
+          statusBadge.className = 'status-badge status-offline';
+          statusBadge.textContent = 'Offline';
+        }
+      }
+      
+      // Update stats
+      const onlineCount = document.querySelectorAll('.status-online').length;
+      const totalCount = services.length;
+      document.getElementById('online-count').textContent = onlineCount;
+      document.getElementById('total-count').textContent = totalCount;
+      
+      console.log(`Status update complete: ${onlineCount}/${totalCount} services online`);
+    }
+
+    // Certificate detection and installation guide functions
+    function checkCertificateStatus() {
+      // Check if we're in an insecure context (certificate not trusted)
+      if (!window.isSecureContext) {
+        // Show certificate download section
+        document.getElementById('cert-download').style.display = 'block';
+        console.log('Certificate not trusted - showing download section');
+      } else {
+        // Certificate is trusted, hide download section
+        document.getElementById('cert-download').style.display = 'none';
+        console.log('Certificate is trusted - hiding download section');
+      }
+    }
+
+    function hideCertDownload() {
+      document.getElementById('cert-download').style.display = 'none';
+    }
+
+    function showCertDownload() {
+      document.getElementById('cert-download').style.display = 'block';
+      // Scroll to the certificate download section with offset for header
+      const element = document.getElementById('cert-download');
+      const headerHeight = 80; // Approximate header height
+      const elementPosition = element.offsetTop - headerHeight;
+      
+      window.scrollTo({
+        top: elementPosition,
+        behavior: 'smooth'
+      });
+    }
+
+    function showInstallGuide() {
+      document.getElementById('install-guide-modal').classList.remove('hidden');
+      showBrowserGuide('chrome'); // Default to Chrome
+    }
+
+    function hideInstallGuide() {
+      document.getElementById('install-guide-modal').classList.add('hidden');
+    }
+
+    function showBrowserGuide(browser) {
+      // Update tab styles
+      document.querySelectorAll('[id$="-tab"]').forEach(tab => {
+        tab.className = 'px-4 py-2 text-sm font-medium text-slate-400 border-b-2 border-transparent hover:text-white';
+      });
+      document.getElementById(browser + '-tab').className = 'px-4 py-2 text-sm font-medium text-blue-400 border-b-2 border-blue-400';
+
+      // Load guide content
+      const guideContent = document.getElementById('guide-content');
+      
+      const guides = {
+        chrome: `
+          <div class="space-y-4">
+            <h4 class="text-lg font-semibold text-white">Chrome/Edge Installation</h4>
+            
+            <div class="bg-slate-700/50 rounded-lg p-4">
+              <h5 class="font-medium text-white mb-2">Method 1: Certificate Manager (Recommended)</h5>
+              <ol class="list-decimal list-inside space-y-2 text-sm">
+                <li>Download the certificate file: <code class="bg-slate-600 px-1 rounded">nxcore-certificate.crt</code></li>
+                <li>Open <code class="bg-slate-600 px-1 rounded">certlm.msc</code> (Local Machine) or <code class="bg-slate-600 px-1 rounded">certmgr.msc</code> (Current User)</li>
+                <li>Navigate to: <strong>Trusted Root Certification Authorities</strong> → <strong>Certificates</strong></li>
+                <li>Right-click → <strong>All Tasks</strong> → <strong>Import</strong></li>
+                <li>Browse and select the downloaded certificate file</li>
+                <li>Click <strong>Next</strong> → <strong>Finish</strong></li>
+                <li><strong>Refresh this page</strong> - you should see a green lock icon!</li>
+              </ol>
+            </div>
+
+            <div class="bg-slate-700/50 rounded-lg p-4">
+              <h5 class="font-medium text-white mb-2">Method 2: Browser Settings</h5>
+              <ol class="list-decimal list-inside space-y-2 text-sm">
+                <li>Open Chrome/Edge → <strong>Settings</strong> → <strong>Privacy and Security</strong> → <strong>Security</strong></li>
+                <li>Click <strong>"Manage certificates"</strong></li>
+                <li>Go to <strong>"Trusted Root Certification Authorities"</strong> tab</li>
+                <li>Click <strong>"Import"</strong></li>
+                <li>Select the downloaded certificate file</li>
+                <li>Check <strong>"Place all certificates in the following store"</strong></li>
+                <li>Select <strong>"Trusted Root Certification Authorities"</strong></li>
+                <li>Click <strong>Next</strong> and <strong>Finish</strong></li>
+                <li><strong>Refresh this page!</strong></li>
+              </ol>
+            </div>
+
+            <div class="bg-green-900/20 border border-green-500/20 rounded-lg p-3">
+              <p class="text-green-300 text-sm"><strong>Verification:</strong> After installation, visit <code class="bg-slate-600 px-1 rounded">https://nxcore.tail79107c.ts.net/</code> - you should see a green lock icon in the address bar.</p>
+            </div>
+          </div>
+        `,
+        firefox: `
+          <div class="space-y-4">
+            <h4 class="text-lg font-semibold text-white">Firefox Installation</h4>
+            
+            <div class="bg-slate-700/50 rounded-lg p-4">
+              <h5 class="font-medium text-white mb-2">Firefox Certificate Manager</h5>
+              <ol class="list-decimal list-inside space-y-2 text-sm">
+                <li>Download the certificate file: <code class="bg-slate-600 px-1 rounded">nxcore-certificate.crt</code></li>
+                <li>Open Firefox → <strong>Settings</strong> (or Preferences)</li>
+                <li>Go to <strong>Privacy & Security</strong></li>
+                <li>Scroll down to <strong>"Certificates"</strong> section</li>
+                <li>Click <strong>"View Certificates"</strong></li>
+                <li>Go to <strong>"Authorities"</strong> tab</li>
+                <li>Click <strong>"Import"</strong></li>
+                <li>Browse and select the downloaded certificate file</li>
+                <li>Check <strong>"Trust this CA to identify websites"</strong></li>
+                <li>Click <strong>"OK"</strong></li>
+                <li><strong>Refresh this page</strong> - you should see a green lock icon!</li>
+              </ol>
+            </div>
+
+            <div class="bg-amber-900/20 border border-amber-500/20 rounded-lg p-3">
+              <p class="text-amber-300 text-sm"><strong>Note:</strong> Firefox has its own certificate store, separate from Windows Certificate Manager.</p>
+            </div>
+
+            <div class="bg-green-900/20 border border-green-500/20 rounded-lg p-3">
+              <p class="text-green-300 text-sm"><strong>Verification:</strong> After installation, visit <code class="bg-slate-600 px-1 rounded">https://nxcore.tail79107c.ts.net/</code> - you should see a green lock icon in the address bar.</p>
+            </div>
+          </div>
+        `,
+        safari: `
+          <div class="space-y-4">
+            <h4 class="text-lg font-semibold text-white">Safari Installation (macOS)</h4>
+            
+            <div class="bg-slate-700/50 rounded-lg p-4">
+              <h5 class="font-medium text-white mb-2">macOS Keychain Method</h5>
+              <ol class="list-decimal list-inside space-y-2 text-sm">
+                <li>Download the certificate file: <code class="bg-slate-600 px-1 rounded">nxcore-certificate.crt</code></li>
+                <li><strong>Double-click</strong> the downloaded certificate file</li>
+                <li><strong>Keychain Access</strong> will open automatically</li>
+                <li>Find the certificate in the list (look for <code class="bg-slate-600 px-1 rounded">nxcore.tail79107c.ts.net</code>)</li>
+                <li><strong>Double-click</strong> the certificate</li>
+                <li>Expand the <strong>"Trust"</strong> section</li>
+                <li>Set <strong>"When using this certificate"</strong> to <strong>"Always Trust"</strong></li>
+                <li>Close the certificate window</li>
+                <li>Enter your password when prompted</li>
+                <li><strong>Refresh this page</strong> - you should see a green lock icon!</li>
+              </ol>
+            </div>
+
+            <div class="bg-slate-700/50 rounded-lg p-4">
+              <h5 class="font-medium text-white mb-2">Alternative: Command Line</h5>
+              <div class="bg-slate-800 rounded p-3">
+                <code class="text-green-300 text-sm">
+                  sudo security add-trusted-cert -d -r trustRoot -k /Library/Keychains/System.keychain nxcore-certificate.crt
+                </code>
+              </div>
+            </div>
+
+            <div class="bg-green-900/20 border border-green-500/20 rounded-lg p-3">
+              <p class="text-green-300 text-sm"><strong>Verification:</strong> After installation, visit <code class="bg-slate-600 px-1 rounded">https://nxcore.tail79107c.ts.net/</code> - you should see a green lock icon in the address bar.</p>
+            </div>
+          </div>
+        `
+      };
+
+      guideContent.innerHTML = guides[browser];
+    }
+
+    // Check status on load and every 30 seconds
+    document.addEventListener('DOMContentLoaded', () => {
+      updateServiceStatus();
+      setInterval(updateServiceStatus, 30000);
+      
+      // Check certificate status on load
+      checkCertificateStatus();
+      
+      // Check certificate status every 10 seconds (in case user installs certificate)
+      setInterval(checkCertificateStatus, 10000);
+    });
+  </script>
+
+</body>
+</html>

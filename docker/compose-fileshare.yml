@@ -1,0 +1,48 @@
+version: "3.8"
+services:
+  fileshare-nginx:
+    image: nginx:alpine
+    container_name: nxcore-fileshare-nginx
+    restart: unless-stopped
+    networks:
+      - gateway
+      - backend
+    ports:
+      - "8082:80" # Expose on a new port for direct access, or remove if only via Traefik
+    volumes:
+      - /srv/core/fileshare/www:/var/www/html:ro
+      - /srv/core/config/fileshare/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+      - /srv/core/fileshare/uploads:/var/www/html/uploads:rw # Writable for uploads
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.fileshare.rule=Host(`share.nxcore.tail79107c.ts.net`)
+      - traefik.http.services.fileshare.loadbalancer.server.port=80
+      - autoheal=true
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:80/ || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    depends_on:
+      - fileshare-php
+
+  fileshare-php:
+    image: php:8.2-fpm-alpine
+    container_name: nxcore-fileshare-php
+    restart: unless-stopped
+    networks:
+      - backend
+    volumes:
+      - /srv/core/fileshare/www:/var/www/html:rw
+      - /srv/core/fileshare/uploads:/var/www/html/uploads:rw # Writable for uploads
+    healthcheck:
+      test: ["CMD-SHELL", "php-fpm -t || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+networks:
+  gateway:
+    external: true
+  backend:
+    external: true

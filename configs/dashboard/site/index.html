@@ -1,0 +1,79 @@
+
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>AeroVista — Daily Brief Builder</title>
+  <link rel="stylesheet" href="./assets/style.css">
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>Daily Brief Builder</h1>
+      <div>
+        <a class="btn" href="./docs/postgresql_sop.md" download>Download: PostgreSQL SOP</a>
+      </div>
+    </div>
+
+    <nav class="tabs">
+      <div class="tab active" data-tab="brief" onclick="setTab('brief')">Brief</div>
+      <div class="tab" data-tab="infra" onclick="setTab('infra')">Infra Shortcuts</div>
+      <div class="tab" data-tab="postgres" onclick="setTab('postgres')">PostgreSQL SOP</div>
+    </nav>
+
+    <!-- Brief panel -->
+    <section id="brief" class="panel card">
+      <h2>Today</h2>
+      <div class="grid">
+        <div class="card">
+          <div class="badge">P1</div>
+          <h3>Back up appdb (nightly)</h3>
+          <p class="small">Verify /var/backups rotation & disk space.</p>
+          <pre id="cmd_backup">sudo -u postgres pg_dump -h localhost -p 5432 -F c -d appdb -f /var/backups/appdb_$(date +%F).dump</pre>
+          <button class="btn copy" data-copy="cmd_backup" onclick="copyText('cmd_backup')">Copy</button>
+        </div>
+        <div class="card">
+          <div class="badge">P1</div>
+          <h3>Health check</h3>
+          <pre id="cmd_health">pg_isready -h localhost -p 5432</pre>
+          <button class="btn copy" data-copy="cmd_health" onclick="copyText('cmd_health')">Copy</button>
+        </div>
+        <div class="card">
+          <div class="badge">P2</div>
+          <h3>List active queries</h3>
+          <pre id="sql_activity">SELECT pid, usename, datname, state, now() - query_start AS age, left(query, 120) AS query
+FROM pg_stat_activity
+ORDER BY state, age DESC
+LIMIT 20;</pre>
+          <button class="btn copy" data-copy="sql_activity" onclick="copyText('sql_activity')">Copy</button>
+        </div>
+      </div>
+      <hr>
+      <p class="small">Tip: add this page behind Traefik at <code>/brief/</code> for quick access on the tailnet.</p>
+    </section>
+
+    <!-- Infra shortcuts -->
+    <section id="infra" class="panel card hidden">
+      <h2>Infra Shortcuts</h2>
+      <div class="kv">
+        <div>Traefik Dashboard</div><div><a class="btn" href="/traefik/" target="_blank">Open</a></div>
+        <div>Portainer</div><div><a class="btn" href="/portainer/" target="_blank">Open</a></div>
+        <div>Files</div><div><a class="btn" href="/files/" target="_blank">Open</a></div>
+        <div>n8n</div><div><a class="btn" href="/n8n/" target="_blank">Open</a></div>
+      </div>
+    </section>
+
+    <!-- PostgreSQL SOP (rendered as plain text for now) -->
+    <section id="postgres" class="panel card hidden">
+      <h2>PostgreSQL SOP</h2>
+      <pre id="postgres_md">Loading...</pre>
+    </section>
+
+    <div class="footer small">
+      AeroVista • Daily Brief Builder • v1.0
+    </div>
+  </div>
+  <script src="./assets/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,63 @@
+version: "3.9"
+
+networks:
+  gateway:
+    external: true
+  backend:
+    external: true
+
+services:
+  guacd:
+    image: guacamole/guacd:latest
+    container_name: guacd
+    restart: unless-stopped
+    volumes:
+      - guacd_data:/opt/guacd
+    networks:
+      - backend
+    labels:
+      - autoheal=true
+    healthcheck:
+      test: ["CMD-SHELL", "nc -z localhost 4822 || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+
+  guacamole:
+    image: guacamole/guacamole:latest
+    container_name: guacamole
+    restart: unless-stopped
+    environment:
+      - GUACD_HOSTNAME=guacd
+      - GUACD_PORT=4822
+      - GUACD_ENCRYPTION_KEY=${GUACAMOLE_ENCRYPTION_KEY:-ChangeMe_GuacamoleKey123}
+      - GUACD_ENCRYPTION_KEY=${GUACAMOLE_ENCRYPTION_KEY:-ChangeMe_GuacamoleKey123}
+    ports:
+      - "8080:8080"
+    volumes:
+      - guacamole_data:/opt/guacamole
+      - /srv/core/fileshare/uploads:/shared:ro
+    networks:
+      - gateway
+      - backend
+    depends_on:
+      - guacd
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.guacamole.rule=Host(`guac.nxcore.tail79107c.ts.net`)
+      - traefik.http.routers.guacamole.entrypoints=websecure
+      - traefik.http.routers.guacamole.tls=true
+      - traefik.http.routers.guacamole.service=guacamole
+      - traefik.http.services.guacamole.loadbalancer.server.port=8080
+      - autoheal=true
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8080/guacamole/ || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+volumes:
+  guacd_data:
+  guacamole_data:

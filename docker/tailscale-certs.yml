@@ -1,0 +1,6 @@
+# /traefik/dynamic/tailscale-certs.yml
+# Uses existing certs at /certs (mounted from /opt/nexus/traefik/certs)
+tls:
+  certificates:
+    - certFile: /certs/fullchain.pem
+      keyFile: /certs/privkey.pem

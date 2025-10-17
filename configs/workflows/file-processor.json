@@ -1,0 +1,123 @@
+{
+  "name": "File Processor Workflow",
+  "description": "Automatically process uploaded files",
+  "nodes": [
+    {
+      "id": "webhook",
+      "name": "File Upload Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "parameters": {
+        "path": "file-uploaded",
+        "httpMethod": "POST"
+      }
+    },
+    {
+      "id": "file-type-check",
+      "name": "Check File Type",
+      "type": "n8n-nodes-base.if",
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{ $json.fileType }}",
+              "operation": "contains",
+              "value2": "image"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "image-processor",
+      "name": "Process Image",
+      "type": "n8n-nodes-base.httpRequest",
+      "parameters": {
+        "url": "http://ai.nxcore.tail79107c.ts.net/api/process-image",
+        "method": "POST",
+        "body": {
+          "file": "={{ $json.fileUrl }}",
+          "action": "resize_and_optimize"
+        }
+      }
+    },
+    {
+      "id": "document-processor",
+      "name": "Process Document",
+      "type": "n8n-nodes-base.httpRequest",
+      "parameters": {
+        "url": "http://ai.nxcore.tail79107c.ts.net/api/process-document",
+        "method": "POST",
+        "body": {
+          "file": "={{ $json.fileUrl }}",
+          "action": "extract_text"
+        }
+      }
+    },
+    {
+      "id": "notification",
+      "name": "Send Notification",
+      "type": "n8n-nodes-base.httpRequest",
+      "parameters": {
+        "url": "http://localhost:8081/api/notify",
+        "method": "POST",
+        "body": {
+          "message": "File {{ $json.filename }} processed successfully",
+          "type": "success"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "webhook": {
+      "main": [
+        [
+          {
+            "node": "file-type-check",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "file-type-check": {
+      "main": [
+        [
+          {
+            "node": "image-processor",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "document-processor",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "image-processor": {
+      "main": [
+        [
+          {
+            "node": "notification",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "document-processor": {
+      "main": [
+        [
+          {
+            "node": "notification",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  }
+}

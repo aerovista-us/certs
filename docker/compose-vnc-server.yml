@@ -1,0 +1,39 @@
+version: "3.9"
+
+networks:
+  gateway:
+    external: true
+  backend:
+    external: true
+
+services:
+  vnc-server:
+    image: consol/ubuntu-xfce-vnc:latest
+    container_name: vnc-server
+    restart: unless-stopped
+    environment:
+      - VNC_PW=${VNC_PASSWORD:-ChangeMe_VNCPassword123}
+      - VNC_RESOLUTION=1920x1080
+      - VNC_COL_DEPTH=24
+      - DISPLAY=:1
+      - VNC_BLACKLIST_THRESHOLD=20
+      - VNC_BLACKLIST_TIMEOUT=0
+    ports:
+      - "5901:5901"  # VNC port
+      - "6901:6901"  # NoVNC web port
+    volumes:
+      - vnc_data:/headless
+      - /srv/core/fileshare/uploads:/headless/Desktop/shared:ro
+    networks:
+      - backend
+    labels:
+      - autoheal=true
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:6901/ || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+volumes:
+  vnc_data:

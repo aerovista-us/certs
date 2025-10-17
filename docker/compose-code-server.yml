@@ -1,0 +1,43 @@
+version: "3.9"
+
+networks:
+  gateway:
+    external: true
+  backend:
+    external: true
+
+services:
+  code-server:
+    image: codercom/code-server:latest
+    container_name: code-server
+    restart: unless-stopped
+    environment:
+      - PASSWORD=${CODE_SERVER_PASSWORD:-ChangeMe_CodeServerPassword123}
+      - SUDO_PASSWORD=${CODE_SERVER_PASSWORD:-ChangeMe_CodeServerPassword123}
+      - DOCKER_HOST=unix:///var/run/docker.sock
+    ports:
+      - "8080:8080"
+    volumes:
+      - code_server_data:/home/coder
+      - /srv/core/fileshare/uploads:/home/coder/shared:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    networks:
+      - gateway
+      - backend
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.code-server.rule=Host(`code.nxcore.tail79107c.ts.net`)
+      - traefik.http.routers.code-server.entrypoints=websecure
+      - traefik.http.routers.code-server.tls=true
+      - traefik.http.routers.code-server.service=code-server
+      - traefik.http.services.code-server.loadbalancer.server.port=8080
+      - autoheal=true
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8080/ || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+volumes:
+  code_server_data:

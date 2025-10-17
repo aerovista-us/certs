@@ -1,0 +1,41 @@
+version: "3.9"
+
+networks:
+  gateway:
+    external: true
+  backend:
+    external: true
+
+services:
+  openwebui:
+    image: ghcr.io/open-webui/open-webui:latest
+    container_name: openwebui
+    restart: unless-stopped
+    environment:
+      - OLLAMA_BASE_URL=http://ollama:11434
+      - WEBUI_NAME=AeroVista AI Assistant
+      - WEBUI_AUTH=true
+      - WEBUI_URL=https://nxcore.tail79107c.ts.net/ai
+      - ENABLE_RAG_WEB_SEARCH=false
+      - ENABLE_IMAGE_GENERATION=false
+      - ENABLE_COMMUNITY_SHARING=false
+    volumes:
+      - /srv/core/data/openwebui:/app/backend/data
+    networks:
+      - gateway
+      - backend
+    # depends_on:
+    #   - ollama  # Ollama runs in separate compose file
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.openwebui.rule=Host(`ai.nxcore.tail79107c.ts.net`)
+      - traefik.http.routers.openwebui.entrypoints=websecure
+      - traefik.http.routers.openwebui.tls=true
+# - traefik.http.routers.openwebui.middlewares=authelia@docker
+      - traefik.http.services.openwebui.loadbalancer.server.port=8080
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+

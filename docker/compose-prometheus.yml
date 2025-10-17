@@ -1,0 +1,36 @@
+version: "3.9"
+
+networks:
+  gateway:
+    external: true
+  observability:
+    external: true
+
+services:
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    restart: unless-stopped
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--storage.tsdb.retention.time=30d'
+      - '--web.console.libraries=/usr/share/prometheus/console_libraries'
+      - '--web.console.templates=/usr/share/prometheus/consoles'
+      - '--web.enable-lifecycle'
+    volumes:
+      - /srv/core/config/prometheus:/etc/prometheus:ro
+      - /srv/core/data/prometheus:/prometheus
+    ports:
+      - "9090:9090"
+    networks:
+      - gateway
+      - observability
+    labels:
+      - traefik.enable=false  # Using path-based routing instead
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:9090/-/healthy"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+

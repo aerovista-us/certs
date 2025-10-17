@@ -1,0 +1,6 @@
+# Example UFW rules
+ufw default deny incoming
+ufw default allow outgoing
+ufw allow OpenSSH
+ufw allow 5678/tcp    # n8n
+ufw allow 8080/tcp    # FileBrowser

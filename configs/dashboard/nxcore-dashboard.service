@@ -1,0 +1,16 @@
+[Unit]
+Description=NXCore System Dashboard
+After=graphical-session.target
+Wants=graphical-session.target
+
+[Service]
+Type=simple
+User=glyph
+Group=glyph
+Environment=DISPLAY=:0
+ExecStart=/usr/bin/chromium-browser --kiosk --no-sandbox --disable-dev-shm-usage --disable-gpu --remote-debugging-port=9222 --user-data-dir=/tmp/chrome-dashboard http://localhost:8081/
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=graphical-session.target

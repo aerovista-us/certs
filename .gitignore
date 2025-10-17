@@ -1,0 +1,78 @@
+# NXCore-Control .gitignore
+
+# Certificates and Keys (Security)
+*.pem
+*.key
+*.crt
+*.p12
+*.der
+certs/
+*.env
+.env.*
+
+# Logs
+*.log
+logs/
+*.log.*
+
+# Database files
+*.db
+*.sqlite
+*.sqlite3
+
+# Temporary files
+*.tmp
+*.temp
+.DS_Store
+Thumbs.db
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Node modules (if any)
+node_modules/
+npm-debug.log*
+
+# Docker volumes and data
+data/
+volumes/
+uploads/
+
+# Backup files
+*.backup
+*.bak
+*.save
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Windows
+desktop.ini
+
+# Linux
+*~
+
+# Sensitive configuration
+config/secrets/
+secrets/
+*.secret
+
+# Build artifacts
+dist/
+build/
+*.tar.gz
+*.zip
+
+# Runtime files
+*.pid
+*.sock

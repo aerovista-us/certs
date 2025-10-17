@@ -1,0 +1,8 @@
+{
+  "ACLs": [
+    { "Action": "accept", "Users": ["*"], "Ports": ["nxcore:22", "nxcore:8080", "nxcore:5678"] }
+  ],
+  "Groups": {
+    "group:admins": ["you@example.com"]
+  }
+}

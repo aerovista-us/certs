@@ -1,0 +1,48 @@
+networks:
+  gateway:
+    external: true
+  backend:
+    external: true
+
+services:
+  n8n:
+    image: docker.n8n.io/n8nio/n8n:latest
+    container_name: n8n
+    restart: unless-stopped
+    environment:
+      - GENERIC_TIMEZONE=America/Los_Angeles
+      - N8N_HOST=n8n.nxcore.tail79107c.ts.net
+      - N8N_PROTOCOL=https
+      - WEBHOOK_URL=https://n8n.nxcore.tail79107c.ts.net/
+      # Database configuration for durability
+      - DB_TYPE=postgresdb
+      - DB_POSTGRESDB_HOST=postgres
+      - DB_POSTGRESDB_DATABASE=n8n
+      - DB_POSTGRESDB_USER=aerovista
+      - DB_POSTGRESDB_PASSWORD=${POSTGRES_PASSWORD:-ChangeMe_SecurePassword123}
+      # Queue configuration for job persistence
+      - QUEUE_BULL_REDIS_HOST=redis
+      - QUEUE_BULL_REDIS_PASSWORD=${REDIS_PASSWORD:-ChangeMe_RedisPassword123}
+      - EXECUTIONS_MODE=queue
+      - N8N_ENCRYPTION_KEY=${N8N_ENCRYPTION_KEY:-ChangeMe_N8N_EncryptionKey123456789012345678901234567890}
+    volumes:
+      - /srv/core/n8n_data:/home/node/.n8n
+    networks:
+      - gateway
+      - backend
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.n8n.rule=Host(`n8n.nxcore.tail79107c.ts.net`)
+      - traefik.http.routers.n8n.entrypoints=websecure
+      - traefik.http.routers.n8n.tls=true
+      - traefik.http.services.n8n.loadbalancer.server.port=5678
+      - autoheal=true
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:5678/healthz || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+    depends_on:
+      - postgres
+      - redis

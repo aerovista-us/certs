@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>AeroVista • NXCore Landing</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cpath fill='%23a78bfa' d='M31 4l8 18 19 3-14 13 3 19-16-9-16 9 3-19L4 25l19-3z'/%3E%3C/svg%3E">
+  <style>
+    .card { @apply relative bg-zinc-900/70 border border-zinc-700/60 rounded-2xl p-4 shadow-lg hover:shadow-xl transition; }
+    .chip { @apply px-2 py-0.5 rounded-full text-xs font-medium; }
+    .chip-up { @apply bg-emerald-500/15 text-emerald-300 border border-emerald-400/30; }
+    .chip-down { @apply bg-rose-500/15 text-rose-300 border border-rose-400/30; }
+    .chip-warn { @apply bg-amber-500/15 text-amber-300 border border-amber-400/30; }
+    .btn { @apply inline-flex items-center gap-2 rounded-xl border border-zinc-600/60 px-3 py-1.5 hover:bg-zinc-800; }
+    .kbd { @apply px-1.5 py-0.5 rounded border border-zinc-600/60 bg-zinc-900 text-zinc-300 text-[11px]; }
+    .link { @apply text-indigo-300 hover:text-indigo-200 underline decoration-dotted underline-offset-4; }
+    .service-card { @apply bg-zinc-900/50 border border-zinc-700/40 rounded-xl p-4 hover:bg-zinc-800/50 transition-all duration-200; }
+    .service-link { @apply block w-full text-left p-3 rounded-lg bg-zinc-800/30 hover:bg-zinc-700/50 border border-zinc-600/30 hover:border-indigo-500/50 transition-all duration-200; }
+  </style>
+</head>
+<body class="min-h-screen bg-gradient-to-b from-zinc-950 via-zinc-950 to-zinc-900 text-zinc-200">
+  <div class="container mx-auto px-4 py-8 max-w-6xl">
+    <!-- Header -->
+    <header class="text-center mb-12">
+      <div class="inline-flex items-center gap-3 mb-4">
+        <div class="w-12 h-12 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl flex items-center justify-center">
+          <svg class="w-7 h-7 text-white" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+          </svg>
+        </div>
+        <h1 class="text-4xl font-bold bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent">
+          AeroVista
+        </h1>
+      </div>
+      <p class="text-zinc-400 text-lg mb-2">NXCore Infrastructure Dashboard</p>
+      <div class="flex items-center justify-center gap-2 text-sm text-zinc-500">
+        <span class="chip chip-up">●</span>
+        <span>All Systems Operational</span>
+        <span class="kbd">100.115.9.61</span>
+      </div>
+    </header>
+
+    <!-- Quick Stats -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+      <div class="card text-center">
+        <div class="text-2xl font-bold text-emerald-400">21</div>
+        <div class="text-sm text-zinc-400">Services Running</div>
+      </div>
+      <div class="card text-center">
+        <div class="text-2xl font-bold text-blue-400">6</div>
+        <div class="text-sm text-zinc-400">Browser Workspaces</div>
+      </div>
+      <div class="card text-center">
+        <div class="text-2xl font-bold text-purple-400">4</div>
+        <div class="text-sm text-zinc-400">Monitoring Tools</div>
+      </div>
+      <div class="card text-center">
+        <div class="text-2xl font-bold text-indigo-400">100%</div>
+        <div class="text-sm text-zinc-400">Uptime</div>
+      </div>
+    </div>
+
+    <!-- Services Grid -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
+      
+      <!-- Monitoring & Observability -->
+      <div class="service-card">
+        <h2 class="text-xl font-semibold mb-4 flex items-center gap-2">
+          <svg class="w-5 h-5 text-blue-400" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+          </svg>
+          Monitoring & Observability
+        </h2>
+        <div class="space-y-3">
+          <a href="http://100.115.9.61:3000/" class="service-link">
+            <div class="flex items-center justify-between">
+              <div>
+                <div class="font-medium text-white">Grafana</div>
+                <div class="text-sm text-zinc-400">Dashboards & Analytics</div>
+              </div>
+              <div class="chip chip-up">Port 3000</div>
+            </div>
+          </a>
+          
+          <a href="http://100.115.9.61:9090/" class="service-link">
+            <div class="flex items-center justify-between">
+              <div>
+                <div class="font-medium text-white">Prometheus</div>
+                <div class="text-sm text-zinc-400">Metrics Collection</div>
+              </div>
+              <div class="chip chip-up">Port 9090</div>
+            </div>
+          </a>
+          
+          <a href="http://100.115.9.61:3001/" class="service-link">
+            <div class="flex items-center justify-between">
+              <div>
+                <div class="font-medium text-white">Uptime Kuma</div>
+                <div class="text-sm text-zinc-400">Service Monitoring</div>
+              </div>
+              <div class="chip chip-up">Port 3001</div>
+            </div>
+          </a>
+          
+          <a href="http://100.115.9.61:8080/" class="service-link">
+            <div class="flex items-center justify-between">
+              <div>
+                <div class="font-medium text-white">cAdvisor</div>
+                <div class="text-sm text-zinc-400">Container Metrics</div>
+              </div>
+              <div class="chip chip-up">Port 8080</div>
+            </div>
+          </a>
+        </div>
+      </div>
+
+      <!-- Infrastructure & Security -->
+      <div class="service-card">
+        <h2 class="text-xl font-semibold mb-4 flex items-center gap-2">
+          <svg class="w-5 h-5 text-emerald-400" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z"/>
+          </svg>
+          Infrastructure & Security
+        </h2>
+        <div class="space-y-3">
+          <a href="https://nxcore.tail79107c.ts.net/" class="service-link">
+            <div class="flex items-center justify-between">
+              <div>
+                <div class="font-medium text-white">Traefik</div>
+                <div class="text-sm text-zinc-400">Reverse Proxy & Gateway</div>
+              </div>
+              <div class="chip chip-up">HTTPS</div>
+            </div>
+          </a>
+          
+          <a href="http://100.115.9.61:9091/" class="service-link">
+            <div class="flex items-center justify-between">
+              <div>
+                <div class="font-medium text-white">Authelia</div>
+                <div class="text-sm text-zinc-400">SSO & MFA Gateway</div>
+              </div>
+              <div class="chip chip-up">Port 9091</div>
+            </div>
+          </a>
+
+          <a href="https://portainer.nxcore.tail79107c.ts.net/" class="service-link">
+            <div class="flex items-center justify-between">
+              <div>
+                <div class="font-medium text-white">Portainer</div>
+                <div class="text-sm text-zinc-400">Docker Management</div>
+              </div>
+              <div class="chip chip-up">HTTPS</div>
+            </div>
+          </a>
+          
+          <div class="service-link opacity-60">
+            <div class="flex items-center justify-between">
+              <div>
+                <div class="font-medium text-white">PostgreSQL</div>
+                <div class="text-sm text-zinc-400">Primary Database</div>
+              </div>
+              <div class="chip chip-warn">Internal</div>
+            </div>
+          </div>
+          
+          <div class="service-link opacity-60">
+            <div class="flex items-center justify-between">
+              <div>
+                <div class="font-medium text-white">Redis</div>
+                <div class="text-sm text-zinc-400">Cache & Queues</div>
+              </div>
+              <div class="chip chip-warn">Internal</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- File Sharing & Storage -->
+      <div class="service-card">
+        <h2 class="text-xl font-semibold mb-4 flex items-center gap-2">
+          <svg class="w-5 h-5 text-green-400" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M10 4H4c-1.11 0-2 .89-2 2v12c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V8c0-1.11-.89-2-2-2h-8l-2-2z"/>
+          </svg>
+          File Sharing & Storage
+        </h2>
+        <div class="space-y-3">
+          <a href="http://100.115.9.61:8082/" class="service-link">
+            <div class="flex items-center justify-between">
+              <div>
+                <div class="font-medium text-white">Drop & Go</div>
+                <div class="text-sm text-zinc-400">Drag & Drop File Upload</div>
+              </div>
+              <div class="chip chip-up">Port 8082</div>
+            </div>
+          </a>
+          
+          <a href="http://100.115.9.61:8082/files.html" class="service-link">
+            <div class="flex items-center justify-between">
+              <div>
+                <div class="font-medium text-white">File Manager</div>
+                <div class="text-sm text-zinc-400">Browse & Manage Files</div>
+              </div>
+              <div class="chip chip-up">Active</div>
+            </div>
+          </a>
+          
+          <div class="service-link opacity-60">
+            <div class="flex items-center justify-between">
+              <div>
+                <div class="font-medium text-white">NXCore Dashboard</div>
+                <div class="text-sm text-zinc-400">Live Service Monitor</div>
+              </div>
+              <div class="chip chip-up">Port 8081</div>
+            </div>
+          </div>
+          
+          <div class="service-link opacity-60">
+            <div class="flex items-center justify-between">
+              <div>
+                <div class="font-medium text-white">Workflow Automation</div>
+                <div class="text-sm text-zinc-400">File Processing</div>
+              </div>
+              <div class="chip chip-warn">Coming Soon</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Browser Workspaces -->
+      <div class="service-card">
+        <h2 class="text-xl font-semibold mb-4 flex items-center gap-2">
+          <svg class="w-5 h-5 text-cyan-400" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.94-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/>
+          </svg>
+          Browser Workspaces
+        </h2>
+        <div class="space-y-3">
+          <a href="https://vnc.nxcore.tail79107c.ts.net/" class="service-link">
+            <div class="flex items-center justify-between">
+              <div>
+                <div class="font-medium text-white">NoVNC</div>
+                <div class="text-sm text-zinc-400">Browser-based Remote Desktop</div>
+              </div>
+              <div class="chip chip-up">HTTPS</div>
+            </div>
+          </a>
+          
+          <a href="https://guac.nxcore.tail79107c.ts.net/" class="service-link">
+            <div class="flex items-center justify-between">
+              <div>
+                <div class="font-medium text-white">Guacamole</div>
+                <div class="text-sm text-zinc-400">Web-based Remote Access</div>
+              </div>
+              <div class="chip chip-up">HTTPS</div>
+            </div>
+          </a>
+          
+          <a href="https://code.nxcore.tail79107c.ts.net/" class="service-link">
+            <div class="flex items-center justify-between">
+              <div>
+                <div class="font-medium text-white">Code Server</div>
+                <div class="text-sm text-zinc-400">Browser-based VS Code</div>
+              </div>
+              <div class="chip chip-up">HTTPS</div>
+            </div>
+          </a>
+          
+          <a href="https://jupyter.nxcore.tail79107c.ts.net/" class="service-link">
+            <div class="flex items-center justify-between">
+              <div>
+                <div class="font-medium text-white">Jupyter</div>
+                <div class="text-sm text-zinc-400">Data Science Notebooks</div>
+              </div>
+              <div class="chip chip-up">HTTPS</div>
+            </div>
+          </a>
+          
+          <a href="https://rstudio.nxcore.tail79107c.ts.net/" class="service-link">
+            <div class="flex items-center justify-between">
+              <div>
+                <div class="font-medium text-white">RStudio</div>
+                <div class="text-sm text-zinc-400">R Development Environment</div>
+              </div>
+              <div class="chip chip-up">HTTPS</div>
+            </div>
+          </a>
+          
+          <a href="http://100.115.9.61:5901/" class="service-link">
+            <div class="flex items-center justify-between">
+              <div>
+                <div class="font-medium text-white">VNC Server</div>
+                <div class="text-sm text-zinc-400">Direct VNC Access</div>
+              </div>
+              <div class="chip chip-up">Port 5901</div>
+            </div>
+          </a>
+        </div>
+      </div>
+
+      <!-- Quick Actions -->
+      <div class="service-card">
+        <h2 class="text-xl font-semibold mb-4 flex items-center gap-2">
+          <svg class="w-5 h-5 text-amber-400" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M13 3c-4.97 0-9 4.03-9 9H1l3.89 3.89.07.14L9 12H6c0-3.87 3.13-7 7-7s7 3.13 7 7-3.13 7-7 7c-1.93 0-3.68-.79-4.94-2.06l-1.42 1.42C8.27 19.99 10.51 21 13 21c4.97 0 9-4.03 9-9s-4.03-9-9-9zm-1 5v5l4.28 2.54.72-1.21-3.5-2.08V8H12z"/>
+          </svg>
+          Quick Actions
+        </h2>
+        <div class="space-y-3">
+          <a href="https://nxcore.tail79107c.ts.net/" class="service-link">
+            <div class="flex items-center justify-between">
+              <div>
+                <div class="font-medium text-white">Landing Page</div>
+                <div class="text-sm text-zinc-400">This Dashboard</div>
+              </div>
+              <div class="chip chip-up">HTTPS</div>
+            </div>
+          </a>
+          
+          <div class="service-link">
+            <div class="flex items-center justify-between">
+              <div>
+                <div class="font-medium text-white">SSH Access</div>
+                <div class="text-sm text-zinc-400">glyph@100.115.9.61</div>
+              </div>
+              <div class="kbd">SSH</div>
+            </div>
+          </div>
+          
+          <div class="service-link">
+            <div class="flex items-center justify-between">
+              <div>
+                <div class="font-medium text-white">Tailscale</div>
+                <div class="text-sm text-zinc-400">nxcore.tail79107c.ts.net</div>
+              </div>
+              <div class="kbd">VPN</div>
+            </div>
+          </div>
+          
+          <div class="service-link">
+            <div class="flex items-center justify-between">
+              <div>
+                <div class="font-medium text-white">Direct IP</div>
+                <div class="text-sm text-zinc-400">100.115.9.61</div>
+              </div>
+              <div class="kbd">IP</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="mt-12 text-center text-zinc-500 text-sm">
+      <div class="flex items-center justify-center gap-4 mb-4">
+        <span class="chip chip-up">●</span>
+        <span>AeroVista Infrastructure</span>
+        <span class="chip chip-up">●</span>
+      </div>
+      <p>NXCore Server • Tailscale Network • Docker Compose</p>
+      <p class="mt-2 text-xs">Last Updated: <span id="timestamp"></span></p>
+    </footer>
+  </div>
+
+  <script>
+    // Update timestamp
+    document.getElementById('timestamp').textContent = new Date().toLocaleString();
+    
+    // Add click tracking for analytics
+    document.querySelectorAll('.service-link').forEach(link => {
+      link.addEventListener('click', function(e) {
+        const serviceName = this.querySelector('.font-medium').textContent;
+        console.log(`Accessing service: ${serviceName}`);
+      });
+    });
+  </script>
+</body>
+</html>

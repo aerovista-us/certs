@@ -1,0 +1,90 @@
+# Authelia Configuration for AeroVista
+# Tailscale-only SSO/MFA gateway
+
+server:
+  host: 0.0.0.0
+  port: 9091
+
+log:
+  level: info
+  format: text
+
+theme: auto
+
+totp:
+  issuer: aerovista.local
+  period: 30
+  skew: 1
+
+authentication_backend:
+  password_reset:
+    disable: false
+  refresh_interval: 5m
+  file:
+    path: /config/users_database.yml
+    password:
+      algorithm: argon2id
+      iterations: 1
+      key_length: 32
+      salt_length: 16
+      memory: 65536
+      parallelism: 4
+
+access_control:
+  default_policy: deny
+  rules:
+    # Allow Tailscale network (100.64.0.0/10) - path-based routing
+    - domain:
+        - "nxcore.tail79107c.ts.net"
+      policy: two_factor
+      networks:
+        - 100.64.0.0/10
+        - 127.0.0.1/32
+    
+    # Public endpoints (if needed later) - path-based routing
+    - domain:
+        - "nxcore.tail79107c.ts.net"
+      resources:
+        - "^/status.*"
+      policy: bypass
+
+session:
+  name: authelia_session
+  domain: nxcore.tail79107c.ts.net
+  same_site: lax
+  secret: CHANGE_ME_session_secret_min_32_chars
+  expiration: 1h
+  inactivity: 15m
+  remember_me_duration: 1M
+  
+  redis:
+    host: redis
+    port: 6379
+    password: ChangeMe_RedisPassword123
+    database_index: 0
+
+regulation:
+  max_retries: 3
+  find_time: 2m
+  ban_time: 5m
+
+storage:
+  encryption_key: CHANGE_ME_storage_encryption_key_min_20_chars
+  postgres:
+    host: postgres
+    port: 5432
+    database: authelia
+    username: authelia_user
+    password: CHANGE_ME_authelia_password
+
+notifier:
+  disable_startup_check: true
+  filesystem:
+    filename: /config/notification.txt
+  # Later: configure SMTP for email notifications
+  # smtp:
+  #   host: mailpit
+  #   port: 1025
+  #   sender: authelia@aerovista.local
+  #   disable_require_tls: true
+

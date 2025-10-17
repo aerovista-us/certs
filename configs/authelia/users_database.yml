@@ -1,0 +1,21 @@
+# Authelia Users Database
+# Password hashes generated with: docker run --rm authelia/authelia:latest authelia crypto hash generate argon2 --password 'yourpassword'
+
+users:
+  admin:
+    displayname: "AeroVista Admin"
+    password: "$argon2id$v=19$m=65536,t=1,p=4$YourSaltHere$YourHashHere"  # CHANGE THIS!
+    email: admin@aerovista.local
+    groups:
+      - admins
+      - dev
+
+# To generate a password hash:
+# docker run --rm authelia/authelia:latest authelia crypto hash generate argon2 --password 'YourPasswordHere'
+# Then replace the password field above with the output
+
+# Example groups:
+# - admins: Full access to everything
+# - dev: Access to code, jupyter, dev tools
+# - users: Access to office, files, basic tools
+
