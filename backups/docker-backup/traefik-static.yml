@@ -1,0 +1,44 @@
+entryPoints:
+  web:
+    address: ":80"
+    http:
+      redirections:
+        entryPoint:
+          to: websecure
+          scheme: https
+  websecure:
+    address: ":443"
+  api:
+    address: ":8083"
+
+providers:
+  docker:
+    exposedByDefault: false
+    network: gateway
+  file:
+    directory: /etc/traefik/dynamic
+    watch: true
+
+# Using Tailscale certificates instead of Let's Encrypt
+# certificatesResolvers:
+#   le-dns:
+#     acme:
+#       email: aerovistaus@gmail.com
+#       storage: /etc/traefik/acme.json
+#       dnsChallenge:
+#         provider: porkbun
+#         resolvers:
+#           - "1.1.1.1:53"
+#           - "8.8.8.8:53"
+#         delayBeforeCheck: 20s
+
+api:
+  dashboard: true
+  insecure: true
+
+ping: {}
+
+log:
+  level: INFO
+
+accessLog: {}

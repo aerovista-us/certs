@@ -1,0 +1,228 @@
+version: "3.9"
+
+networks:
+  gateway:
+    external: true
+  backend:
+    external: true
+
+services:
+  # VNC Server for Remote Desktop
+  vnc-server:
+    image: consol/ubuntu-xfce-vnc:latest
+    container_name: vnc-server
+    restart: unless-stopped
+    environment:
+      - VNC_PW=${VNC_PASSWORD:-ChangeMe_VNCPassword123}
+      - VNC_RESOLUTION=1920x1080
+      - VNC_COL_DEPTH=24
+      - DISPLAY=:1
+      - VNC_BLACKLIST_THRESHOLD=20
+      - VNC_BLACKLIST_TIMEOUT=0
+    ports:
+      - "5901:5901"  # VNC port
+      - "6901:6901"  # NoVNC web port
+    volumes:
+      - vnc_data:/headless
+      - /srv/core/fileshare/uploads:/headless/Desktop/shared:ro
+    networks:
+      - backend
+    labels:
+      - autoheal=true
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:6901/ || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+  # NoVNC for Browser-based VNC Access
+  novnc:
+    image: theasp/novnc:latest
+    container_name: novnc
+    restart: unless-stopped
+    environment:
+      - DISPLAY_WIDTH=1920
+      - DISPLAY_HEIGHT=1080
+      - RUN_XTERM=no
+      - VNC_SERVER=vnc-server:5901
+    ports:
+      - "6080:8080"  # NoVNC web interface
+    volumes:
+      - /srv/core/fileshare/uploads:/shared:ro
+    networks:
+      - gateway
+      - backend
+    depends_on:
+      - vnc-server
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.novnc.rule=Host(`vnc.nxcore.tail79107c.ts.net`)
+      - traefik.http.routers.novnc.entrypoints=websecure
+      - traefik.http.routers.novnc.tls=true
+      - traefik.http.routers.novnc.service=novnc
+      - traefik.http.services.novnc.loadbalancer.server.port=8080
+      - autoheal=true
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8080/ || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+  # Guacamole for Web-based Remote Access
+  guacd:
+    image: guacamole/guacd:latest
+    container_name: guacd
+    restart: unless-stopped
+    volumes:
+      - guacd_data:/opt/guacd
+    networks:
+      - backend
+    labels:
+      - autoheal=true
+    healthcheck:
+      test: ["CMD-SHELL", "nc -z localhost 4822 || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+
+  guacamole:
+    image: guacamole/guacamole:latest
+    container_name: guacamole
+    restart: unless-stopped
+    environment:
+      - GUACD_HOSTNAME=guacd
+      - GUACD_PORT=4822
+      - GUACD_ENCRYPTION_KEY=${GUACAMOLE_ENCRYPTION_KEY:-ChangeMe_GuacamoleKey123}
+    ports:
+      - "8080:8080"
+    volumes:
+      - guacamole_data:/opt/guacamole
+      - /srv/core/fileshare/uploads:/shared:ro
+    networks:
+      - gateway
+      - backend
+    depends_on:
+      - guacd
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.guacamole.rule=Host(`guac.nxcore.tail79107c.ts.net`)
+      - traefik.http.routers.guacamole.entrypoints=websecure
+      - traefik.http.routers.guacamole.tls=true
+      - traefik.http.routers.guacamole.service=guacamole
+      - traefik.http.services.guacamole.loadbalancer.server.port=8080
+      - autoheal=true
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8080/guacamole/ || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+  # Code Server for Browser-based VS Code
+  code-server:
+    image: codercom/code-server:latest
+    container_name: code-server
+    restart: unless-stopped
+    environment:
+      - PASSWORD=${CODE_SERVER_PASSWORD:-ChangeMe_CodeServerPassword123}
+      - SUDO_PASSWORD=${CODE_SERVER_PASSWORD:-ChangeMe_CodeServerPassword123}
+      - DOCKER_HOST=unix:///var/run/docker.sock
+    ports:
+      - "8080:8080"
+    volumes:
+      - code_server_data:/home/coder
+      - /srv/core/fileshare/uploads:/home/coder/shared:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    networks:
+      - gateway
+      - backend
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.code-server.rule=Host(`code.nxcore.tail79107c.ts.net`)
+      - traefik.http.routers.code-server.entrypoints=websecure
+      - traefik.http.routers.code-server.tls=true
+      - traefik.http.routers.code-server.service=code-server
+      - traefik.http.services.code-server.loadbalancer.server.port=8080
+      - autoheal=true
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8080/ || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+  # Jupyter for Browser-based Notebooks
+  jupyter:
+    image: jupyter/datascience-notebook:latest
+    container_name: jupyter
+    restart: unless-stopped
+    environment:
+      - JUPYTER_ENABLE_LAB=yes
+      - JUPYTER_TOKEN=${JUPYTER_TOKEN:-ChangeMe_JupyterToken123}
+      - JUPYTER_ALLOW_ROOT=yes
+      - JUPYTER_ALLOW_ORIGIN=*
+    ports:
+      - "8888:8888"
+    volumes:
+      - jupyter_data:/home/jovyan/work
+      - /srv/core/fileshare/uploads:/home/jovyan/shared:ro
+    networks:
+      - gateway
+      - backend
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.jupyter.rule=Host(`jupyter.nxcore.tail79107c.ts.net`)
+      - traefik.http.routers.jupyter.entrypoints=websecure
+      - traefik.http.routers.jupyter.tls=true
+      - traefik.http.routers.jupyter.service=jupyter
+      - traefik.http.services.jupyter.loadbalancer.server.port=8888
+      - autoheal=true
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8888/ || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+  # RStudio for Browser-based R Development
+  rstudio:
+    image: rocker/rstudio:latest
+    container_name: rstudio
+    restart: unless-stopped
+    environment:
+      - PASSWORD=${RSTUDIO_PASSWORD:-ChangeMe_RStudioPassword123}
+      - ROOT=TRUE
+      - DISABLE_AUTH=false
+    ports:
+      - "8787:8787"
+    volumes:
+      - rstudio_data:/home/rstudio
+      - /srv/core/fileshare/uploads:/home/rstudio/shared:ro
+    networks:
+      - gateway
+      - backend
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.rstudio.rule=Host(`rstudio.nxcore.tail79107c.ts.net`)
+      - traefik.http.routers.rstudio.entrypoints=websecure
+      - traefik.http.routers.rstudio.tls=true
+      - traefik.http.routers.rstudio.service=rstudio
+      - traefik.http.services.rstudio.loadbalancer.server.port=8787
+      - autoheal=true
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8787/ || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+volumes:
+  vnc_data:
+  guacd_data:
+  guacamole_data:
+  code_server_data:
+  jupyter_data:
+  rstudio_data:

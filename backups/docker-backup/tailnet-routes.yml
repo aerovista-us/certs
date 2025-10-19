@@ -1,0 +1,188 @@
+# /traefik/dynamic/tailnet-routes.yml
+# Single-host (nxcore.tail79107c.ts.net) path-based routing for all internal apps.
+
+http:
+  routers:
+    # Portainer under /portainer → points to existing external container "portainer" on 9443 (https)
+    portainer:
+      rule: Host(`nxcore.tail79107c.ts.net`) && PathPrefix(`/portainer`)
+      priority: 100
+      entryPoints: [ websecure ]
+      tls: {}
+      middlewares: [ strip-portainer ]
+      service: portainer-svc
+
+    # Grafana under /grafana (container port 3000)
+    grafana:
+      rule: Host(`nxcore.tail79107c.ts.net`) && PathPrefix(`/grafana`)
+      priority: 100
+      entryPoints: [ websecure ]
+      tls: {}
+      middlewares: [ strip-grafana, grafana-headers ]
+      service: grafana-svc
+
+    # Prometheus under /prometheus (9090)
+    prometheus:
+      rule: Host(`nxcore.tail79107c.ts.net`) && PathPrefix(`/prometheus`)
+      priority: 100
+      entryPoints: [ websecure ]
+      tls: {}
+      middlewares: [ strip-prometheus ]
+      service: prometheus-svc
+
+    # Fileshare under /files (nginx on 80)
+    files:
+      rule: Host(`nxcore.tail79107c.ts.net`) && PathPrefix(`/files`)
+      priority: 100
+      entryPoints: [ websecure ]
+      tls: {}
+      middlewares: [ strip-files ]
+      service: files-svc
+
+    # Authelia under /auth (9091)
+    auth:
+      rule: Host(`nxcore.tail79107c.ts.net`) && PathPrefix(`/auth`)
+      priority: 100
+      entryPoints: [ websecure ]
+      tls: {}
+      middlewares: [ strip-auth ]
+      service: auth-svc
+
+    # Status page under /status (nginx or static html on 80)
+    status:
+      rule: Host(`nxcore.tail79107c.ts.net`) && PathPrefix(`/status`)
+      priority: 100
+      entryPoints: [ websecure ]
+      tls: {}
+      middlewares: [ strip-status ]
+      service: status-svc
+
+    # AeroCaller under /aerocaller (container serves HTTPS 4443)
+    aerocaller:
+      rule: Host(`nxcore.tail79107c.ts.net`) && PathPrefix(`/aerocaller`)
+      priority: 100
+      entryPoints: [ websecure ]
+      tls: {}
+      middlewares: [ strip-aerocaller ]
+      service: aerocaller-svc
+
+    # Open WebUI (AI) - subdomain routing
+    openwebui:
+      rule: Host(`ai.nxcore.tail79107c.ts.net`)
+      priority: 100
+      entryPoints: [ websecure ]
+      tls: {}
+      service: openwebui-svc
+
+    # Open WebUI (AI) - path-based routing under /ai
+    ai:
+      rule: Host(`nxcore.tail79107c.ts.net`) && PathPrefix(`/ai`)
+      priority: 100
+      entryPoints: [ websecure ]
+      tls: {}
+      middlewares: [ strip-ai ]
+      service: openwebui-svc
+
+    # Open WebUI static assets - handle /static/, /_app/, and /assets/ paths
+    ai-static:
+      rule: Host(`nxcore.tail79107c.ts.net`) && (PathPrefix(`/static/`) || PathPrefix(`/_app/`) || PathPrefix(`/assets/`))
+      priority: 200
+      entryPoints: [ websecure ]
+      tls: {}
+      middlewares: [ ai-static-rewrite ]
+      service: openwebui-svc
+
+  middlewares:
+    strip-portainer:
+      stripPrefix:
+        prefixes: ["/portainer"]
+        forceSlash: true
+    strip-grafana:
+      stripPrefix:
+        prefixes: ["/grafana"]
+        forceSlash: true
+    strip-prometheus:
+      stripPrefix:
+        prefixes: ["/prometheus"]
+        forceSlash: true
+    strip-files:
+      stripPrefix:
+        prefixes: ["/files"]
+        forceSlash: true
+    strip-auth:
+      stripPrefix:
+        prefixes: ["/auth"]
+        forceSlash: true
+    strip-status:
+      stripPrefix:
+        prefixes: ["/status"]
+        forceSlash: true
+    strip-aerocaller:
+      stripPrefix:
+        prefixes: ["/aerocaller"]
+        forceSlash: true
+
+    strip-ai:
+      stripPrefix:
+        prefixes: ["/ai"]
+        forceSlash: true
+
+    ai-static-rewrite:
+      replacePathRegex:
+        regex: "^/(static/.*|_app/.*|assets/.*)"
+        replacement: "/$1"
+
+    grafana-headers:
+      headers:
+        referrerPolicy: no-referrer
+        customRequestHeaders:
+          X-Script-Name: /grafana
+
+  services:
+    portainer-svc:
+      loadBalancer:
+        serversTransport: portainer-insecure
+        servers:
+          - url: https://portainer:9443
+
+    grafana-svc:
+      loadBalancer:
+        servers:
+          - url: http://grafana:3000
+
+    prometheus-svc:
+      loadBalancer:
+        servers:
+          - url: http://prometheus:9090
+
+    files-svc:
+      loadBalancer:
+        servers:
+          - url: http://filebrowser:80
+
+    auth-svc:
+      loadBalancer:
+        servers:
+          - url: http://authelia:9091
+
+    status-svc:
+      loadBalancer:
+        servers:
+          - url: http://uptime-kuma:3001
+
+    aerocaller-svc:
+      loadBalancer:
+        serversTransport: aerocaller-insecure
+        servers:
+          - url: https://aerocaller:4443
+
+    openwebui-svc:
+      loadBalancer:
+        servers:
+          - url: http://openwebui:8080
+
+  serversTransports:
+    portainer-insecure:
+      insecureSkipVerify: true
+    aerocaller-insecure:
+      insecureSkipVerify: true

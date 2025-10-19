@@ -1,0 +1,41 @@
+version: "3.9"
+
+networks:
+  gateway:
+    external: true
+  backend:
+    external: true
+
+services:
+  authelia:
+    image: authelia/authelia:latest
+    container_name: authelia
+    restart: unless-stopped
+    environment:
+      - TZ=America/Los_Angeles
+      - AUTHELIA_JWT_SECRET=${AUTHELIA_JWT_SECRET:-CHANGE_ME_jwt_secret_min_32_chars}
+      - AUTHELIA_SESSION_SECRET=${AUTHELIA_SESSION_SECRET:-CHANGE_ME_session_secret_min_32_chars}
+      - AUTHELIA_STORAGE_ENCRYPTION_KEY=${AUTHELIA_STORAGE_KEY:-CHANGE_ME_storage_key_min_20_chars}
+      - REDIS_PASSWORD=${REDIS_PASSWORD:-ChangeMe_RedisPassword123}
+      - AUTHELIA_DB_PASSWORD=${AUTHELIA_DB_PASSWORD:-CHANGE_ME_authelia_password}
+    volumes:
+      - /opt/nexus/authelia:/config
+    networks:
+      - gateway
+      - backend
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.authelia.rule=Host(`nxcore.tail79107c.ts.net`) && PathPrefix(`/auth`)
+      - traefik.http.routers.authelia.entrypoints=websecure
+      - traefik.http.routers.authelia.tls=true
+      - traefik.http.routers.authelia.priority=50
+      - traefik.http.middlewares.authelia-strip.stripprefix.prefixes=/auth
+      - traefik.http.routers.authelia.middlewares=authelia-strip@docker
+      - traefik.http.services.authelia.loadbalancer.server.port=9091
+      - traefik.http.middlewares.authelia.forwardAuth.authResponseHeaders=Remote-User,Remote-Groups,Remote-Name,Remote-Email
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:9091/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+

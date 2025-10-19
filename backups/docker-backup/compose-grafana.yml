@@ -1,0 +1,44 @@
+version: "3.9"
+
+networks:
+  gateway:
+    external: true
+  observability:
+    external: true
+  backend:
+    external: true
+
+services:
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    restart: unless-stopped
+    environment:
+      - GF_SERVER_ROOT_URL=https://nxcore.tail79107c.ts.net/grafana/
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_ADMIN_PASSWORD:-ChangeMe_GrafanaPassword123}
+      - GF_AUTH_ANONYMOUS_ENABLED=false
+      - GF_USERS_ALLOW_SIGN_UP=false
+      - GF_INSTALL_PLUGINS=grafana-clock-panel,grafana-simple-json-datasource
+      - GF_DATABASE_TYPE=postgres
+      - GF_DATABASE_HOST=postgres:5432
+      - GF_DATABASE_NAME=grafana
+      - GF_DATABASE_USER=grafana_user
+      - GF_DATABASE_PASSWORD=${GRAFANA_DB_PASSWORD:-CHANGE_ME_grafana_password}
+    volumes:
+      - /srv/core/data/grafana:/var/lib/grafana
+      - /srv/core/config/grafana/provisioning:/etc/grafana/provisioning:ro
+    ports:
+      - "3000:3000"
+    networks:
+      - gateway
+      - observability
+      - backend
+    labels:
+      - traefik.enable=false  # Using path-based routing instead
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+

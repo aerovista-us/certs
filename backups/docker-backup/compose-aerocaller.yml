@@ -1,0 +1,25 @@
+services:
+  aerocaller:
+    image: node:18-alpine
+    container_name: aerocaller
+    working_dir: /app
+    command: ["sh", "-lc", "[ -d node_modules ] || npm ci --omit=dev || npm install; node server.staff.js"]
+    environment:
+      - PORT=4443
+      - USE_HTTPS=1
+      - BIND_ADDR=0.0.0.0
+      - BASE_PATH=/
+      - KEY_PATH=/certs/privkey.pem
+      - CERT_PATH=/certs/fullchain.pem
+    ports:
+      - "4443:4443"
+    volumes:
+      - /opt/nexus/aerocaller:/app
+      - /opt/nexus/aerocaller/certs:/certs:ro
+    healthcheck:
+      test: ["CMD-SHELL", "curl -skf https://127.0.0.1:4443/api/readyz >/dev/null 2>&1 || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 6
+    restart: unless-stopped
+

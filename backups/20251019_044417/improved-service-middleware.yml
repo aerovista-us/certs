@@ -1,0 +1,47 @@
+# Improved middleware configuration for services with static assets
+# Addresses white screens and 404 errors for JavaScript/CSS files
+
+http:
+  middlewares:
+    # OpenWebUI - No path stripping, let service handle base path
+    openwebui-no-strip:
+      headers:
+        customRequestHeaders:
+          X-Forwarded-Proto: https
+          X-Forwarded-Host: nxcore.tail79107c.ts.net
+          X-Forwarded-Prefix: /ai
+        customResponseHeaders:
+          X-Frame-Options: SAMEORIGIN
+          X-Content-Type-Options: nosniff
+
+    # n8n - No path stripping, let service handle base path
+    n8n-no-strip:
+      headers:
+        customRequestHeaders:
+          X-Forwarded-Proto: https
+          X-Forwarded-Host: nxcore.tail79107c.ts.net
+          X-Forwarded-Prefix: /n8n
+        customResponseHeaders:
+          X-Frame-Options: SAMEORIGIN
+          X-Content-Type-Options: nosniff
+
+    # Alternative: Use replacePathRegex for services that need it
+    openwebui-replace:
+      replacePathRegex:
+        regex: "^/ai/(.*)"
+        replacement: "/$1"
+
+    n8n-replace:
+      replacePathRegex:
+        regex: "^/n8n/(.*)"
+        replacement: "/$1"
+
+    # WebSocket support for real-time services
+    websocket-headers:
+      headers:
+        customRequestHeaders:
+          X-Forwarded-Proto: https
+          X-Forwarded-Host: nxcore.tail79107c.ts.net
+        customResponseHeaders:
+          X-Frame-Options: SAMEORIGIN
+          X-Content-Type-Options: nosniff

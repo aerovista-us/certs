@@ -1,0 +1,441 @@
+# /opt/nexus/traefik/dynamic/complete-routes-optimized.yml
+# Comprehensive routing configuration for NXCore-Control
+# Tailscale Mesh Network: nxcore.tail79107c.ts.net
+# Optimized for self-signed certificates and efficient port usage
+# Zero-trust network overlay with end-to-end encryption
+
+http:
+  routers:
+    # Core Infrastructure
+    traefik-api:
+      rule: Host(`nxcore.tail79107c.ts.net`) && PathPrefix(`/api`)
+      priority: 100
+      entryPoints: [websecure]
+      tls: {}
+      service: api@internal
+
+    traefik-dashboard:
+      rule: Host(`nxcore.tail79107c.ts.net`) && PathPrefix(`/traefik`)
+      priority: 100
+      entryPoints: [websecure]
+      tls: {}
+      middlewares: [traefik-strip]
+      service: api@internal
+
+    # Monitoring & Observability
+    grafana:
+      rule: Host(`nxcore.tail79107c.ts.net`) && PathPrefix(`/grafana`)
+      priority: 200
+      entryPoints: [websecure]
+      tls: {}
+      middlewares: [grafana-strip, grafana-headers]
+      service: grafana-svc
+
+    prometheus:
+      rule: Host(`nxcore.tail79107c.ts.net`) && PathPrefix(`/prometheus`)
+      priority: 200
+      entryPoints: [websecure]
+      tls: {}
+      middlewares: [prometheus-strip]
+      service: prometheus-svc
+
+    cadvisor:
+      rule: Host(`nxcore.tail79107c.ts.net`) && PathPrefix(`/metrics`)
+      priority: 200
+      entryPoints: [websecure]
+      tls: {}
+      middlewares: [cadvisor-strip]
+      service: cadvisor-svc
+
+    uptime-kuma:
+      rule: Host(`nxcore.tail79107c.ts.net`) && PathPrefix(`/status`)
+      priority: 200
+      entryPoints: [websecure]
+      tls: {}
+      middlewares: [uptime-strip]
+      service: uptime-svc
+
+    dozzle:
+      rule: Host(`nxcore.tail79107c.ts.net`) && PathPrefix(`/logs`)
+      priority: 200
+      entryPoints: [websecure]
+      tls: {}
+      middlewares: [dozzle-strip]
+      service: dozzle-svc
+
+    # AI & Development
+    openwebui:
+      rule: Host(`nxcore.tail79107c.ts.net`) && PathPrefix(`/ai`)
+      priority: 200
+      entryPoints: [websecure]
+      tls: {}
+      middlewares: [ai-strip]
+      service: openwebui-svc
+
+    code-server:
+      rule: Host(`nxcore.tail79107c.ts.net`) && PathPrefix(`/code`)
+      priority: 200
+      entryPoints: [websecure]
+      tls: {}
+      middlewares: [code-strip]
+      service: code-server-svc
+
+    jupyter:
+      rule: Host(`nxcore.tail79107c.ts.net`) && PathPrefix(`/jupyter`)
+      priority: 200
+      entryPoints: [websecure]
+      tls: {}
+      middlewares: [jupyter-strip]
+      service: jupyter-svc
+
+    rstudio:
+      rule: Host(`nxcore.tail79107c.ts.net`) && PathPrefix(`/rstudio`)
+      priority: 200
+      entryPoints: [websecure]
+      tls: {}
+      middlewares: [rstudio-strip]
+      service: rstudio-svc
+
+    # Remote Access & Workspaces
+    vnc-server:
+      rule: Host(`nxcore.tail79107c.ts.net`) && PathPrefix(`/vnc`)
+      priority: 200
+      entryPoints: [websecure]
+      tls: {}
+      middlewares: [vnc-strip]
+      service: vnc-svc
+
+    novnc:
+      rule: Host(`nxcore.tail79107c.ts.net`) && PathPrefix(`/novnc`)
+      priority: 200
+      entryPoints: [websecure]
+      tls: {}
+      middlewares: [novnc-strip]
+      service: novnc-svc
+
+    guacamole:
+      rule: Host(`nxcore.tail79107c.ts.net`) && PathPrefix(`/guac`)
+      priority: 200
+      entryPoints: [websecure]
+      tls: {}
+      middlewares: [guac-strip]
+      service: guacamole-svc
+
+    # File & Data Services
+    filebrowser:
+      rule: Host(`nxcore.tail79107c.ts.net`) && PathPrefix(`/files`)
+      priority: 200
+      entryPoints: [websecure]
+      tls: {}
+      middlewares: [files-strip]
+      service: filebrowser-svc
+
+    fileshare:
+      rule: Host(`nxcore.tail79107c.ts.net`) && PathPrefix(`/fileshare`)
+      priority: 200
+      entryPoints: [websecure]
+      tls: {}
+      middlewares: [fileshare-strip]
+      service: fileshare-svc
+
+    dashboard:
+      rule: Host(`nxcore.tail79107c.ts.net`) && PathPrefix(`/dashboard`)
+      priority: 200
+      entryPoints: [websecure]
+      tls: {}
+      middlewares: [dashboard-strip]
+      service: dashboard-svc
+
+    # Management & Automation
+    portainer:
+      rule: Host(`nxcore.tail79107c.ts.net`) && PathPrefix(`/portainer`)
+      priority: 200
+      entryPoints: [websecure]
+      tls: {}
+      middlewares: [portainer-strip]
+      service: portainer-svc
+
+    n8n:
+      rule: Host(`nxcore.tail79107c.ts.net`) && PathPrefix(`/n8n`)
+      priority: 200
+      entryPoints: [websecure]
+      tls: {}
+      middlewares: [n8n-strip]
+      service: n8n-svc
+
+    aerocaller:
+      rule: Host(`nxcore.tail79107c.ts.net`) && PathPrefix(`/aerocaller`)
+      priority: 200
+      entryPoints: [websecure]
+      tls: {}
+      middlewares: [aerocaller-strip]
+      service: aerocaller-svc
+
+    # Authentication
+    authelia:
+      rule: Host(`nxcore.tail79107c.ts.net`) && PathPrefix(`/auth`)
+      priority: 200
+      entryPoints: [websecure]
+      tls: {}
+      middlewares: [auth-strip]
+      service: authelia-svc
+
+  middlewares:
+    # StripPrefix middlewares (FIXED - forceSlash: false)
+    traefik-strip:
+      stripPrefix:
+        prefixes: ["/traefik"]
+        forceSlash: false
+
+    grafana-strip:
+      stripPrefix:
+        prefixes: ["/grafana"]
+        forceSlash: false
+
+    prometheus-strip:
+      stripPrefix:
+        prefixes: ["/prometheus"]
+        forceSlash: false
+
+    cadvisor-strip:
+      stripPrefix:
+        prefixes: ["/metrics"]
+        forceSlash: false
+
+    uptime-strip:
+      stripPrefix:
+        prefixes: ["/status"]
+        forceSlash: false
+
+    dozzle-strip:
+      stripPrefix:
+        prefixes: ["/logs"]
+        forceSlash: false
+
+    ai-strip:
+      stripPrefix:
+        prefixes: ["/ai"]
+        forceSlash: false
+
+    code-strip:
+      stripPrefix:
+        prefixes: ["/code"]
+        forceSlash: false
+
+    jupyter-strip:
+      stripPrefix:
+        prefixes: ["/jupyter"]
+        forceSlash: false
+
+    rstudio-strip:
+      stripPrefix:
+        prefixes: ["/rstudio"]
+        forceSlash: false
+
+    vnc-strip:
+      stripPrefix:
+        prefixes: ["/vnc"]
+        forceSlash: false
+
+    novnc-strip:
+      stripPrefix:
+        prefixes: ["/novnc"]
+        forceSlash: false
+
+    guac-strip:
+      stripPrefix:
+        prefixes: ["/guac"]
+        forceSlash: false
+
+    files-strip:
+      stripPrefix:
+        prefixes: ["/files"]
+        forceSlash: false
+
+    fileshare-strip:
+      stripPrefix:
+        prefixes: ["/fileshare"]
+        forceSlash: false
+
+    dashboard-strip:
+      stripPrefix:
+        prefixes: ["/dashboard"]
+        forceSlash: false
+
+    portainer-strip:
+      stripPrefix:
+        prefixes: ["/portainer"]
+        forceSlash: false
+
+    n8n-strip:
+      stripPrefix:
+        prefixes: ["/n8n"]
+        forceSlash: false
+
+    aerocaller-strip:
+      stripPrefix:
+        prefixes: ["/aerocaller"]
+        forceSlash: false
+
+    auth-strip:
+      stripPrefix:
+        prefixes: ["/auth"]
+        forceSlash: false
+
+    # Security headers
+    grafana-headers:
+      headers:
+        referrerPolicy: no-referrer
+        customRequestHeaders:
+          X-Script-Name: /grafana
+
+    security-headers:
+      headers:
+        sslRedirect: true
+        stsSeconds: 31536000
+        stsIncludeSubdomains: true
+        stsPreload: true
+        contentTypeNosniff: true
+        browserXssFilter: true
+        frameDeny: true
+        referrerPolicy: strict-origin-when-cross-origin
+        customRequestHeaders:
+          X-Forwarded-Proto: https
+        customResponseHeaders:
+          X-Content-Type-Options: nosniff
+          X-Frame-Options: DENY
+          X-XSS-Protection: "1; mode=block"
+
+  services:
+    # Service definitions
+    grafana-svc:
+      loadBalancer:
+        servers:
+          - url: "http://grafana:3000"
+
+    prometheus-svc:
+      loadBalancer:
+        servers:
+          - url: "http://prometheus:9090"
+
+    cadvisor-svc:
+      loadBalancer:
+        servers:
+          - url: "http://cadvisor:8080"
+
+    uptime-svc:
+      loadBalancer:
+        servers:
+          - url: "http://uptime-kuma:3001"
+
+    dozzle-svc:
+      loadBalancer:
+        servers:
+          - url: "http://dozzle:8080"
+
+    openwebui-svc:
+      loadBalancer:
+        servers:
+          - url: "http://openwebui:8080"
+
+    code-server-svc:
+      loadBalancer:
+        servers:
+          - url: "http://code-server:8080"
+
+    jupyter-svc:
+      loadBalancer:
+        servers:
+          - url: "http://jupyter:8888"
+
+    rstudio-svc:
+      loadBalancer:
+        servers:
+          - url: "http://rstudio:8787"
+
+    vnc-svc:
+      loadBalancer:
+        servers:
+          - url: "http://vnc-server:6901"
+
+    novnc-svc:
+      loadBalancer:
+        servers:
+          - url: "http://novnc:8080"
+
+    guacamole-svc:
+      loadBalancer:
+        servers:
+          - url: "http://guacamole:8080"
+
+    filebrowser-svc:
+      loadBalancer:
+        servers:
+          - url: "http://filebrowser:80"
+
+    fileshare-svc:
+      loadBalancer:
+        servers:
+          - url: "http://nxcore-fileshare-nginx:80"
+
+    dashboard-svc:
+      loadBalancer:
+        servers:
+          - url: "http://nxcore-dashboard:80"
+
+    portainer-svc:
+      loadBalancer:
+        serversTransport: portainer-insecure
+        servers:
+          - url: "https://portainer:9443"
+
+    n8n-svc:
+      loadBalancer:
+        servers:
+          - url: "http://n8n:5678"
+
+    aerocaller-svc:
+      loadBalancer:
+        serversTransport: aerocaller-insecure
+        servers:
+          - url: "https://aerocaller:4443"
+
+    authelia-svc:
+      loadBalancer:
+        servers:
+          - url: "http://authelia:9091"
+
+  serversTransports:
+    portainer-insecure:
+      insecureSkipVerify: true
+    aerocaller-insecure:
+      insecureSkipVerify: true
+
+# TLS Configuration
+tls:
+  certificates:
+    - certFile: /certs/fullchain.pem
+      keyFile: /certs/privkey.pem
+      stores:
+        - default
+
+  options:
+    default:
+      minVersion: VersionTLS12
+      maxVersion: VersionTLS13
+      sniStrict: true
+      alpnProtocols:
+        - http/1.1
+        - h2
+      cipherSuites:
+        - TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        - TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305_SHA256
+        - TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
+
+    # WebSocket-friendly configuration
+    websocket:
+      minVersion: VersionTLS12
+      maxVersion: VersionTLS13
+      sniStrict: true
+      alpnProtocols:
+        - http/1.1

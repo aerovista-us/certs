@@ -1,0 +1,26 @@
+{
+  "ORG": "AeroVista LLC",
+  "OU_ROOT": "SecOps",
+  "OU_INT": "SecOps",
+  "LOCATION": "Coeur d'Alene",
+  "STATE": "Idaho",
+  "COUNTRY": "US",
+  "TAILNET_HOSTS": [
+    "traefik.nxcore.tail79107c.ts.net",
+    "grafana.nxcore.tail79107c.ts.net",
+    "portainer.nxcore.tail79107c.ts.net",
+    "files.nxcore.tail79107c.ts.net",
+    "status.nxcore.tail79107c.ts.net"
+  ],
+  "PRIVATE_ZONE_HOSTS": [
+    "traefik.internal.av",
+    "grafana.internal.av",
+    "portainer.internal.av"
+  ],
+  "ROOT_CN": "AeroVista ROOT CA",
+  "INT_CN": "AeroVista INT CA",
+  "DEFAULT_CN": "traefik.nxcore.tail79107c.ts.net",
+  "SERVER_DAYS": 825,
+  "INT_DAYS": 1825,
+  "ROOT_DAYS": 3650
+}

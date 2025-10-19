@@ -1,0 +1,62 @@
+name: Deploy NXCore Certificate System
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  deploy-github-pages:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        
+    - name: Install dependencies
+      run: |
+        if [ -f package.json ]; then
+          npm install
+        fi
+        
+    - name: Build certificate installer
+      run: |
+        # Copy main certificate installer to GitHub Pages directory
+        cp certificate-installer.html github-pages/index.html
+        
+        # Update GitHub Pages index.html with correct URLs
+        sed -i 's/your-username/aerovista-us/g' github-pages/index.html
+        sed -i 's/nxcore-certificate-installer/certs/g' github-pages/index.html
+        
+    - name: Deploy to GitHub Pages
+      uses: peaceiris/actions-gh-pages@v3
+      if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_dir: ./github-pages
+        cname: # Optional: add custom domain here
+        
+    - name: Create deployment summary
+      run: |
+        echo "## 🚀 NXCore Certificate System Deployed" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "### 📱 Certificate Installer" >> $GITHUB_STEP_SUMMARY
+        echo "- **URL**: https://aerovista-us.github.io/certs/" >> $GITHUB_STEP_SUMMARY
+        echo "- **Status**: ✅ Deployed successfully" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "### 🔐 Features" >> $GITHUB_STEP_SUMMARY
+        echo "- ✅ Android APK installer" >> $GITHUB_STEP_SUMMARY
+        echo "- ✅ Windows EXE installer" >> $GITHUB_STEP_SUMMARY
+        echo "- ✅ Universal certificate files" >> $GITHUB_STEP_SUMMARY
+        echo "- ✅ Auto-device detection" >> $GITHUB_STEP_SUMMARY
+        echo "- ✅ Responsive design" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "### 📊 Repository" >> $GITHUB_STEP_SUMMARY
+        echo "- **Repository**: https://github.com/aerovista-us/certs" >> $GITHUB_STEP_SUMMARY
+        echo "- **Documentation**: https://aerovista-us.github.io/certs/" >> $GITHUB_STEP_SUMMARY

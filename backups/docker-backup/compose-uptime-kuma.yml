@@ -1,0 +1,28 @@
+version: "3.9"
+
+networks:
+  gateway:
+    external: true
+  observability:
+    external: true
+
+services:
+  uptime-kuma:
+    image: louislam/uptime-kuma:latest
+    container_name: uptime-kuma
+    restart: unless-stopped
+    volumes:
+      - /srv/core/data/uptime-kuma:/app/data
+    ports:
+      - "3001:3001"
+    networks:
+      - gateway
+      - observability
+    labels:
+      - traefik.enable=false  # Using path-based routing instead
+    healthcheck:
+      test: ["CMD", "node", "extra/healthcheck.js"]
+      interval: 60s
+      timeout: 10s
+      retries: 3
+

@@ -1,0 +1,8 @@
+traefik.nxcore.tail79107c.ts.net
+grafana.nxcore.tail79107c.ts.net
+portainer.nxcore.tail79107c.ts.net
+files.nxcore.tail79107c.ts.net
+status.nxcore.tail79107c.ts.net
+traefik.internal.av
+grafana.internal.av
+portainer.internal.av

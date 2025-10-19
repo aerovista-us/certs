@@ -1,0 +1,94 @@
+# Alternative routing configuration for services with static asset issues
+# Uses different middleware approaches for problematic services
+
+http:
+  routers:
+    # OpenWebUI - Try without path stripping first
+    openwebui-alt:
+      rule: Host(`nxcore.tail79107c.ts.net`) && PathPrefix(`/ai`)
+      priority: 200
+      entryPoints: [websecure]
+      tls: {}
+      middlewares: [openwebui-no-strip]
+      service: openwebui-svc
+
+    # n8n - Try without path stripping first
+    n8n-alt:
+      rule: Host(`nxcore.tail79107c.ts.net`) && PathPrefix(`/n8n`)
+      priority: 200
+      entryPoints: [websecure]
+      tls: {}
+      middlewares: [n8n-no-strip]
+      service: n8n-svc
+
+    # Alternative: Use replacePathRegex for services that need path handling
+    openwebui-replace:
+      rule: Host(`nxcore.tail79107c.ts.net`) && PathPrefix(`/ai`)
+      priority: 201
+      entryPoints: [websecure]
+      tls: {}
+      middlewares: [openwebui-replace, websocket-headers]
+      service: openwebui-svc
+
+    n8n-replace:
+      rule: Host(`nxcore.tail79107c.ts.net`) && PathPrefix(`/n8n`)
+      priority: 201
+      entryPoints: [websecure]
+      tls: {}
+      middlewares: [n8n-replace, websocket-headers]
+      service: n8n-svc
+
+  middlewares:
+    # OpenWebUI - No path stripping, let service handle base path
+    openwebui-no-strip:
+      headers:
+        customRequestHeaders:
+          X-Forwarded-Proto: https
+          X-Forwarded-Host: nxcore.tail79107c.ts.net
+          X-Forwarded-Prefix: /ai
+        customResponseHeaders:
+          X-Frame-Options: SAMEORIGIN
+          X-Content-Type-Options: nosniff
+
+    # n8n - No path stripping, let service handle base path
+    n8n-no-strip:
+      headers:
+        customRequestHeaders:
+          X-Forwarded-Proto: https
+          X-Forwarded-Host: nxcore.tail79107c.ts.net
+          X-Forwarded-Prefix: /n8n
+        customResponseHeaders:
+          X-Frame-Options: SAMEORIGIN
+          X-Content-Type-Options: nosniff
+
+    # Alternative: Use replacePathRegex for services that need it
+    openwebui-replace:
+      replacePathRegex:
+        regex: "^/ai/(.*)"
+        replacement: "/$1"
+
+    n8n-replace:
+      replacePathRegex:
+        regex: "^/n8n/(.*)"
+        replacement: "/$1"
+
+    # WebSocket support for real-time services
+    websocket-headers:
+      headers:
+        customRequestHeaders:
+          X-Forwarded-Proto: https
+          X-Forwarded-Host: nxcore.tail79107c.ts.net
+        customResponseHeaders:
+          X-Frame-Options: SAMEORIGIN
+          X-Content-Type-Options: nosniff
+
+  services:
+    openwebui-svc:
+      loadBalancer:
+        servers:
+          - url: "http://openwebui:8080"
+
+    n8n-svc:
+      loadBalancer:
+        servers:
+          - url: "http://n8n:5678"

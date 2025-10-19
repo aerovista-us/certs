@@ -1,0 +1,30 @@
+# Traefik TLS Configuration
+# Configure Traefik to use our custom certificate
+
+tls:
+  certificates:
+    - certFile: /certs/fullchain.pem
+      keyFile: /certs/privkey.pem
+      stores:
+        - default
+
+  options:
+    default:
+      minVersion: VersionTLS12
+      maxVersion: VersionTLS13
+      sniStrict: true
+      alpnProtocols:
+        - http/1.1
+        - h2
+      cipherSuites:
+        - TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        - TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305_SHA256
+        - TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
+
+    # WebSocket-friendly configuration
+    websocket:
+      minVersion: VersionTLS12
+      maxVersion: VersionTLS13
+      sniStrict: true
+      alpnProtocols:
+        - http/1.1

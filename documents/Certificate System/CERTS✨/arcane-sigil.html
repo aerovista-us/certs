@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>AeroVista // Arcane Sigil Certificate</title>
+<style>
+  :root{--ink:#eae9f7;--bg:#0d0a11;--a:#e9d5ff;--b:#c084fc;--c:#22d3ee;}
+  *{box-sizing:border-box}
+  body{margin:0;background: radial-gradient(1200px 700px at 50% 0%, rgba(34,211,238,0.07), transparent), var(--bg);color:var(--ink);min-height:100vh;display:grid;place-items:center;padding:42px;font-family:ui-sans-serif, system-ui, Inter}
+  .frame{width:min(1000px,94vw);padding:30px;border-radius:26px;background:linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.02)); border:1px solid rgba(255,255,255,0.12); box-shadow:0 18px 60px rgba(0,0,0,.55); position:relative; overflow:hidden}
+  .halo{position:absolute;inset:-20%;background:radial-gradient(closest-side, rgba(192,132,252,.18), transparent 60%); filter:blur(40px);animation:pulse 6s ease-in-out infinite}
+  @keyframes pulse{ 50%{ transform: scale(1.05);} }
+  header{display:flex;gap:18px;align-items:center;margin-bottom:12px}
+  header img{width:74px;height:74px;filter: drop-shadow(0 0 20px rgba(233,213,255,0.45));}
+  .h1{font-weight:900;font-size:clamp(30px,5vw,52px);letter-spacing:.03em;background:linear-gradient(90deg, var(--a), #fff, var(--c));-webkit-background-clip:text;background-clip:text;color:transparent}
+  .sub{letter-spacing:.18em;text-transform:uppercase;font-size:12px;color:#c7c3d9}
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:22px}
+  .slab{padding:18px;border-radius:18px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.12)}
+  .kv{display:grid;gap:8px;font-size:16px}
+  .sigil{position:relative;aspect-ratio:1/1;border-radius:18px;background:radial-gradient(circle at 50% 42%, rgba(233,213,255,.15), transparent 55%);display:grid;place-items:center;border:1px solid rgba(255,255,255,0.12)}
+  .sigil svg{width:72%;opacity:.9;filter:drop-shadow(0 0 10px rgba(233,213,255,.35))}
+  .meter{height:10px;border-radius:8px;background:#121018;border:1px solid rgba(255,255,255,0.08);overflow:hidden}
+  .meter>span{display:block;height:100%;background:linear-gradient(90deg, var(--a), var(--c));}
+  footer{display:flex;justify-content:space-between;align-items:center;margin-top:16px;color:#c7c3d9;font-size:13px}
+</style>
+</head>
+<body>
+  <div class="frame">
+    <div class="halo"></div>
+    <header>
+      <img src="./assets/aerovista-logo.svg" alt="AeroVista"/>
+      <div>
+        <div class="sub">Arcane Access • Certificate</div>
+        <div class="h1">Arcane Sigil — {{tier_label}}</div>
+      </div>
+      <div style="margin-left:auto" class="sub">Serial: {{serial}}</div>
+    </header>
+    <section class="grid">
+      <div class="slab">
+        <div class="kv">
+          <div><span>Holder</span> <strong>{{holder}}</strong></div>
+          <div><span>Division</span> <strong>{{division}}</strong></div>
+          <div><span>Issued</span> <strong>{{issued}}</strong></div>
+          <div><span>Expires</span> <strong>{{expires}}</strong></div>
+          <div><span>Fingerprint</span> <span style="font-family:ui-monospace, monospace">{{fingerprint}}</span></div>
+          <div><span>Perks</span> <span>{{perks}}</span></div>
+        </div>
+        <div style="margin-top:12px">
+          <div style="display:flex;justify-content:space-between"><small>Level {{level}}</small><small>XP {{xp}}</small></div>
+          <div class="meter"><span style="width: {{progress}}%"></span></div>
+        </div>
+      </div>
+      <div class="slab sigil">
+        <!-- Decorative geometric sigil -->
+        <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stop-color="#e9d5ff"/>
+              <stop offset="100%" stop-color="#22d3ee"/>
+            </linearGradient>
+          </defs>
+          <circle cx="50" cy="50" r="44" fill="none" stroke="url(#g)" stroke-width="1.5"/>
+          <polygon points="50,8 88,50 50,92 12,50" fill="none" stroke="url(#g)" stroke-width="1.2"/>
+          <polygon points="50,18 78,50 50,82 22,50" fill="none" stroke="url(#g)" stroke-width="0.8" opacity="0.8"/>
+          <circle cx="50" cy="50" r="3" fill="#fff"/>
+          <path d="M50 14 L56 26 L70 28 L60 38 L62 52 L50 46 L38 52 L40 38 L30 28 L44 26 Z" fill="none" stroke="url(#g)" stroke-width="0.8" opacity="0.9"/>
+        </svg>
+      </div>
+    </section>
+    <footer>
+      <div>Issuer: {{issuer}} • Policy: {{policy}} • Audience: {{audience}}</div>
+      <div>Verify: <span style="font-family:ui-monospace, monospace">{{verify_url}}</span></div>
+    </footer>
+  </div>
+</body>
+</html>

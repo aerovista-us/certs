@@ -1,0 +1,18 @@
+{
+  "ACLs": [
+    {
+      "Action": "accept",
+      "Users": ["*"],
+      "Ports": ["nxcore:443"]
+    }
+  ],
+  "Groups": {
+    "group:admins": ["admin@company.com", "admin1@company.com", "admin2@company.com"],
+    "group:users": ["user1@company.com", "user2@company.com", "user3@company.com", "user4@company.com", "user5@company.com"],
+    "group:developers": ["dev1@company.com", "dev2@company.com"],
+    "group:monitoring": ["monitor@company.com"]
+  },
+  "Hosts": {
+    "nxcore": "100.115.9.61"
+  }
+}

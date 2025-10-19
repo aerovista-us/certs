@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NXCore Certificate Installer</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #1f2937;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 3rem;
+        }
+        
+        .header h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .header p {
+            font-size: 1.25rem;
+            opacity: 0.9;
+        }
+        
+        .device-selector {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+        
+        .device-card {
+            background: white;
+            border-radius: 1rem;
+            padding: 2rem;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: 3px solid transparent;
+        }
+        
+        .device-card:hover {
+            transform: translateY(-5px);
+            border-color: #3b82f6;
+        }
+        
+        .device-card.selected {
+            border-color: #10b981;
+            background: #f0fdf4;
+        }
+        
+        .device-card h3 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: #1f2937;
+        }
+        
+        .device-card p {
+            color: #6b7280;
+            margin-bottom: 1.5rem;
+        }
+        
+        .device-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            display: block;
+        }
+        
+        .install-section {
+            background: white;
+            border-radius: 1rem;
+            padding: 2rem;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+            display: none;
+        }
+        
+        .install-section.active {
+            display: block;
+        }
+        
+        .install-btn {
+            display: inline-block;
+            background: #10b981;
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: 0.5rem;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1.1rem;
+            transition: background 0.3s ease;
+            margin-right: 1rem;
+            margin-bottom: 1rem;
+        }
+        
+        .install-btn:hover {
+            background: #059669;
+        }
+        
+        .install-btn.secondary {
+            background: #6b7280;
+        }
+        
+        .install-btn.secondary:hover {
+            background: #4b5563;
+        }
+        
+        .status {
+            background: #f9fafb;
+            border-radius: 0.5rem;
+            padding: 1rem;
+            margin: 1rem 0;
+            display: none;
+        }
+        
+        .status.success {
+            background: #d1fae5;
+            border: 1px solid #10b981;
+            color: #065f46;
+        }
+        
+        .status.error {
+            background: #fee2e2;
+            border: 1px solid #ef4444;
+            color: #991b1b;
+        }
+        
+        .status.info {
+            background: #dbeafe;
+            border: 1px solid #3b82f6;
+            color: #1e40af;
+        }
+        
+        .steps {
+            background: #f9fafb;
+            border-radius: 0.5rem;
+            padding: 1.5rem;
+            margin: 1rem 0;
+        }
+        
+        .steps h4 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: #1f2937;
+        }
+        
+        .steps ol {
+            margin: 0;
+            padding-left: 1.5rem;
+        }
+        
+        .steps li {
+            margin-bottom: 0.5rem;
+        }
+        
+        .auto-detect {
+            background: #fef3c7;
+            border: 1px solid #f59e0b;
+            border-radius: 0.5rem;
+            padding: 1rem;
+            margin: 1rem 0;
+            text-align: center;
+        }
+        
+        .auto-detect h4 {
+            color: #92400e;
+            margin-bottom: 0.5rem;
+        }
+        
+        .auto-detect p {
+            color: #92400e;
+            margin: 0;
+        }
+        
+        .github-info {
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 1rem;
+            padding: 2rem;
+            color: white;
+            text-align: center;
+            margin-top: 2rem;
+        }
+        
+        .github-info h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .github-info p {
+            opacity: 0.9;
+            margin-bottom: 1rem;
+        }
+        
+        .github-btn {
+            display: inline-block;
+            background: #24292e;
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            text-decoration: none;
+            font-weight: 500;
+            transition: background 0.3s ease;
+        }
+        
+        .github-btn:hover {
+            background: #1a1e22;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .device-selector {
+                grid-template-columns: 1fr;
+            }
+            
+            .install-btn {
+                display: block;
+                text-align: center;
+                margin-bottom: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔐 NXCore Certificate Installer</h1>
+            <p>Automated certificate installation for secure access to NXCore services</p>
+        </div>
+        
+        <!-- Auto-detection -->
+        <div class="auto-detect" id="autoDetect">
+            <h4>🔍 Auto-Detecting Your Device...</h4>
+            <p>Please wait while we detect your device type and operating system.</p>
+        </div>
+        
+        <!-- Device Selection -->
+        <div class="device-selector" id="deviceSelector" style="display: none;">
+            <div class="device-card" data-device="android">
+                <span class="device-icon">📱</span>
+                <h3>Android Device</h3>
+                <p>Install certificates on your Android phone or tablet for secure access to NXCore services.</p>
+            </div>
+            
+            <div class="device-card" data-device="windows">
+                <span class="device-icon">🖥️</span>
+                <h3>Windows Computer</h3>
+                <p>Install certificates on your Windows computer for secure access to NXCore services.</p>
+            </div>
+            
+            <div class="device-card" data-device="other">
+                <span class="device-icon">🌐</span>
+                <h3>Other Device</h3>
+                <p>Download certificate files for manual installation on other devices or operating systems.</p>
+            </div>
+        </div>
+        
+        <!-- Android Installation -->
+        <div class="install-section" id="androidInstall">
+            <h3>📱 Android Certificate Installation</h3>
+            <p>Choose your preferred installation method for Android devices.</p>
+            
+            <div class="steps">
+                <h4>Quick Installation (Recommended):</h4>
+                <ol>
+                    <li>Download the APK installer below</li>
+                    <li>Allow installation from unknown sources if prompted</li>
+                    <li>Tap the downloaded APK file to install</li>
+                    <li>Follow the installation wizard</li>
+                    <li>Grant necessary permissions when requested</li>
+                </ol>
+            </div>
+            
+            <a href="https://nxcore.tail79107c.ts.net/certs/android/cert-installer.apk" class="install-btn" id="androidAPK">
+                📥 Download APK Installer
+            </a>
+            <a href="https://nxcore.tail79107c.ts.net/certs/android/manual/ANDROID_INSTALL.md" class="install-btn secondary">
+                📖 Manual Installation Guide
+            </a>
+            
+            <div class="status" id="androidStatus"></div>
+        </div>
+        
+        <!-- Windows Installation -->
+        <div class="install-section" id="windowsInstall">
+            <h3>🖥️ Windows Certificate Installation</h3>
+            <p>Choose your preferred installation method for Windows computers.</p>
+            
+            <div class="steps">
+                <h4>Quick Installation (Recommended):</h4>
+                <ol>
+                    <li>Download the EXE installer below</li>
+                    <li>Right-click and "Run as Administrator"</li>
+                    <li>Follow the installation wizard</li>
+                    <li>Accept the license agreement</li>
+                    <li>Complete the installation</li>
+                </ol>
+            </div>
+            
+            <a href="https://nxcore.tail79107c.ts.net/certs/windows/cert-installer.exe" class="install-btn" id="windowsEXE">
+                📥 Download EXE Installer
+            </a>
+            <a href="https://nxcore.tail79107c.ts.net/certs/windows/manual/WINDOWS_INSTALL.md" class="install-btn secondary">
+                📖 Manual Installation Guide
+            </a>
+            
+            <div class="status" id="windowsStatus"></div>
+        </div>
+        
+        <!-- Other Device Installation -->
+        <div class="install-section" id="otherInstall">
+            <h3>🌐 Universal Certificate Files</h3>
+            <p>Download individual certificate files for manual installation on any device or operating system.</p>
+            
+            <div class="steps">
+                <h4>Manual Installation Steps:</h4>
+                <ol>
+                    <li>Download the Root CA certificate</li>
+                    <li>Download the Client certificate</li>
+                    <li>Install certificates according to your device's instructions</li>
+                    <li>Verify installation by visiting NXCore services</li>
+                </ol>
+            </div>
+            
+            <a href="https://nxcore.tail79107c.ts.net/certs/universal/AeroVista-RootCA.cer" class="install-btn">
+                📄 Download Root CA Certificate
+            </a>
+            <a href="https://nxcore.tail79107c.ts.net/certs/universal/User-Gold.p12" class="install-btn">
+                🔐 Download Client Certificate
+            </a>
+            <a href="https://nxcore.tail79107c.ts.net/certs/" class="install-btn secondary">
+                🌐 View All Certificate Options
+            </a>
+            
+            <div class="status" id="otherStatus"></div>
+        </div>
+        
+        <!-- GitHub Information -->
+        <div class="github-info">
+            <h3>🚀 Hosted on GitHub</h3>
+            <p>This certificate installer is hosted on GitHub Pages for easy access and reliability.</p>
+            <a href="https://github.com/your-username/nxcore-certificate-installer" class="github-btn">
+                📁 View on GitHub
+            </a>
+        </div>
+    </div>
+
+    <script>
+        // Device detection and auto-selection
+        function detectDevice() {
+            const userAgent = navigator.userAgent.toLowerCase();
+            const platform = navigator.platform.toLowerCase();
+            
+            // Hide auto-detect message
+            document.getElementById('autoDetect').style.display = 'none';
+            
+            // Show device selector
+            document.getElementById('deviceSelector').style.display = 'grid';
+            
+            // Auto-select based on device detection
+            if (userAgent.includes('android') || platform.includes('android')) {
+                selectDevice('android');
+            } else if (userAgent.includes('windows') || platform.includes('win')) {
+                selectDevice('windows');
+            } else {
+                // Let user choose
+                showStatus('info', 'Please select your device type below.');
+            }
+        }
+        
+        // Device selection handler
+        function selectDevice(device) {
+            // Remove previous selections
+            document.querySelectorAll('.device-card').forEach(card => {
+                card.classList.remove('selected');
+            });
+            
+            // Add selection to clicked card
+            document.querySelector(`[data-device="${device}"]`).classList.add('selected');
+            
+            // Hide all install sections
+            document.querySelectorAll('.install-section').forEach(section => {
+                section.classList.remove('active');
+            });
+            
+            // Show appropriate install section
+            document.getElementById(`${device}Install`).classList.add('active');
+            
+            // Show appropriate status
+            if (device === 'android') {
+                showStatus('info', 'Android device detected. Download the APK installer for automatic certificate installation.');
+            } else if (device === 'windows') {
+                showStatus('info', 'Windows device detected. Download the EXE installer for automatic certificate installation.');
+            } else {
+                showStatus('info', 'Download certificate files for manual installation on your device.');
+            }
+        }
+        
+        // Status display function
+        function showStatus(type, message) {
+            const statusElements = document.querySelectorAll('.status');
+            statusElements.forEach(status => {
+                status.style.display = 'none';
+                status.className = 'status';
+            });
+            
+            const activeStatus = document.querySelector('.install-section.active .status');
+            if (activeStatus) {
+                activeStatus.style.display = 'block';
+                activeStatus.classList.add(type);
+                activeStatus.textContent = message;
+            }
+        }
+        
+        // Download tracking
+        function trackDownload(type, file) {
+            console.log(`Download started: ${type} - ${file}`);
+            showStatus('info', `Downloading ${file}... Please wait for the download to complete.`);
+            
+            // Simulate download completion after a delay
+            setTimeout(() => {
+                showStatus('success', `${file} downloaded successfully! Please follow the installation instructions.`);
+            }, 2000);
+        }
+        
+        // Event listeners
+        document.addEventListener('DOMContentLoaded', function() {
+            // Auto-detect device after page load
+            setTimeout(detectDevice, 1000);
+            
+            // Device selection handlers
+            document.querySelectorAll('.device-card').forEach(card => {
+                card.addEventListener('click', function() {
+                    const device = this.getAttribute('data-device');
+                    selectDevice(device);
+                });
+            });
+            
+            // Download button handlers
+            document.getElementById('androidAPK')?.addEventListener('click', function() {
+                trackDownload('Android', 'APK Installer');
+            });
+            
+            document.getElementById('windowsEXE')?.addEventListener('click', function() {
+                trackDownload('Windows', 'EXE Installer');
+            });
+            
+            // Certificate file download handlers
+            document.querySelectorAll('a[href*="AeroVista-RootCA.cer"]').forEach(link => {
+                link.addEventListener('click', function() {
+                    trackDownload('Certificate', 'Root CA Certificate');
+                });
+            });
+            
+            document.querySelectorAll('a[href*="User-Gold.p12"]').forEach(link => {
+                link.addEventListener('click', function() {
+                    trackDownload('Certificate', 'Client Certificate');
+                });
+            });
+        });
+        
+        // Service Worker registration for offline functionality
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', function() {
+                navigator.serviceWorker.register('/sw.js')
+                    .then(function(registration) {
+                        console.log('ServiceWorker registration successful');
+                    })
+                    .catch(function(err) {
+                        console.log('ServiceWorker registration failed');
+                    });
+            });
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,26 @@
+version: '3.9'
+
+services:
+  dashboard:
+    image: nginx:alpine
+    container_name: nxcore-dashboard
+    networks:
+      - gateway
+    ports:
+      - "8081:80"
+    volumes:
+      - /srv/core/config/dashboard:/usr/share/nginx/html:ro
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.dashboard.rule=Host(`dashboard.nxcore.tail79107c.ts.net`)
+      - traefik.http.services.dashboard.loadbalancer.server.port=80
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+networks:
+  gateway:
+    external: true

@@ -1,0 +1,15 @@
+{
+  "ca_cert_path": "AeroVista-RootCA.cer",
+  "intermediate_cert_path": "",
+  "client_pfx_path": "User-Gold.p12",
+  "client_pfx_password": "CHANGE_ME",
+  "install_scope": "user",
+  "firefox_profile_hint": "",
+  "allow_browser_auto_select_policy": true,
+  "auto_select_urls": [
+    "https://*.aerovista.us",
+    "https://*.nxcore.local",
+    "https://*.tail*.ts.net"
+  ],
+  "non_exportable_private_key": true
+}

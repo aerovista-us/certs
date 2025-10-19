@@ -1,0 +1,40 @@
+version: "3.9"
+
+networks:
+  gateway:
+    external: true
+
+services:
+  traefik:
+    image: traefik:v2.10
+    container_name: traefik
+    restart: unless-stopped
+    command:
+      - --configFile=/etc/traefik/traefik-static.yml
+    ports:
+      - "80:80"
+      - "443:443"
+      - "8083:8080"   # dashboard/API on host:8083 (container 8080)
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /opt/nexus/traefik:/etc/traefik:ro
+    networks:
+      - gateway
+    labels:
+      - traefik.enable=true
+
+      # Traefik API (JSON) at /api -> NO strip
+      - traefik.http.routers.traefik-api.rule=Host(`nxcore.tail79107c.ts.net`) && PathPrefix(`/api`)
+      - traefik.http.routers.traefik-api.entrypoints=websecure
+      - traefik.http.routers.traefik-api.tls=true
+      - traefik.http.routers.traefik-api.service=api@internal
+      - traefik.http.routers.traefik-api.priority=100
+
+      # Traefik Dashboard at /dash -> STRIP /dash so it serves /dashboard/ internally
+      - traefik.http.routers.traefik-dash.rule=Host(`nxcore.tail79107c.ts.net`) && PathPrefix(`/dash`)
+      - traefik.http.routers.traefik-dash.entrypoints=websecure
+      - traefik.http.routers.traefik-dash.tls=true
+      - traefik.http.routers.traefik-dash.service=api@internal
+      - traefik.http.routers.traefik-dash.priority=100
+      - traefik.http.middlewares.traefik-dash-strip.stripprefix.prefixes=/dash
+      - traefik.http.routers.traefik-dash.middlewares=traefik-dash-strip@docker

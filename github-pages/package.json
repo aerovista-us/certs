@@ -1,0 +1,27 @@
+{
+  "name": "nxcore-certificate-installer",
+  "version": "1.0.0",
+  "description": "Automated certificate installation for NXCore services",
+  "main": "index.html",
+  "scripts": {
+    "start": "python -m http.server 8000",
+    "deploy": "gh-pages -d ."
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/your-username/nxcore-certificate-installer.git"
+  },
+  "keywords": [
+    "nxcore",
+    "certificates",
+    "ssl",
+    "security",
+    "installer"
+  ],
+  "author": "NXCore Team",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/your-username/nxcore-certificate-installer/issues"
+  },
+  "homepage": "https://your-username.github.io/nxcore-certificate-installer/"
+}

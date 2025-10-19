@@ -1,0 +1,44 @@
+version: "3.9"
+
+networks:
+  observability:
+    external: true
+  gateway:
+    external: true
+
+services:
+  cadvisor:
+    image: gcr.io/cadvisor/cadvisor:latest
+    container_name: cadvisor
+    restart: unless-stopped
+    privileged: true
+    devices:
+      - /dev/kmsg
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:ro
+      - /sys:/sys:ro
+      - /var/lib/docker:/var/lib/docker:ro
+      - /dev/disk:/dev/disk:ro
+    ports:
+      - "8082:8080"
+    networks:
+      - observability
+      - gateway
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.cadvisor.rule=Host(`metrics.nxcore.tail79107c.ts.net`)
+      - traefik.http.routers.cadvisor.entrypoints=websecure
+      - traefik.http.routers.cadvisor.tls=true
+      - traefik.http.routers.cadvisor.service=cadvisor
+      - traefik.http.services.cadvisor.loadbalancer.server.port=8080
+    command:
+      - '--housekeeping_interval=30s'
+      - '--docker_only=true'
+      - '--disable_metrics=disk,diskIO,network,tcp,udp,percpu,sched,process'
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8080/healthz"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+

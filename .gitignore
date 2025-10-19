@@ -79,4 +79,11 @@ build/
 
 # GitHub prep - State management
 !state/**
-!state/outbox/**
+!state/outbox/**EchoVerse_Music_Catalog/
+aerovista-workspaces/
+aerocoreos_splash/
+admin-nav.links.html
+aerovista-landing.html
+LICENSE
+.secrets/
+AUTOSYNC_DEPLOYMENT_GUIDE.md

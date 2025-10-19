@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NXCore Control Panel</title>
+    
+    <!-- Local Inter Font CSS (replaces Google Fonts) -->
+    <link rel="stylesheet" href="/assets/css/inter-font.css">
+    
+    <!-- Local Tailwind CSS (replaces CDN) -->
+    <script src="/assets/js/tailwind.min.js"></script>
+    
+    <!-- Additional local styles -->
+    <style>
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            color: #e2e8f0;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+        
+        .header h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .header p {
+            font-size: 1.25rem;
+            color: #94a3b8;
+            margin-bottom: 2rem;
+        }
+        
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+        
+        .metric-card {
+            background: rgba(30, 41, 59, 0.8);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            text-decoration: none;
+            color: inherit;
+        }
+        
+        .metric-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+            border-color: rgba(59, 130, 246, 0.5);
+        }
+        
+        .metric-card h3 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: #3b82f6;
+        }
+        
+        .metric-card p {
+            color: #94a3b8;
+            margin-bottom: 1rem;
+        }
+        
+        .status-indicator {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            margin-right: 0.5rem;
+        }
+        
+        .status-online {
+            background-color: #10b981;
+        }
+        
+        .status-offline {
+            background-color: #ef4444;
+        }
+        
+        .footer {
+            text-align: center;
+            padding: 2rem 0;
+            border-top: 1px solid rgba(59, 130, 246, 0.2);
+            color: #64748b;
+        }
+        
+        .verification {
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            border-radius: 0.5rem;
+            padding: 1rem;
+            margin: 1rem 0;
+        }
+        
+        .verification p {
+            color: #86efac;
+            font-size: 0.875rem;
+            margin: 0;
+        }
+        
+        .verification code {
+            background: #475569;
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.25rem;
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>NXCore Control Panel</h1>
+            <p>Secure Tailscale Network Management Dashboard</p>
+        </div>
+        
+        <div class="services-grid">
+            <a href="https://nxcore.tail79107c.ts.net/traefik/" target="_blank" class="metric-card" data-check-url="https://nxcore.tail79107c.ts.net/traefik/">
+                <h3>Traefik Dashboard</h3>
+                <p>Reverse proxy and load balancer management</p>
+                <div class="status-indicator status-online"></div>
+                <span>Online</span>
+            </a>
+            
+            <a href="https://nxcore.tail79107c.ts.net/auth/" target="_blank" class="metric-card" data-check-url="https://nxcore.tail79107c.ts.net/auth/">
+                <h3>Authelia</h3>
+                <p>Authentication and authorization server</p>
+                <div class="status-indicator status-online"></div>
+                <span>Online</span>
+            </a>
+            
+            <a href="https://nxcore.tail79107c.ts.net/ai/" target="_blank" class="metric-card" data-check-url="https://nxcore.tail79107c.ts.net/ai/">
+                <h3>OpenWebUI</h3>
+                <p>AI chat interface and model management</p>
+                <div class="status-indicator status-online"></div>
+                <span>Online</span>
+            </a>
+            
+            <a href="https://nxcore.tail79107c.ts.net/n8n/" target="_blank" class="metric-card" data-check-url="https://nxcore.tail79107c.ts.net/n8n/">
+                <h3>n8n Workflow</h3>
+                <p>Workflow automation and integration platform</p>
+                <div class="status-indicator status-online"></div>
+                <span>Online</span>
+            </a>
+            
+            <a href="https://nxcore.tail79107c.ts.net/grafana/" target="_blank" class="metric-card" data-check-url="https://nxcore.tail79107c.ts.net/grafana/">
+                <h3>Grafana</h3>
+                <p>Monitoring and observability dashboards</p>
+                <div class="status-indicator status-online"></div>
+                <span>Online</span>
+            </a>
+            
+            <a href="https://nxcore.tail79107c.ts.net/prometheus/" target="_blank" class="metric-card" data-check-url="https://nxcore.tail79107c.ts.net/prometheus/">
+                <h3>Prometheus</h3>
+                <p>Metrics collection and monitoring</p>
+                <div class="status-indicator status-online"></div>
+                <span>Online</span>
+            </a>
+            
+            <a href="https://nxcore.tail79107c.ts.net/status/" target="_blank" class="metric-card" data-check-url="https://nxcore.tail79107c.ts.net/status/">
+                <h3>Uptime Kuma</h3>
+                <p>Uptime monitoring and status pages</p>
+                <div class="status-indicator status-online"></div>
+                <span>Online</span>
+            </a>
+            
+            <a href="http://100.115.9.61:9999/" target="_blank" class="metric-card" data-check-url="http://100.115.9.61:9999/">
+                <h3>Dozzle</h3>
+                <p>Docker container logs viewer</p>
+                <div class="status-indicator status-online"></div>
+                <span>Online</span>
+            </a>
+            
+            <a href="https://nxcore.tail79107c.ts.net/portainer/" target="_blank" class="metric-card" data-check-url="https://nxcore.tail79107c.ts.net/portainer/">
+                <h3>Portainer</h3>
+                <p>Docker container management interface</p>
+                <div class="status-indicator status-online"></div>
+                <span>Online</span>
+            </a>
+            
+            <a href="https://nxcore.tail79107c.ts.net/files/" target="_blank" class="metric-card" data-check-url="https://nxcore.tail79107c.ts.net/files/">
+                <h3>FileBrowser</h3>
+                <p>Web-based file manager</p>
+                <div class="status-indicator status-online"></div>
+                <span>Online</span>
+            </a>
+        </div>
+        
+        <div class="verification">
+            <p><strong>Verification:</strong> After installation, visit <code>https://nxcore.tail79107c.ts.net/</code> - you should see a green lock icon in the address bar.</p>
+        </div>
+        
+        <div class="footer">
+            <p>&copy; 2025 NXCore Control Panel. Secure Tailscale Network Management.</p>
+        </div>
+    </div>
+    
+    <script>
+        // Service status checking (local implementation)
+        function checkServiceStatus() {
+            const serviceCards = document.querySelectorAll('.metric-card[data-check-url]');
+            
+            serviceCards.forEach(card => {
+                const url = card.getAttribute('data-check-url');
+                const statusIndicator = card.querySelector('.status-indicator');
+                const statusText = card.querySelector('span');
+                
+                // Simple status check (you can enhance this)
+                fetch(url, { method: 'HEAD', mode: 'no-cors' })
+                    .then(() => {
+                        statusIndicator.className = 'status-indicator status-online';
+                        statusText.textContent = 'Online';
+                    })
+                    .catch(() => {
+                        statusIndicator.className = 'status-indicator status-offline';
+                        statusText.textContent = 'Offline';
+                    });
+            });
+        }
+        
+        // Check service status on page load
+        document.addEventListener('DOMContentLoaded', checkServiceStatus);
+    </script>
+</body>
+</html>

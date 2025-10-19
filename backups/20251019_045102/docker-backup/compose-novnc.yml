@@ -1,0 +1,41 @@
+version: "3.9"
+
+networks:
+  gateway:
+    external: true
+  backend:
+    external: true
+
+services:
+  novnc:
+    image: theasp/novnc:latest
+    container_name: novnc
+    restart: unless-stopped
+    environment:
+      - DISPLAY_WIDTH=1920
+      - DISPLAY_HEIGHT=1080
+      - RUN_XTERM=no
+      - VNC_SERVER=vnc-server:5901
+    ports:
+      - "6080:8080"  # NoVNC web interface
+    volumes:
+      - /srv/core/fileshare/uploads:/shared:ro
+    networks:
+      - gateway
+      - backend
+    depends_on:
+      - vnc-server
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.novnc.rule=Host(`vnc.nxcore.tail79107c.ts.net`)
+      - traefik.http.routers.novnc.entrypoints=websecure
+      - traefik.http.routers.novnc.tls=true
+      - traefik.http.routers.novnc.service=novnc
+      - traefik.http.services.novnc.loadbalancer.server.port=8080
+      - autoheal=true
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8080/ || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s

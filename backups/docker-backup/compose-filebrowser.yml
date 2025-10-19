@@ -1,0 +1,21 @@
+networks:
+  gateway:
+    external: true
+  backend:
+    external: true
+
+services:
+  filebrowser:
+    image: filebrowser/filebrowser:latest
+    container_name: filebrowser
+    volumes:
+      - /srv/core:/srv
+      - /srv/core/filebrowser.db:/database/filebrowser.db
+    environment:
+      - FB_BASEURL=/
+    networks:
+      - gateway
+      - backend
+    restart: unless-stopped
+    labels:
+      - traefik.enable=false  # Using path-based routing instead

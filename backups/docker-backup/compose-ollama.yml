@@ -1,0 +1,33 @@
+version: "3.9"
+
+networks:
+  backend:
+    external: true
+
+services:
+  ollama:
+    image: ollama/ollama:latest
+    container_name: ollama
+    restart: unless-stopped
+    environment:
+      - OLLAMA_HOST=0.0.0.0:11434
+    volumes:
+      - /srv/core/data/ollama:/root/.ollama
+    networks:
+      - backend
+    ports:
+      - "127.0.0.1:11434:11434"  # Only accessible internally
+    # Uncomment if you have NVIDIA GPU:
+    # deploy:
+    #   resources:
+    #     reservations:
+    #       devices:
+    #         - driver: nvidia
+    #           count: 1
+    #           capabilities: [gpu]
+    healthcheck:
+      test: ["CMD", "ollama", "list"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+

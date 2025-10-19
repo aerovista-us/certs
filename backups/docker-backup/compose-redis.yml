@@ -1,0 +1,29 @@
+version: "3.9"
+
+networks:
+  backend:
+    external: true
+
+services:
+  redis:
+    image: redis:7-alpine
+    container_name: redis
+    restart: unless-stopped
+    command: >
+      redis-server
+      --appendonly yes
+      --requirepass ${REDIS_PASSWORD:-ChangeMe_RedisPassword123}
+      --maxmemory 512mb
+      --maxmemory-policy allkeys-lru
+    volumes:
+      - /srv/core/data/redis:/data
+    networks:
+      - backend
+    ports:
+      - "127.0.0.1:6379:6379"  # Only accessible from localhost
+    healthcheck:
+      test: ["CMD", "redis-cli", "--raw", "incr", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+

@@ -1,0 +1,27 @@
+services:
+  landing:
+    image: nginx:alpine
+    container_name: landing
+    restart: unless-stopped
+    volumes:
+      - /srv/core/landing:/usr/share/nginx/html:ro
+      - /srv/core/config/landing/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+    networks:
+      - gateway
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.landing.rule=Host(`nxcore.tail79107c.ts.net`) && Path(`/`)
+      - traefik.http.routers.landing.priority=1
+      - traefik.http.routers.landing.entrypoints=websecure
+      - traefik.http.routers.landing.tls=true
+      - traefik.http.services.landing.loadbalancer.server.port=80
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+networks:
+  gateway:
+    external: true

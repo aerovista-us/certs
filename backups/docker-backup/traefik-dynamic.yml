@@ -1,0 +1,43 @@
+# Traefik dynamic configuration
+# Place in /opt/nexus/traefik/dynamic/ on the server
+
+http:
+  middlewares:
+    # Tailnet-only access (optional middleware)
+    # Use with labels: traefik.http.routers.myapp.middlewares=tailnet-only@file
+    tailnet-only:
+      ipWhiteList:
+        sourceRange:
+          - "100.64.0.0/10"  # Tailscale CGNAT range
+          - "127.0.0.1/32"
+          - "::1/128"
+
+    # Security headers
+    secure-headers:
+      headers:
+        sslRedirect: true
+        stsSeconds: 31536000
+        stsIncludeSubdomains: true
+        contentTypeNosniff: true
+        browserXssFilter: true
+        frameDeny: true
+
+tls:
+  options:
+    # TLS 1.2+ only, HTTP/1.1 for WebSocket compatibility
+    default:
+      minVersion: VersionTLS12
+      sniStrict: true
+      alpnProtocols:
+        - http/1.1
+        - h2
+    
+    # WebSocket-friendly (no HTTP/2)
+    ws11:
+      minVersion: VersionTLS12
+      sniStrict: true
+      alpnProtocols:
+        - http/1.1
+
+  # certificates loaded from tailscale-certs.yml
+

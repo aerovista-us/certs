@@ -1,0 +1,237 @@
+version: "3.9"
+
+networks:
+  gateway:
+    external: true
+  backend:
+    external: true
+  observability:
+    external: true
+
+services:
+  # Core Infrastructure
+  traefik:
+    image: traefik:v2.10
+    container_name: traefik
+    restart: unless-stopped
+    command:
+      - --api.dashboard=true
+      - --api.insecure=false
+      - --providers.docker=true
+      - --providers.docker.exposedbydefault=false
+      - --providers.docker.network=gateway
+      - --providers.file.directory=/traefik/dynamic
+      - --providers.file.watch=true
+      - --entrypoints.web.address=:80
+      - --entrypoints.web.http.redirections.entryPoint.to=websecure
+      - --entrypoints.web.http.redirections.entryPoint.scheme=https
+      - --entrypoints.websecure.address=:443
+      - --log.level=INFO
+      - --accesslog=true
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /opt/nexus/traefik/dynamic:/traefik/dynamic:ro
+      - /opt/nexus/traefik/certs:/certs:ro
+    networks:
+      - gateway
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.traefik-dash.rule=Host(`traefik.nxcore.tail79107c.ts.net`)
+      - traefik.http.routers.traefik-dash.entrypoints=websecure
+      - traefik.http.routers.traefik-dash.service=api@internal
+      - traefik.http.routers.traefik-dash.tls=true
+      - autoheal=true
+    healthcheck:
+      test: ["CMD", "traefik", "healthcheck", "--ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  postgres:
+    image: postgres:16-alpine
+    container_name: postgres
+    restart: unless-stopped
+    environment:
+      - POSTGRES_USER=aerovista
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-ChangeMe_SecurePassword123}
+      - POSTGRES_DB=aerovista
+      - PGDATA=/var/lib/postgresql/data/pgdata
+    volumes:
+      - /srv/core/data/postgres:/var/lib/postgresql/data
+      - /srv/core/config/postgres:/docker-entrypoint-initdb.d:ro
+    networks:
+      - backend
+    ports:
+      - "127.0.0.1:5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U aerovista -d aerovista"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    command:
+      - "postgres"
+      - "-c"
+      - "max_connections=200"
+      - "-c"
+      - "shared_buffers=256MB"
+      - "-c"
+      - "effective_cache_size=1GB"
+      - "-c"
+      - "maintenance_work_mem=64MB"
+      - "-c"
+      - "checkpoint_completion_target=0.9"
+      - "-c"
+      - "wal_buffers=16MB"
+      - "-c"
+      - "default_statistics_target=100"
+      - "-c"
+      - "random_page_cost=1.1"
+      - "-c"
+      - "effective_io_concurrency=200"
+      - "-c"
+      - "work_mem=1310kB"
+      - "-c"
+      - "min_wal_size=1GB"
+      - "-c"
+      - "max_wal_size=4GB"
+
+  redis:
+    image: redis:7-alpine
+    container_name: redis
+    restart: unless-stopped
+    command: >
+      redis-server
+      --appendonly yes
+      --requirepass ${REDIS_PASSWORD:-ChangeMe_RedisPassword123}
+      --maxmemory 512mb
+      --maxmemory-policy allkeys-lru
+    volumes:
+      - /srv/core/data/redis:/data
+    networks:
+      - backend
+    ports:
+      - "127.0.0.1:6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "--raw", "incr", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+
+  authelia:
+    image: authelia/authelia:latest
+    container_name: authelia
+    restart: unless-stopped
+    volumes:
+      - /srv/core/config/authelia:/config
+    networks:
+      - backend
+    ports:
+      - "9091:9091"
+    environment:
+      - AUTHELIA_JWT_SECRET=${AUTHELIA_JWT_SECRET:-ChangeMe_AutheliaJWTSecret123}
+      - AUTHELIA_SESSION_SECRET=${AUTHELIA_SESSION_SECRET:-ChangeMe_AutheliaSessionSecret123}
+      - AUTHELIA_STORAGE_ENCRYPTION_KEY=${AUTHELIA_STORAGE_ENCRYPTION_KEY:-ChangeMe_AutheliaStorageKey123456789012345678901234567890}
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:9091/api/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Dashboard
+  nxcore-dashboard:
+    image: nginx:alpine
+    container_name: nxcore-dashboard
+    restart: unless-stopped
+    ports:
+      - "8081:80"
+    volumes:
+      - /srv/core/config/dashboard:/usr/share/nginx/html:ro
+    networks:
+      - gateway
+    labels:
+      - autoheal=true
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:80/ || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # File Sharing
+  fileshare-nginx:
+    image: nginx:alpine
+    container_name: nxcore-fileshare-nginx
+    restart: unless-stopped
+    networks:
+      - gateway
+      - backend
+    ports:
+      - "8082:80"
+    volumes:
+      - /srv/core/fileshare/www:/var/www/html:ro
+      - /srv/core/config/fileshare/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+      - /srv/core/fileshare/uploads:/var/www/html/uploads:rw
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.fileshare.rule=Host(`share.nxcore.tail79107c.ts.net`)
+      - traefik.http.services.fileshare.loadbalancer.server.port=80
+      - autoheal=true
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:80/ || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    depends_on:
+      - fileshare-php
+
+  fileshare-php:
+    image: php:8.2-fpm-alpine
+    container_name: nxcore-fileshare-php
+    restart: unless-stopped
+    networks:
+      - backend
+    volumes:
+      - /srv/core/fileshare/www:/var/www/html:rw
+      - /srv/core/fileshare/uploads:/var/www/html/uploads:rw
+    healthcheck:
+      test: ["CMD-SHELL", "php-fpm -t || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Management
+  portainer:
+    image: portainer/portainer-ce:latest
+    container_name: portainer
+    restart: unless-stopped
+    command: >
+      -H unix:///var/run/docker.sock
+      --http-disabled
+      --tlsskipverify
+    ports:
+      - "9444:9443"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - portainer_data:/data
+    networks:
+      - gateway
+      - default
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.portainer.rule=Host(`portainer.nxcore.tail79107c.ts.net`)
+      - traefik.http.routers.portainer.entrypoints=websecure
+      - traefik.http.routers.portainer.tls=true
+      - traefik.http.routers.portainer.service=portainer
+      - traefik.http.services.portainer.loadbalancer.server.port=9443
+      - traefik.http.services.portainer.loadbalancer.server.scheme=https
+      - autoheal=true
+    healthcheck:
+      test: ["CMD", "curl", "-f", "https://localhost:9443/api/system/status"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+volumes:
+  portainer_data:

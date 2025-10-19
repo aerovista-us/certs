@@ -1,0 +1,42 @@
+version: "3.9"
+
+networks:
+  gateway:
+    external: true
+  backend:
+    external: true
+
+services:
+  rstudio:
+    image: rocker/rstudio:latest
+    container_name: rstudio
+    restart: unless-stopped
+    environment:
+      - PASSWORD=${RSTUDIO_PASSWORD:-ChangeMe_RStudioPassword123}
+      - ROOT=TRUE
+      - DISABLE_AUTH=false
+    ports:
+      - "8787:8787"
+    volumes:
+      - rstudio_data:/home/rstudio
+      - /srv/core/fileshare/uploads:/home/rstudio/shared:ro
+    networks:
+      - gateway
+      - backend
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.rstudio.rule=Host(`rstudio.nxcore.tail79107c.ts.net`)
+      - traefik.http.routers.rstudio.entrypoints=websecure
+      - traefik.http.routers.rstudio.tls=true
+      - traefik.http.routers.rstudio.service=rstudio
+      - traefik.http.services.rstudio.loadbalancer.server.port=8787
+      - autoheal=true
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8787/ || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+volumes:
+  rstudio_data:
